@@ -6,7 +6,7 @@ import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityRes
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import org.junit.jupiter.api.Test;
 
-public class TestCapability extends AbstractTest{
+public class TestCapability extends AbstractTest {
   private static final String appId = "your-app-id";
   private static final String contactId = "your-contact-id";
 

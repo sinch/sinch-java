@@ -19,10 +19,13 @@ public class ContactMessage {
 
   @JsonProperty("text_message")
   private TextMessage textMessage;
+
   @JsonProperty("media_message")
   private MediaMessage mediaMessage;
+
   @JsonProperty("location_message")
   private LocationMessage locationMessage;
+
   @JsonProperty("choice_response_message")
   private ChoiceResponseMessage choiceResponseMessage;
   // Optional. Included if the contact message is a response to a previous App message.

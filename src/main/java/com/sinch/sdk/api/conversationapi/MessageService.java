@@ -16,6 +16,6 @@ public interface MessageService {
 
   TranscodeMessageResponse transcodeMessage(@Valid TranscodeMessageRequest transcodeMessageRequest);
 
-  //TODO: query params??
+  // TODO: query params??
   ListMessagesResponse listMessages(String contactId);
 }

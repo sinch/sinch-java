@@ -10,7 +10,7 @@ import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class TestApp extends AbstractTest{
+public class TestApp extends AbstractTest {
 
   private static final String appId = "your-app-id";
 

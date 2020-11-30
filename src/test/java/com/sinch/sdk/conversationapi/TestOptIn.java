@@ -10,7 +10,7 @@ import com.sinch.sdk.model.conversationapi.optin.service.OptOutResponse;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class TestOptIn extends AbstractTest{
+public class TestOptIn extends AbstractTest {
   private static final String contactId = "your-contact-id";
   private static final String appId = "your-app-id";
 

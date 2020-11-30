@@ -8,7 +8,7 @@ import com.sinch.sdk.model.conversationapi.event.service.SendEventRequest;
 import com.sinch.sdk.model.conversationapi.event.service.SendEventResponse;
 import org.junit.jupiter.api.Test;
 
-public class TestEvent extends AbstractTest{
+public class TestEvent extends AbstractTest {
   private static final String contactId = "your-contact-id";
   private static final String appId = "your-app-id";
 

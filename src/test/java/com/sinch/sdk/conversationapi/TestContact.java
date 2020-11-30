@@ -8,7 +8,7 @@ import com.sinch.sdk.model.conversationapi.contact.service.ListContactsResponse;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class TestContact extends AbstractTest{
+public class TestContact extends AbstractTest {
   private static final String contactId = "your-contact-id";
   private static final String appId = "your-app-id";
 

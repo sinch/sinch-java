@@ -43,7 +43,8 @@ public class MessageServiceImpl extends ConversationApiService implements Messag
 
   @Override
   public ListMessagesResponse listMessages(String contactId) {
-    return getRequest(buildQueryParams(listMessagesQueryParams(contactId)), ListMessagesResponse.class);
+    return getRequest(
+        buildQueryParams(listMessagesQueryParams(contactId)), ListMessagesResponse.class);
   }
 
   private Map<String, String> listMessagesQueryParams(String contactId) {

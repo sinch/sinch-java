@@ -31,16 +31,19 @@ public class Choice {
    * The default is message_id_{text, title}. */
   @JsonProperty("postback_data")
   private String postbackData;
+
   @Builder(builderMethodName = "fromTextMessage", builderClassName = "TextChoice")
   public Choice(TextMessage textMessage, String postbackData) {
     this.textMessage = textMessage;
     this.postbackData = postbackData;
   }
+
   @Builder(builderMethodName = "fromUrlMessage", builderClassName = "UrlChoice")
   public Choice(UrlMessage urlMessage, String postbackData) {
     this.urlMessage = urlMessage;
     this.postbackData = postbackData;
   }
+
   @Builder(builderMethodName = "fromCallMessage", builderClassName = "CallChoice")
   public Choice(CallMessage callMessage, String postbackData) {
     this.callMessage = callMessage;

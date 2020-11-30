@@ -13,7 +13,7 @@ import com.sinch.sdk.model.conversationapi.transcoding.service.TranscodeMessageR
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class TestMessage extends AbstractTest{
+public class TestMessage extends AbstractTest {
   private static final String contactId = "your-contact-id";
   private static final String appId = "your-app-id";
   private static final String messageId = "your-message-id";
@@ -45,8 +45,7 @@ public class TestMessage extends AbstractTest{
     client.initContext(baseUrl, version, projectId);
     client.initBasicAuth(clientId, clientSecret);
 
-    ConversationMessage response =
-        client.getMessageService().getMessage(messageId);
+    ConversationMessage response = client.getMessageService().getMessage(messageId);
     System.out.println(response);
   }
 

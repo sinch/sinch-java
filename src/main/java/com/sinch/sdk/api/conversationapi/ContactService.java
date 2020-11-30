@@ -3,7 +3,6 @@ package com.sinch.sdk.api.conversationapi;
 import com.sinch.sdk.model.conversationapi.contact.Contact;
 import com.sinch.sdk.model.conversationapi.contact.service.ListContactsResponse;
 import com.sinch.sdk.model.conversationapi.contact.service.MergeContactRequest;
-import java.time.Instant;
 import javax.validation.Valid;
 
 public interface ContactService {

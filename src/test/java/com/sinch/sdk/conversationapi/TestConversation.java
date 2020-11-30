@@ -8,7 +8,7 @@ import com.sinch.sdk.model.conversationapi.message.ConversationMessage;
 import com.sinch.sdk.model.conversationapi.message.type.MediaMessage;
 import org.junit.jupiter.api.Test;
 
-public class TestConversation extends AbstractTest{
+public class TestConversation extends AbstractTest {
   private static final String contactId = "your-contact-id";
   private static final String conversationId = "your-conversation-id";
   private static final String appId = "your-app-id";
@@ -37,8 +37,7 @@ public class TestConversation extends AbstractTest{
     client.initContext(baseUrl, version, projectId);
     client.initBasicAuth(clientId, clientSecret);
 
-    Conversation response =
-        client.getConversationService().getConversation(conversationId);
+    Conversation response = client.getConversationService().getConversation(conversationId);
     System.out.println(response);
   }
 
@@ -57,8 +56,7 @@ public class TestConversation extends AbstractTest{
             .metadata("some metadata")
             .build();
 
-    Conversation response =
-        client.getConversationService().updateConversation(con, conversationId);
+    Conversation response = client.getConversationService().updateConversation(con, conversationId);
     System.out.println(response);
   }
 
@@ -70,8 +68,7 @@ public class TestConversation extends AbstractTest{
 
     client.getConversationService().stopActiveConversation(conversationId);
 
-    Conversation response =
-        client.getConversationService().getConversation(conversationId);
+    Conversation response = client.getConversationService().getConversation(conversationId);
     System.out.println(response);
   }
 
@@ -89,8 +86,6 @@ public class TestConversation extends AbstractTest{
                     .build())
             .build();
 
-    client
-        .getConversationService()
-        .injectMessageIntoConversation(message, conversationId);
+    client.getConversationService().injectMessageIntoConversation(message, conversationId);
   }
 }

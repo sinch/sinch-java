@@ -7,7 +7,7 @@ import com.sinch.sdk.model.conversationapi.webhook.Webhook.Trigger;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class TestWebhook extends AbstractTest{
+public class TestWebhook extends AbstractTest {
   private static final String webhookId = "your-webhook-id";
   private static final String appId = "your-app-id";
 

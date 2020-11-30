@@ -45,7 +45,8 @@ public class ContactServiceImpl extends ConversationApiService implements Contac
 
   @Override
   public ListContactsResponse listContacts(Integer pageSize, String pageToken) {
-    return getRequest(buildQueryParams(listContactsQueryParams(pageSize,pageToken)), ListContactsResponse.class);
+    return getRequest(
+        buildQueryParams(listContactsQueryParams(pageSize, pageToken)), ListContactsResponse.class);
   }
 
   // TODO
@@ -56,7 +57,8 @@ public class ContactServiceImpl extends ConversationApiService implements Contac
 
   private Map<String, String> listContactsQueryParams(Integer pageSize, String pageToken) {
     Map<String, String> queryParams = new HashMap<>();
-    Optional.ofNullable(pageSize).ifPresent(size -> queryParams.put(PAGE_SIZE_PARAM, String.valueOf(size)));
+    Optional.ofNullable(pageSize)
+        .ifPresent(size -> queryParams.put(PAGE_SIZE_PARAM, String.valueOf(size)));
     Optional.ofNullable(pageToken).ifPresent(token -> queryParams.put(PAGE_TOKEN_PARAM, token));
     return queryParams;
   }
