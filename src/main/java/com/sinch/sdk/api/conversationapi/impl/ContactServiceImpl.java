@@ -5,9 +5,7 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.model.conversationapi.contact.Contact;
 import com.sinch.sdk.model.conversationapi.contact.service.ListContactsResponse;
 import com.sinch.sdk.model.conversationapi.contact.service.MergeContactRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.sinch.sdk.utils.QueryStringBuilder;
 import java.util.function.Supplier;
 import javax.validation.Valid;
 
@@ -45,21 +43,17 @@ public class ContactServiceImpl extends ConversationApiService implements Contac
 
   @Override
   public ListContactsResponse listContacts(Integer pageSize, String pageToken) {
-    return getRequest(
-        buildQueryParams(listContactsQueryParams(pageSize, pageToken)), ListContactsResponse.class);
+    final String queryString =
+        QueryStringBuilder.newInstance()
+            .add(PAGE_SIZE_PARAM, pageSize)
+            .add(PAGE_TOKEN_PARAM, pageToken)
+            .build();
+    return getRequest(queryString, ListContactsResponse.class);
   }
 
   // TODO
   @Override
   public Contact mergeContact(@Valid MergeContactRequest mergeContactRequest) {
     return null;
-  }
-
-  private Map<String, String> listContactsQueryParams(Integer pageSize, String pageToken) {
-    Map<String, String> queryParams = new HashMap<>();
-    Optional.ofNullable(pageSize)
-        .ifPresent(size -> queryParams.put(PAGE_SIZE_PARAM, String.valueOf(size)));
-    Optional.ofNullable(pageToken).ifPresent(token -> queryParams.put(PAGE_TOKEN_PARAM, token));
-    return queryParams;
   }
 }

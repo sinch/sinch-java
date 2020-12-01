@@ -9,8 +9,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 public abstract class ConversationApiService {
@@ -111,16 +109,5 @@ public abstract class ConversationApiService {
               }
             })
         .join();
-  }
-
-  protected String buildQueryParams(Map<String, String> queryParams) {
-    if (queryParams.isEmpty()) {
-      return "";
-    }
-    StringBuilder params = new StringBuilder("?");
-    for (Entry entry : queryParams.entrySet()) {
-      params.append(entry.getKey()).append("=").append(entry.getValue());
-    }
-    return params.toString();
   }
 }

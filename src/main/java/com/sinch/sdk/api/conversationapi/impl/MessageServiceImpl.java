@@ -8,9 +8,7 @@ import com.sinch.sdk.model.conversationapi.message.service.SendAppMessageRequest
 import com.sinch.sdk.model.conversationapi.message.service.SendAppMessageResponse;
 import com.sinch.sdk.model.conversationapi.transcoding.service.TranscodeMessageRequest;
 import com.sinch.sdk.model.conversationapi.transcoding.service.TranscodeMessageResponse;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.sinch.sdk.utils.QueryStringBuilder;
 import java.util.function.Supplier;
 import javax.validation.Valid;
 
@@ -43,13 +41,8 @@ public class MessageServiceImpl extends ConversationApiService implements Messag
 
   @Override
   public ListMessagesResponse listMessages(String contactId) {
-    return getRequest(
-        buildQueryParams(listMessagesQueryParams(contactId)), ListMessagesResponse.class);
-  }
-
-  private Map<String, String> listMessagesQueryParams(String contactId) {
-    Map<String, String> queryParams = new HashMap<>();
-    Optional.ofNullable(contactId).ifPresent(id -> queryParams.put(CONTACT_PARAM, contactId));
-    return queryParams;
+    final String queryString =
+        QueryStringBuilder.newInstance().add(CONTACT_PARAM, contactId).build();
+    return getRequest(queryString, ListMessagesResponse.class);
   }
 }

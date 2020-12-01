@@ -5,9 +5,7 @@ import com.sinch.sdk.api.conversationapi.ConversationService;
 import com.sinch.sdk.model.conversationapi.conversation.Conversation;
 import com.sinch.sdk.model.conversationapi.conversation.service.ListConversationsResponse;
 import com.sinch.sdk.model.conversationapi.message.ConversationMessage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import com.sinch.sdk.utils.QueryStringBuilder;
 import java.util.function.Supplier;
 import javax.validation.Valid;
 
@@ -45,20 +43,17 @@ public class ConversationServiceImpl extends ConversationApiService implements C
   @Override
   public ListConversationsResponse listConversationsByApp(
       String appId, boolean activeOnly, Integer pageSize, String pageToken) {
-    return getRequest(
-        buildQueryParams(
-            listConversationsQueryParams(appId, APP_PARAM, activeOnly, pageSize, pageToken)),
-        ListConversationsResponse.class);
+    final String queryString =
+        getQueryBuilder(activeOnly, pageSize, pageToken).add(APP_PARAM, appId).build();
+    return getRequest(queryString, ListConversationsResponse.class);
   }
 
   @Override
   public ListConversationsResponse listConversationsByContact(
       String contactId, boolean activeOnly, Integer pageSize, String pageToken) {
-    return getRequest(
-        buildQueryParams(
-            listConversationsQueryParams(
-                contactId, CONTACT_PARAM, activeOnly, pageSize, pageToken)),
-        ListConversationsResponse.class);
+    final String queryString =
+        getQueryBuilder(activeOnly, pageSize, pageToken).add(CONTACT_PARAM, contactId).build();
+    return getRequest(queryString, ListConversationsResponse.class);
   }
 
   @Override
@@ -72,15 +67,11 @@ public class ConversationServiceImpl extends ConversationApiService implements C
     postRequestEmptyBody("/".concat(conversationId).concat(":inject-message"));
   }
 
-  private Map<String, String> listConversationsQueryParams(
-      String id, String idParamName, boolean activeOnly, Integer pageSize, String pageToken) {
-    Map<String, String> queryParams = new HashMap<>();
-    Optional.ofNullable(id).ifPresent(idParam -> queryParams.put(idParamName, idParam));
-    Optional.ofNullable(activeOnly)
-        .ifPresent(active -> queryParams.put(ACTIVE_PARAM, String.valueOf(active)));
-    Optional.ofNullable(pageSize)
-        .ifPresent(size -> queryParams.put(PAGE_SIZE_PARAM, String.valueOf(size)));
-    Optional.ofNullable(pageToken).ifPresent(token -> queryParams.put(PAGE_TOKEN_PARAM, token));
-    return queryParams;
+  private QueryStringBuilder getQueryBuilder(
+      final boolean activeOnly, final Integer pageSize, final String pageToken) {
+    return QueryStringBuilder.newInstance()
+        .add(ACTIVE_PARAM, activeOnly)
+        .add(PAGE_SIZE_PARAM, pageSize)
+        .add(PAGE_TOKEN_PARAM, pageToken);
   }
 }
