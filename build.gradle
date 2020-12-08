@@ -41,6 +41,10 @@ test {
     useJUnitPlatform()
 }
 
+tasks.withType(Test) {
+    systemProperties = System.properties as Map<String, ?>
+}
+
 tasks.named("jar") {
     manifest {
         attributes("Implementation-Title": project.name,

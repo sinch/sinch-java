@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi;
 
+import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.conversationapi.impl.AppServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.CapabilityServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.ContactServiceImpl;
@@ -18,6 +19,11 @@ public class ConversationApiClient {
   public ConversationApiClient() {
     authenticationModule = new AuthenticationModule();
     config = new ConversationApiConfig();
+  }
+
+  public ConversationApiClient(final Sinch.Config sinchConfig) {
+    this();
+    config.setProjectId(sinchConfig.getProjectId());
   }
 
   public void initBasicAuth(String clientId, String clientSecret) {
