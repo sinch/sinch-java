@@ -1,6 +1,6 @@
-package com.sinch.sdk.conversationapi;
+package com.sinch.sdk.api.conversationapi;
 
-import com.sinch.sdk.api.conversationapi.ConversationApiClient;
+import com.sinch.sdk.Sinch;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
 import com.sinch.sdk.model.conversationapi.message.AppMessage;
@@ -11,20 +11,25 @@ import com.sinch.sdk.model.conversationapi.message.type.TextMessage;
 import com.sinch.sdk.model.conversationapi.transcoding.service.TranscodeMessageRequest;
 import com.sinch.sdk.model.conversationapi.transcoding.service.TranscodeMessageResponse;
 import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class TestMessage extends AbstractTest {
-  private static final String contactId = "your-contact-id";
-  private static final String appId = "your-app-id";
-  private static final String messageId = "your-message-id";
+class MessageServiceTest {
+
+  private final String appId = "your-app-id";
+  private final String contactId = "your-contact-id";
+  private final String messageId = "your-message-id";
+
+  private static MessageService messageService;
+
+  @BeforeAll
+  static void beforeAll() {
+    messageService = Sinch.conversationApi().getMessageService();
+  }
 
   @Test
-  public void testSendMessage() {
-    ConversationApiClient client = new ConversationApiClient();
-    client.initContext(baseUrl, version, projectId);
-    client.initBasicAuth(clientId, clientSecret);
-
-    SendAppMessageRequest request =
+  void testSendAppMessage() {
+    final SendAppMessageRequest request =
         SendAppMessageRequest.builder()
             .appId(appId)
             .message(
@@ -35,27 +40,19 @@ public class TestMessage extends AbstractTest {
             .channelPriorityOrder(List.of(ConversationChannel.VIBER))
             .build();
 
-    SendAppMessageResponse response = client.getMessageService().sendAppMessage(request);
+    final SendAppMessageResponse response = messageService.sendAppMessage(request);
     System.out.println(response);
   }
 
   @Test
-  public void testGetMessage() {
-    ConversationApiClient client = new ConversationApiClient();
-    client.initContext(baseUrl, version, projectId);
-    client.initBasicAuth(clientId, clientSecret);
-
-    ConversationMessage response = client.getMessageService().getMessage(messageId);
+  void testGetMessage() {
+    final ConversationMessage response = messageService.getMessage(messageId);
     System.out.println(response);
   }
 
   @Test
-  public void testTranscodeMessage() {
-    ConversationApiClient client = new ConversationApiClient();
-    client.initContext(baseUrl, version, projectId);
-    client.initBasicAuth(clientId, clientSecret);
-
-    TranscodeMessageRequest request =
+  void testTranscodeMessage() {
+    final TranscodeMessageRequest request =
         TranscodeMessageRequest.builder()
             .appMessage(
                 AppMessage.fromTextMessage()
@@ -65,7 +62,7 @@ public class TestMessage extends AbstractTest {
             .appId(appId)
             .build();
 
-    TranscodeMessageResponse response = client.getMessageService().transcodeMessage(request);
+    final TranscodeMessageResponse response = messageService.transcodeMessage(request);
     System.out.println(response);
   }
 }

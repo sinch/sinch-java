@@ -1,113 +1,49 @@
 package com.sinch.sdk.api.conversationapi.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.sinch.sdk.api.SinchRestClient;
+import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.util.function.Supplier;
 
 public abstract class ConversationApiService {
-  private static final String AUTH_HEADER = "Authorization";
-  private final ObjectMapper objectMapper =
-      new ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-  protected String serviceUrl;
-  protected HttpClient client;
-  protected Supplier<String> authorizationHeader;
 
-  public ConversationApiService(String serviceUrl, Supplier<String> authorizationHeader) {
-    this.serviceUrl = serviceUrl;
-    this.authorizationHeader = authorizationHeader;
-    this.client = HttpClient.newHttpClient();
+  protected static final String TEMPLATE_URL =
+      "https://api.%s1tst.conversation-api.staging.sinch.com/%s/projects/%s/%s";
+  protected static final String PAGE_SIZE_PARAM = "page_size";
+  protected static final String PAGE_TOKEN_PARAM = "page_token";
+  protected static final String CONTACT_PARAM = "contact_id";
+
+  protected final String projectId;
+  protected final String region;
+  protected final String version;
+  protected final SinchRestClient restClient;
+
+  private String serviceUrl;
+  protected URI serviceURI;
+
+  public ConversationApiService(final ConversationApiConfig config) {
+    this.projectId = config.getProjectId();
+    this.region = config.getRegion().nameLowercase();
+    this.version = config.getVersion();
+    this.restClient = config.getRestClient();
+    updateServiceUrl();
   }
 
-  protected <T> T getRequest(String path, Class<T> clazz) {
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .GET()
-            .uri(URI.create(serviceUrl.concat(path)))
-            .header(AUTH_HEADER, authorizationHeader.get())
-            .build();
-
-    return sendRequest(clazz, request);
+  protected void updateServiceUrl() {
+    serviceUrl = String.format(TEMPLATE_URL, region, version, projectId, getServiceName());
+    serviceURI = URI.create(serviceUrl);
   }
 
-  protected void postRequestEmptyBody(String path) {
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .POST(BodyPublishers.noBody())
-            .uri(URI.create(serviceUrl.concat(path)))
-            .header(AUTH_HEADER, authorizationHeader.get())
-            .build();
-
-    client.sendAsync(request, BodyHandlers.ofString()).join();
+  protected URI withPath(final String path) {
+    return withPath(serviceUrl, path);
   }
 
-  protected <T, S> T postRequest(String path, Class<T> clazz, S body) {
-    String postBody = "";
-    try {
-      postBody = objectMapper.writeValueAsString(body);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .POST(BodyPublishers.ofString(postBody))
-            .uri(URI.create(serviceUrl.concat(path)))
-            .header(AUTH_HEADER, authorizationHeader.get())
-            .build();
-
-    return sendRequest(clazz, request);
+  protected static URI withPath(final String serviceUrl, final String path) {
+    return URI.create(serviceUrl.concat("/").concat(path));
   }
 
-  protected <T, S> T patchRequest(String path, Class<T> clazz, S body) {
-    String patchBody = "";
-    try {
-      patchBody = objectMapper.writeValueAsString(body);
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
-
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .method("PATCH", BodyPublishers.ofString(patchBody))
-            .uri(URI.create(serviceUrl.concat(path)))
-            .header(AUTH_HEADER, authorizationHeader.get())
-            .build();
-
-    return sendRequest(clazz, request);
+  protected URI withQuery(final String query) {
+    return URI.create(serviceUrl.concat(query));
   }
 
-  protected void deleteRequest(String path) {
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .DELETE()
-            .uri(URI.create(serviceUrl.concat(path)))
-            .header(AUTH_HEADER, authorizationHeader.get())
-            .build();
-
-    client.sendAsync(request, BodyHandlers.ofString()).join();
-  }
-
-  private <T> T sendRequest(Class<T> clazz, HttpRequest request) {
-    return client
-        .sendAsync(request, BodyHandlers.ofString())
-        .thenApply(HttpResponse::body)
-        .thenApply(
-            body -> {
-              try {
-                System.out.println(body);
-                return objectMapper.readValue(body, clazz);
-              } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-              }
-            })
-        .join();
-  }
+  protected abstract String getServiceName();
 }

@@ -5,43 +5,46 @@ import com.sinch.sdk.api.conversationapi.WebhookService;
 import com.sinch.sdk.model.conversationapi.webhook.Webhook;
 import com.sinch.sdk.model.conversationapi.webhook.service.ListWebhooksResponse;
 import java.util.List;
-import java.util.function.Supplier;
 import javax.validation.Valid;
 
 public class WebhookServiceImpl extends ConversationApiService implements WebhookService {
-  private static final String URL_TEMPLATE = "%s/%s/projects/%s";
-  private static final String WEBHOOKS_PATH = "/webhooks";
-  private static final String APPS_PATH = "/apps/%s/webhooks";
 
-  public WebhookServiceImpl(ConversationApiConfig config, Supplier<String> authorizationHeader) {
-    super(
-        String.format(
-            URL_TEMPLATE, config.getBaseUrl(), config.getVersion(), config.getProjectId()),
-        authorizationHeader);
+  private final String appService;
+
+  public WebhookServiceImpl(final ConversationApiConfig config) {
+    super(config);
+    appService = String.format(TEMPLATE_URL, region, version, projectId, "apps");
   }
 
   @Override
-  public Webhook createWebhook(@Valid Webhook webhook) {
-    return postRequest(WEBHOOKS_PATH, Webhook.class, webhook);
+  protected String getServiceName() {
+    return "webhooks";
   }
 
   @Override
-  public List<Webhook> listWebhooks(String appId) {
-    return getRequest(String.format(APPS_PATH, appId), ListWebhooksResponse.class).getWebhooks();
+  public Webhook createWebhook(@Valid final Webhook webhook) {
+    return restClient.post(serviceURI, Webhook.class, webhook);
   }
 
   @Override
-  public Webhook updateWebhook(@Valid Webhook webhook, String webhookId) {
-    return patchRequest(WEBHOOKS_PATH.concat("/").concat(webhookId), Webhook.class, webhook);
+  public List<Webhook> listWebhooks(final String appId) {
+    return restClient
+        .get(withPath(appService, String.format("%s/webhooks", appId)), ListWebhooksResponse.class)
+        .getWebhooks();
   }
 
   @Override
-  public void deleteWebhook(String webhookId) {
-    deleteRequest(WEBHOOKS_PATH.concat("/").concat(webhookId));
+  public Webhook updateWebhook(@Valid final Webhook webhook, final String webhookId) {
+    return restClient.patch(withPath(webhookId), Webhook.class, webhook);
   }
 
   @Override
-  public Webhook getWebhook(String webhookId) {
-    return getRequest(WEBHOOKS_PATH.concat("/").concat(webhookId), Webhook.class);
+  public void deleteWebhook(final String webhookId) {
+    restClient.delete(withPath(webhookId));
+  }
+
+  @Override
+  public Webhook getWebhook(final String webhookId) {
+    return restClient.get(withPath(webhookId), Webhook.class);
   }
 }
