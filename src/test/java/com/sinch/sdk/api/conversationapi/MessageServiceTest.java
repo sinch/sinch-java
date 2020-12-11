@@ -14,7 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class MessageServiceTest {
+class MessageServiceTest extends BaseTest {
 
   private final String appId = "your-app-id";
   private final String contactId = "your-contact-id";
@@ -41,13 +41,13 @@ class MessageServiceTest {
             .build();
 
     final SendAppMessageResponse response = messageService.sendAppMessage(request);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void testGetMessage() {
     final ConversationMessage response = messageService.getMessage(messageId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
@@ -63,6 +63,6 @@ class MessageServiceTest {
             .build();
 
     final TranscodeMessageResponse response = messageService.transcodeMessage(request);
-    System.out.println(response);
+    prettyPrint(response);
   }
 }

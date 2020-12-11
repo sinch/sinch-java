@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class WebhookServiceTest {
+class WebhookServiceTest extends BaseTest {
 
   private final String webhookId = "your-webhook-id";
   private final String appId = "your-app-id";
@@ -35,13 +35,13 @@ class WebhookServiceTest {
             .build();
 
     Webhook response = webhookService.createWebhook(w);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void listWebhooks() {
     final List<Webhook> response = webhookService.listWebhooks(appId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
@@ -61,19 +61,19 @@ class WebhookServiceTest {
             .build();
 
     Webhook response = webhookService.updateWebhook(w, webhookId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void deleteWebhook() {
     webhookService.deleteWebhook(webhookId);
     final Webhook response = webhookService.getWebhook(webhookId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void getWebhook() {
     final Webhook response = webhookService.getWebhook(webhookId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 }

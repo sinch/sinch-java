@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class AppServiceTest {
+class AppServiceTest extends BaseTest {
 
   private final String appId = "your-app-id";
 
@@ -38,13 +38,13 @@ class AppServiceTest {
             .build();
 
     final App responseApp = appService.createApp(testApp);
-    System.out.println(responseApp);
+    prettyPrint(responseApp);
   }
 
   @Test
   void testListApps() {
     final List<App> apps = appService.listApps();
-    System.out.println(apps);
+    prettyPrint(apps);
   }
 
   @Test
@@ -59,19 +59,19 @@ class AppServiceTest {
             .build();
 
     final App responseApp = appService.updateApp(testApp, appId);
-    System.out.println(responseApp);
+    prettyPrint(responseApp);
   }
 
   @Test
   void testDeleteApp() {
     appService.deleteApp(appId);
     final App responseApp = appService.getApp(appId);
-    System.out.println(responseApp);
+    prettyPrint(responseApp);
   }
 
   @Test
   void testGetApp() {
     final App responseApp = appService.getApp(appId);
-    System.out.println(responseApp);
+    prettyPrint(responseApp);
   }
 }

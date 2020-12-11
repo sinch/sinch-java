@@ -9,7 +9,7 @@ import com.sinch.sdk.model.conversationapi.message.type.MediaMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ConversationServiceTest {
+class ConversationServiceTest extends BaseTest {
 
   private final String appId = "your-app-id";
   private final String contactId = "your-contact-id";
@@ -33,13 +33,13 @@ class ConversationServiceTest {
             .build();
 
     final Conversation response = conversationService.createConversation(con);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void testGetConversation() {
     final Conversation response = conversationService.getConversation(conversationId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
@@ -54,14 +54,14 @@ class ConversationServiceTest {
             .build();
 
     final Conversation response = conversationService.updateConversation(con, conversationId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void testStopActiveConversation() {
     conversationService.stopActiveConversation(conversationId);
     final Conversation response = conversationService.getConversation(conversationId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test

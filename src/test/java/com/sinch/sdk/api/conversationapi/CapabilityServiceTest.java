@@ -7,7 +7,7 @@ import com.sinch.sdk.model.conversationapi.common.Recipient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class CapabilityServiceTest {
+class CapabilityServiceTest extends BaseTest {
 
   private final String appId = "your-app-id";
   private final String contactId = "your-contact-id";
@@ -28,6 +28,6 @@ class CapabilityServiceTest {
             .build();
 
     QueryCapabilityResponse response = capabilityService.queryCapability(rq);
-    System.out.println(response);
+    prettyPrint(response);
   }
 }

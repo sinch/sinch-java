@@ -8,7 +8,7 @@ import com.sinch.sdk.model.conversationapi.event.service.SendEventResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class EventServiceTest {
+class EventServiceTest extends BaseTest {
 
   private final String contactId = "your-contact-id";
   private final String appId = "your-app-id";
@@ -33,6 +33,6 @@ class EventServiceTest {
             .build();
 
     final SendEventResponse response = eventService.sendEvent(request);
-    System.out.println(response);
+    prettyPrint(response);
   }
 }

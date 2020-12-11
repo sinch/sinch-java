@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class OptInServiceTest {
+class OptInServiceTest extends BaseTest {
 
   private final String contactId = "your-contact-id";
   private final String appId = "your-app-id";
@@ -33,7 +33,7 @@ class OptInServiceTest {
             .build();
 
     OptInResponse response = optInService.registerOptIn(in);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
@@ -46,6 +46,6 @@ class OptInServiceTest {
             .build();
 
     OptOutResponse response = optInService.registerOptOut(out);
-    System.out.println(response);
+    prettyPrint(response);
   }
 }

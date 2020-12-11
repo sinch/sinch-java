@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ContactServiceTest {
+class ContactServiceTest extends BaseTest {
 
   private static final String appId = "your-app-id";
   private static final String contactId = "your-contact-id";
@@ -35,7 +35,7 @@ class ContactServiceTest {
             .build();
 
     Contact response = contactService.createContact(con);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
@@ -54,31 +54,31 @@ class ContactServiceTest {
             .build();
 
     Contact response = contactService.updateContact(con, contactId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void testGetContact() {
     final Contact response = contactService.getContact(contactId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void testDeleteContact() {
     contactService.deleteContact(contactId);
     final Contact response = contactService.getContact(contactId);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   void testListContacts() {
     final ListContactsResponse response = contactService.listContacts(null, null);
-    System.out.println(response);
+    prettyPrint(response);
   }
 
   @Test
   public void testListContactsSize() {
     final ListContactsResponse response = contactService.listContacts(3, null);
-    System.out.println(response);
+    prettyPrint(response);
   }
 }
