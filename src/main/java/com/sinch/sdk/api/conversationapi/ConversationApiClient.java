@@ -1,6 +1,5 @@
 package com.sinch.sdk.api.conversationapi;
 
-import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.conversationapi.impl.AppServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.CapabilityServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.ContactServiceImpl;
@@ -19,13 +18,9 @@ public class ConversationApiClient {
 
   private ConversationApiConfig config;
 
-  public ConversationApiClient(@NonNull final Sinch.Config sinchConfig) {
-    config =
-        ConversationApiConfig.builder()
-            .projectId(sinchConfig.getProjectId())
-            .restClient(sinchConfig.getRestClient())
-            .region(Region.safeValueOf(System.getProperty("sinch.region")))
-            .build();
+  public ConversationApiClient(final ConversationApiConfig config) {
+    this.config =
+        config.toBuilder().region(Region.safeValueOf(System.getProperty("sinch.region"))).build();
   }
 
   public ConversationApiClient forRegion(@NonNull final Region region) {
