@@ -8,65 +8,77 @@ import com.sinch.sdk.api.conversationapi.impl.EventServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.MessageServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.OptInServiceImpl;
 import com.sinch.sdk.api.conversationapi.impl.WebhookServiceImpl;
-import com.sinch.sdk.client.auth.AuthMode;
-import com.sinch.sdk.client.auth.module.AuthenticationModule;
+import com.sinch.sdk.model.common.Region;
+import java.util.Optional;
+import javax.naming.ConfigurationException;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 
 public class ConversationApiClient {
-  private AuthenticationModule authenticationModule;
+
   private ConversationApiConfig config;
 
-  public ConversationApiClient() {
-    authenticationModule = new AuthenticationModule();
-    config = new ConversationApiConfig();
+  public ConversationApiClient(final ConversationApiConfig config) {
+    this.config =
+        config.toBuilder().region(Region.safeValueOf(System.getProperty("sinch.region"))).build();
   }
 
-  public void initBasicAuth(String clientId, String clientSecret) {
-    authenticationModule.setAuthMode(AuthMode.BASIC_AUTH, clientId, clientSecret);
+  public ConversationApiClient forRegion(@NonNull final Region region) {
+    config = config.toBuilder().region(region).build();
+    return this;
   }
 
-  public void initBearerToken(String clientId, String clientSecret) {
-    authenticationModule.setAuthMode(AuthMode.BEARER_TOKEN, clientId, clientSecret);
-  }
-
-  public void initContext() {
-    // TODO solution for props from sysprop, config?
-  }
-
-  public void initContext(String baseUrl, String version, String projectId) {
-    config.setBaseUrl(baseUrl);
-    config.setProjectId(projectId);
-    config.setVersion(version);
+  public ConversationApiClient forVersion(@NonNull final String version) {
+    config = config.toBuilder().version(version).build();
+    return this;
   }
 
   public AppService getAppService() {
-    return new AppServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new AppServiceImpl(config);
   }
 
   public CapabilityService getCapabilityService() {
-    return new CapabilityServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new CapabilityServiceImpl(config);
   }
 
   public ContactService getContactService() {
-    return new ContactServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new ContactServiceImpl(config);
   }
 
   public ConversationService getConversationService() {
-    return new ConversationServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new ConversationServiceImpl(config);
   }
 
   public EventService getEventService() {
-    return new EventServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new EventServiceImpl(config);
   }
 
   public MessageService getMessageService() {
-    return new MessageServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new MessageServiceImpl(config);
   }
 
   public OptInService getOptInService() {
-    return new OptInServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new OptInServiceImpl(config);
   }
 
   public WebhookService getWebhookService() {
-    return new WebhookServiceImpl(config, authenticationModule::getAuthorizationHeader);
+    validate();
+    return new WebhookServiceImpl(config);
+  }
+
+  @SneakyThrows
+  private void validate() {
+    Optional.ofNullable(config.getRegion())
+        .orElseThrow(
+            () ->
+                new ConfigurationException(
+                    "ConversationApi requires a region, set using .forRegion(...)"));
   }
 }

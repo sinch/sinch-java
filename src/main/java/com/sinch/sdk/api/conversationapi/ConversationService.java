@@ -13,11 +13,11 @@ public interface ConversationService {
 
   Conversation updateConversation(@Valid Conversation conversation, String conversationId);
 
-  //TODO: allow for less args!
+  // TODO: allow for less args!
   ListConversationsResponse listConversationsByApp(
       String appId, boolean activeOnly, Integer pageSize, String pageToken);
 
-  //TODO: allow for less args!
+  // TODO: allow for less args!
   ListConversationsResponse listConversationsByContact(
       String contactId, boolean activeOnly, Integer pageSize, String pageToken);
 

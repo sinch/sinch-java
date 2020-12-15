@@ -1,11 +1,15 @@
 package com.sinch.sdk.api.conversationapi;
 
-import lombok.Data;
+import com.sinch.sdk.api.SinchRestClient;
+import com.sinch.sdk.model.common.Region;
+import lombok.Builder;
+import lombok.Getter;
 
-// TODO: smart solution for configuration
-@Data
+@Getter
+@Builder(toBuilder = true)
 public class ConversationApiConfig {
-  private String baseUrl;
-  private String version;
-  private String projectId;
+  private final String projectId;
+  @Builder.Default private final String version = "v1";
+  private final Region region;
+  private final SinchRestClient restClient;
 }
