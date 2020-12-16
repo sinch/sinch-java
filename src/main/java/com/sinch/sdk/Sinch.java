@@ -2,14 +2,10 @@ package com.sinch.sdk;
 
 import static com.sinch.sdk.utils.StringUtils.isEmpty;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sinch.sdk.api.SinchRestClient;
-import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiClient;
-import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
-import java.net.http.HttpClient;
+import com.sinch.sdk.configuration.ExternalConfiguration;
+import com.sinch.sdk.model.common.Region;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import javax.naming.ConfigurationException;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,58 +20,38 @@ public class Sinch {
   private ConversationApiClient conversationApi;
 
   static {
-    final String clientId = System.getProperty("sinch.id");
-    final String clientSecret = System.getProperty("sinch.secret");
-    final String projectId = System.getProperty("sinch.project_id");
-    if (!(isEmpty(clientId) || isEmpty(clientSecret) || isEmpty(projectId))) {
-      init(clientId, clientSecret, projectId);
+    final String keyId = ExternalConfiguration.getKeyId();
+    final String keySecret = ExternalConfiguration.getKeySecret();
+    final String projectId = ExternalConfiguration.getProjectId();
+    if (!(isEmpty(keyId) || isEmpty(keySecret) || isEmpty(projectId))) {
+      init(keyId, keySecret, projectId);
     }
   }
 
   /**
    * Initialize the Sinch environment.
    *
-   * @param clientId account to use
-   * @param clientSecret auth token for the account
+   * @param keyId account to use
+   * @param keySecret auth token for the account
    * @param projectId the project id
    */
   public void init(
-      @NonNull final String clientId,
-      @NonNull final String clientSecret,
+      @NonNull final String keyId,
+      @NonNull final String keySecret,
       @NonNull final String projectId) {
     invalidate();
-    sinchConfig =
-        Config.builder().clientId(clientId).clientSecret(clientSecret).projectId(projectId).build();
+    sinchConfig = Config.builder().keyId(keyId).keySecret(keySecret).projectId(projectId).build();
   }
 
-  public ConversationApiClient conversationApi() {
+  public ConversationApiClient conversationApi(@NonNull final Region region) {
     validate();
     return Optional.ofNullable(conversationApi)
+        .filter(client -> client.region() == region)
         .orElseGet(
             () -> {
-              final HttpClient httpClient = HttpClient.newHttpClient();
-              final ObjectMapper objectMapper = ObjectMappers.conversationApiMapper();
-              final AuthenticationService authenticationService =
-                  authenticationService(httpClient, objectMapper);
-              conversationApi =
-                  new ConversationApiClient(
-                      ConversationApiConfig.builder()
-                          .projectId(sinchConfig.projectId)
-                          .restClient(
-                              new SinchRestClient(authenticationService, httpClient, objectMapper))
-                          .build());
+              conversationApi = new ConversationApiClient(region, sinchConfig);
               return conversationApi;
             });
-  }
-
-  private AuthenticationService authenticationService(
-      final HttpClient httpClient, final ObjectMapper objectMapper) {
-    return new AuthenticationService(
-        httpClient,
-        objectMapper,
-        TimeUnit.MINUTES.toSeconds(5),
-        sinchConfig.clientId,
-        sinchConfig.clientSecret);
   }
 
   @SneakyThrows
@@ -94,8 +70,8 @@ public class Sinch {
   @Getter
   @Builder
   public static final class Config {
-    private final String clientId;
-    private final String clientSecret;
+    private final String keyId;
+    private final String keySecret;
     private final String projectId;
   }
 }

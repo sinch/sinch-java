@@ -2,7 +2,7 @@ package com.sinch.sdk.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.sinch.sdk.ObjectMappers;
+import com.sinch.sdk.api.conversationapi.ConversationApiClient;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import lombok.SneakyThrows;
@@ -27,7 +27,7 @@ public class BaseTest {
 
   @SneakyThrows
   private static ObjectMapper objectMapper() {
-    final Method method = ObjectMappers.class.getDeclaredMethod("conversationApiMapper");
+    final Method method = ConversationApiClient.class.getDeclaredMethod("objectMapper");
     method.setAccessible(true);
     return (ObjectMapper) method.invoke(null);
   }
