@@ -79,7 +79,7 @@ public class AuthenticationService {
             .handle(
                 (authResponse, exception) -> {
                   if (authResponse != null) {
-                    scheduleReload(authResponse.getExpiresIn());
+                    scheduleReload(Math.max(authResponse.getExpiresIn() - 60, 1));
                     return String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken());
                   }
                   scheduleReload(fallbackRetryDelay);
