@@ -1,6 +1,7 @@
 package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
+import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import com.sinch.sdk.model.conversationapi.event.ConversationEvent;
 import com.sinch.sdk.model.conversationapi.event.service.SendEventRequest;

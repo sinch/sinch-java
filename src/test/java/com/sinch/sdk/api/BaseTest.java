@@ -1,12 +1,13 @@
-package com.sinch.sdk.api.conversationapi;
+package com.sinch.sdk.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sinch.sdk.ObjectMappers;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import lombok.SneakyThrows;
 
-class BaseTest {
+public class BaseTest {
   protected static final ObjectMapper OM = objectMapper();
   private static final ObjectWriter OW = OM.writerWithDefaultPrettyPrinter();
 
@@ -17,7 +18,11 @@ class BaseTest {
 
   @SneakyThrows
   protected <T> T getResource(final String filePath, final Class<T> clazz) {
-    return OM.readValue(getClass().getClassLoader().getResourceAsStream(filePath), clazz);
+    return OM.readValue(getResource(filePath), clazz);
+  }
+
+  protected InputStream getResource(final String filePath) {
+    return getClass().getClassLoader().getResourceAsStream(filePath);
   }
 
   @SneakyThrows
