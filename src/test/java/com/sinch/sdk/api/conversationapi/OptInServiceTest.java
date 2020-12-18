@@ -2,6 +2,7 @@ package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.BaseTest;
+import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
 import com.sinch.sdk.model.conversationapi.optin.OptIn;
@@ -21,7 +22,7 @@ class OptInServiceTest extends BaseTest {
 
   @BeforeAll
   static void beforeAll() {
-    optInService = Sinch.conversationApi().getOptInService();
+    optInService = Sinch.conversationApi(Region.EU).getOptInService();
   }
 
   @Test

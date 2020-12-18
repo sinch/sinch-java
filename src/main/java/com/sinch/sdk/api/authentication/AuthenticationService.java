@@ -1,6 +1,7 @@
 package com.sinch.sdk.api.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.model.common.auth.service.AuthResponse;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,12 +26,9 @@ public class AuthenticationService {
   private static final String TEMPLATE_BASIC_AUTH = "Basic %s";
   private static final String TEMPLATE_ID_SECRET = "%s:%s";
 
-  private static final URI URL =
-      URI.create("https://public.hydra.common-auth.staging.sinch.com/oauth2/token");
-
   private final HttpClient httpClient;
   private final ObjectMapper objectMapper;
-  private final long fallbackRetryDelaySeconds;
+  private final long fallbackRetryDelay;
   private final Timer refreshTimer;
   private final String basicHeaderValue;
   private final HttpRequest bearerTokenRequest;
@@ -39,26 +37,25 @@ public class AuthenticationService {
   public AuthenticationService(
       final HttpClient httpClient,
       final ObjectMapper objectMapper,
-      final long fallbackRetryDelaySeconds,
-      @NonNull final String clientId,
-      @NonNull final String clientSecret) {
+      final Configuration.Authentication config,
+      @NonNull final String keyId,
+      @NonNull final String keySecret) {
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
-    this.fallbackRetryDelaySeconds = fallbackRetryDelaySeconds;
+    this.fallbackRetryDelay = config.getFallbackRetryDelay();
     this.refreshTimer = new Timer("BearerTokenRefreshTimer");
     this.basicHeaderValue =
         String.format(
             TEMPLATE_BASIC_AUTH,
             Base64.getEncoder()
-                .encodeToString(
-                    String.format(TEMPLATE_ID_SECRET, clientId, clientSecret).getBytes()));
+                .encodeToString(String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes()));
     this.bearerTokenRequest =
         HttpRequest.newBuilder()
             .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
-            .uri(URL)
+            .uri(URI.create(config.getUrl()))
             .header(HEADER_KEY_AUTH, basicHeaderValue)
             .header(HEADER_KEY_CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-            .timeout(Duration.ofSeconds(10))
+            .timeout(Duration.ofSeconds(config.getHttpTimeout()))
             .build();
     reload();
   }
@@ -82,10 +79,10 @@ public class AuthenticationService {
             .handle(
                 (authResponse, exception) -> {
                   if (authResponse != null) {
-                    scheduleReload(authResponse.getExpiresIn());
+                    scheduleReload(Math.max(authResponse.getExpiresIn() - 60, 1));
                     return String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken());
                   }
-                  scheduleReload(fallbackRetryDelaySeconds);
+                  scheduleReload(fallbackRetryDelay);
                   return basicHeaderValue;
                 });
   }

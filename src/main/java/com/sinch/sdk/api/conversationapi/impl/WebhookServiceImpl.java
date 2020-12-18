@@ -13,7 +13,7 @@ public class WebhookServiceImpl extends ConversationApiService implements Webhoo
 
   public WebhookServiceImpl(final ConversationApiConfig config) {
     super(config);
-    appService = String.format(TEMPLATE_URL, region, version, projectId, "apps");
+    appService = String.format(TEMPLATE_URL, config.getBaseUrl(), version, projectId, "apps");
   }
 
   @Override

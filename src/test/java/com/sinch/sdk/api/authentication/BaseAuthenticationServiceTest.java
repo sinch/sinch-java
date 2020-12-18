@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 
 import com.sinch.sdk.api.BaseTest;
+import com.sinch.sdk.configuration.impl.ConfigurationEU;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.http.HttpClient;
@@ -38,7 +39,18 @@ public class BaseAuthenticationServiceTest extends BaseTest {
                             .contains("Basic dGVzdENsaWVudDp0ZXN0U2VjcmV0")),
             any());
 
-    underTest = new AuthenticationService(mockHttpClient, OM, 1, testClientId, testClientSecret);
+    underTest =
+        new AuthenticationService(
+            mockHttpClient,
+            OM,
+            new ConfigurationEU.AuthenticationEU() {
+              @Override
+              public long getFallbackRetryDelay() {
+                return 1;
+              }
+            },
+            testClientId,
+            testClientSecret);
   }
 
   @SneakyThrows

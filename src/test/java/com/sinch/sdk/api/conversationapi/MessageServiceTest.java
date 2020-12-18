@@ -2,6 +2,7 @@ package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.BaseTest;
+import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
 import com.sinch.sdk.model.conversationapi.message.AppMessage;
@@ -25,7 +26,7 @@ class MessageServiceTest extends BaseTest {
 
   @BeforeAll
   static void beforeAll() {
-    messageService = Sinch.conversationApi().getMessageService();
+    messageService = Sinch.conversationApi(Region.EU).getMessageService();
   }
 
   @Test

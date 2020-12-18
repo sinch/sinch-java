@@ -2,6 +2,7 @@ package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.BaseTest;
+import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.webhook.Webhook;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,7 +17,7 @@ class WebhookServiceTest extends BaseTest {
 
   @BeforeAll
   static void beforeAll() {
-    webhookService = Sinch.conversationApi().getWebhookService();
+    webhookService = Sinch.conversationApi(Region.EU).getWebhookService();
   }
 
   @Test

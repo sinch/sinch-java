@@ -2,6 +2,7 @@ package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.BaseTest;
+import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityRequest;
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityResponse;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
@@ -17,7 +18,7 @@ class CapabilityServiceTest extends BaseTest {
 
   @BeforeAll
   static void beforeAll() {
-    capabilityService = Sinch.conversationApi().getCapabilityService();
+    capabilityService = Sinch.conversationApi(Region.EU).getCapabilityService();
   }
 
   @Test

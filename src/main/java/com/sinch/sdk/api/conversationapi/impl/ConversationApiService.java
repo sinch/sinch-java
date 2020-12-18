@@ -6,30 +6,24 @@ import java.net.URI;
 
 public abstract class ConversationApiService {
 
-  protected static final String TEMPLATE_URL =
-      "https://api.%s1tst.conversation-api.staging.sinch.com/%s/projects/%s/%s";
+  protected static final String TEMPLATE_URL = "%s/%s/projects/%s/%s";
   protected static final String PAGE_SIZE_PARAM = "page_size";
   protected static final String PAGE_TOKEN_PARAM = "page_token";
   protected static final String CONTACT_PARAM = "contact_id";
 
   protected final String projectId;
-  protected final String region;
   protected final String version;
   protected final SinchRestClient restClient;
 
-  private String serviceUrl;
+  private final String serviceUrl;
   protected URI serviceURI;
 
   public ConversationApiService(final ConversationApiConfig config) {
     this.projectId = config.getProjectId();
-    this.region = config.getRegion().nameLowercase();
     this.version = config.getVersion();
     this.restClient = config.getRestClient();
-    updateServiceUrl();
-  }
-
-  protected void updateServiceUrl() {
-    serviceUrl = String.format(TEMPLATE_URL, region, version, projectId, getServiceName());
+    serviceUrl =
+        String.format(TEMPLATE_URL, config.getBaseUrl(), version, projectId, getServiceName());
     serviceURI = URI.create(serviceUrl);
   }
 
