@@ -9,6 +9,7 @@ import com.sinch.sdk.api.conversationapi.ConversationApiClient;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import java.net.http.HttpClient;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import javax.naming.ConfigurationException;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,7 +71,11 @@ public class Sinch {
   private AuthenticationService authenticationService(
       final HttpClient httpClient, final ObjectMapper objectMapper) {
     return new AuthenticationService(
-        httpClient, objectMapper, sinchConfig.clientId, sinchConfig.clientSecret);
+        httpClient,
+        objectMapper,
+        TimeUnit.MINUTES.toSeconds(5),
+        sinchConfig.clientId,
+        sinchConfig.clientSecret);
   }
 
   @SneakyThrows

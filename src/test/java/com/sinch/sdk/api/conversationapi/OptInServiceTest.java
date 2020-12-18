@@ -1,6 +1,7 @@
 package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
+import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
 import com.sinch.sdk.model.conversationapi.optin.OptIn;
