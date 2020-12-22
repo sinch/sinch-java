@@ -29,14 +29,12 @@ spotless {
         trimTrailingWhitespace()
     }
 }
-
-afterEvaluate {
-    tasks.getByName("build").dependsOn(tasks.getByName("spotlessApply"))
-}
+tasks.build.dependsOn tasks.spotlessApply
 
 test {
     useJUnitPlatform {
-        excludeTags "integrationTest"
+        excludeTags System.getProperty("ignoreTestTags") ?
+                "none()" : "integrationTest"
     }
 }
 
@@ -49,7 +47,7 @@ tasks.withType(Test) {
     systemProperties = System.properties as Map<String, ?>
 }
 
-tasks.named("jar") {
+tasks.jar {
     manifest {
         attributes("Implementation-Title": project.name,
                 "Implementation-Version": project.version)
