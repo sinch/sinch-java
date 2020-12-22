@@ -1,7 +1,6 @@
 package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
 import com.sinch.sdk.model.conversationapi.conversation.Conversation;
@@ -11,7 +10,7 @@ import com.sinch.sdk.model.conversationapi.message.type.MediaMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ConversationServiceTest extends BaseTest {
+class ConversationServiceTest extends BaseConvIntegrationTest {
 
   private final String appId = "your-app-id";
   private final String contactId = "your-contact-id";

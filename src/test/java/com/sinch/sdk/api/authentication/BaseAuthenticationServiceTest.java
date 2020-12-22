@@ -1,7 +1,7 @@
 package com.sinch.sdk.api.authentication;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeast;
 
 import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.configuration.impl.ConfigurationEU;
@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -27,7 +28,8 @@ public class BaseAuthenticationServiceTest extends BaseTest {
   @BeforeEach
   void setUp() throws IOException, InterruptedException {
     givenServiceWorks();
-    Mockito.doReturn(mockHttpResponse)
+    Mockito.lenient()
+        .doReturn(mockHttpResponse)
         .when(mockHttpClient)
         .send(
             argThat(
@@ -37,7 +39,7 @@ public class BaseAuthenticationServiceTest extends BaseTest {
                             .map()
                             .get(AuthenticationService.HEADER_KEY_AUTH)
                             .contains("Basic dGVzdENsaWVudDp0ZXN0U2VjcmV0")),
-            any());
+            ArgumentMatchers.<HttpResponse.BodyHandler<InputStream>>any());
 
     underTest =
         new AuthenticationService(
@@ -54,8 +56,8 @@ public class BaseAuthenticationServiceTest extends BaseTest {
   }
 
   @SneakyThrows
-  protected void thenExpectThatHttpClientSendCalled(final int times) {
-    Mockito.verify(mockHttpClient, times(times)).send(any(), any());
+  protected void thenExpectThatHttpClientSendCalledAtLeast(final int times) {
+    Mockito.verify(mockHttpClient, atLeast(times)).send(any(), any());
   }
 
   @SneakyThrows

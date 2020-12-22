@@ -1,7 +1,6 @@
 package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.common.Recipient;
 import com.sinch.sdk.model.conversationapi.event.ConversationEvent;
@@ -10,7 +9,7 @@ import com.sinch.sdk.model.conversationapi.event.service.SendEventResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class EventServiceTest extends BaseTest {
+class EventServiceTest extends BaseConvIntegrationTest {
 
   private final String contactId = "your-contact-id";
   private final String appId = "your-app-id";

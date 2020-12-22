@@ -1,7 +1,6 @@
 package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityRequest;
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityResponse;
@@ -9,7 +8,7 @@ import com.sinch.sdk.model.conversationapi.common.Recipient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class CapabilityServiceTest extends BaseTest {
+class CapabilityServiceTest extends BaseConvIntegrationTest {
 
   private final String appId = "your-app-id";
   private final String contactId = "your-contact-id";

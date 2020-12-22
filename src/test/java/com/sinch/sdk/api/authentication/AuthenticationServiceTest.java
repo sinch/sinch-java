@@ -20,13 +20,13 @@ class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
   @Test
   void testReloadTokenEveryExpiresIn() {
     AwaitUtil.delaySeconds(3);
-    thenExpectThatHttpClientSendCalled(3);
+    thenExpectThatHttpClientSendCalledAtLeast(3);
   }
 
   @Test
   void testGetReturnsBearerTokenOnSuccess() throws Throwable {
     assertBearerHeader.run();
-    thenExpectThatHttpClientSendCalled(1);
+    thenExpectThatHttpClientSendCalledAtLeast(1);
   }
 
   @Test
@@ -43,6 +43,7 @@ class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
 
   @Test
   void testFailedRequestStillRetries() {
+    AwaitUtil.delaySeconds(1);
     givenServiceKaputski();
     AwaitUtil.awaitValidAssertion(assertBasicHeader);
     givenServiceWorks();

@@ -1,7 +1,6 @@
 package com.sinch.sdk.api.conversationapi;
 
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.app.App;
 import com.sinch.sdk.model.conversationapi.common.ConversationChannelCredential;
@@ -10,7 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class AppServiceTest extends BaseTest {
+class AppServiceTest extends BaseConvIntegrationTest {
 
   private final String appId = "your-app-id";
 
