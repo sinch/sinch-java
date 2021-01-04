@@ -2,6 +2,7 @@ package com.sinch.sdk.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.api.authentication.AuthenticationService;
+import com.sinch.sdk.exception.ApiException;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class SinchRestClient {
 
@@ -97,7 +99,26 @@ public class SinchRestClient {
   }
 
   public CompletableFuture<HttpResponse<InputStream>> sendAsync(final HttpRequest request) {
-    return client.sendAsync(request, BodyHandlers.ofInputStream());
+    return client.sendAsync(request, BodyHandlers.ofInputStream()).thenApply(this::validate);
+  }
+
+  private HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
+    final int statusCode = response.statusCode();
+    if (statusCode / 100 != 2) {
+      final String responseBody;
+      try {
+        responseBody = response.body() == null ? null : new String(response.body().readAllBytes());
+      } catch (IOException e) {
+        throw new CompletionException(e);
+      }
+      throw new CompletionException(
+          new ApiException(
+              statusCode,
+              "Call to " + response.uri() + " received non-success response",
+              response.headers(),
+              responseBody));
+    }
+    return response;
   }
 
   private HttpRequest.Builder requestBuilder(final URI uri) {
