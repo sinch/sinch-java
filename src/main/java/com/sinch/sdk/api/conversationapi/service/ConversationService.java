@@ -1,7 +1,6 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
-import com.sinch.sdk.api.conversationapi.ConversationService;
 import com.sinch.sdk.model.conversationapi.conversation.Conversation;
 import com.sinch.sdk.model.conversationapi.conversation.service.ListConversationsResponse;
 import com.sinch.sdk.model.conversationapi.message.ConversationMessage;
@@ -9,9 +8,9 @@ import com.sinch.sdk.utils.QueryStringBuilder;
 import javax.validation.Valid;
 import lombok.NonNull;
 
-public class ConversationServiceImpl extends ConversationApiService implements ConversationService {
+public class ConversationService extends ConversationApiService {
 
-  public ConversationServiceImpl(final ConversationApiConfig config) {
+  public ConversationService(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -20,23 +19,19 @@ public class ConversationServiceImpl extends ConversationApiService implements C
     return "conversations";
   }
 
-  @Override
   public Conversation createConversation(@Valid final Conversation conversation) {
     return restClient.post(serviceURI, Conversation.class, conversation);
   }
 
-  @Override
   public Conversation getConversation(final String conversationId) {
     return restClient.get(withPath(conversationId), Conversation.class);
   }
 
-  @Override
   public Conversation updateConversation(
       @Valid final Conversation conversation, final String conversationId) {
     return restClient.patch(withPath(conversationId), Conversation.class, conversation);
   }
 
-  @Override
   public ListConversationsResponse listConversationsByApp(
       final String appId,
       final boolean activeOnly,
@@ -47,7 +42,6 @@ public class ConversationServiceImpl extends ConversationApiService implements C
     return restClient.get(withQuery(queryString), ListConversationsResponse.class);
   }
 
-  @Override
   public ListConversationsResponse listConversationsByContact(
       final String contactId,
       final boolean activeOnly,
@@ -58,12 +52,10 @@ public class ConversationServiceImpl extends ConversationApiService implements C
     return restClient.get(withQuery(queryString), ListConversationsResponse.class);
   }
 
-  @Override
   public void stopActiveConversation(@NonNull final String conversationId) {
     restClient.post(withPath(conversationId.concat(":stop")));
   }
 
-  @Override
   public void injectMessageIntoConversation(
       @Valid final ConversationMessage conversationMessage, @NonNull final String conversationId) {
     restClient.patch(withPath(conversationId.concat(":inject-message")), conversationMessage);

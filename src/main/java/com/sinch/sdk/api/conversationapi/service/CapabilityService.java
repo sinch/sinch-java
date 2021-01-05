@@ -1,14 +1,13 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.api.conversationapi.CapabilityService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityRequest;
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityResponse;
 import javax.validation.Valid;
 
-public class CapabilityServiceImpl extends ConversationApiService implements CapabilityService {
+public class CapabilityService extends ConversationApiService {
 
-  public CapabilityServiceImpl(final ConversationApiConfig config) {
+  public CapabilityService(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -17,7 +16,6 @@ public class CapabilityServiceImpl extends ConversationApiService implements Cap
     return "capability:query";
   }
 
-  @Override
   public QueryCapabilityResponse queryCapability(
       @Valid final QueryCapabilityRequest queryCapabilityRequest) {
     return restClient.post(serviceURI, QueryCapabilityResponse.class, queryCapabilityRequest);

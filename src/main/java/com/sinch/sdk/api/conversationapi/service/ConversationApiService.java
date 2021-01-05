@@ -1,4 +1,4 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;

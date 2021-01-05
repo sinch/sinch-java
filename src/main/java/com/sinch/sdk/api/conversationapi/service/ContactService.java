@@ -1,6 +1,5 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.api.conversationapi.ContactService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.model.conversationapi.contact.Contact;
 import com.sinch.sdk.model.conversationapi.contact.service.ListContactsResponse;
@@ -8,9 +7,9 @@ import com.sinch.sdk.model.conversationapi.contact.service.MergeContactRequest;
 import com.sinch.sdk.utils.QueryStringBuilder;
 import javax.validation.Valid;
 
-public class ContactServiceImpl extends ConversationApiService implements ContactService {
+public class ContactService extends ConversationApiService {
 
-  public ContactServiceImpl(final ConversationApiConfig config) {
+  public ContactService(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -19,27 +18,22 @@ public class ContactServiceImpl extends ConversationApiService implements Contac
     return "contacts";
   }
 
-  @Override
   public Contact createContact(@Valid final Contact contact) {
     return restClient.post(serviceURI, Contact.class, contact);
   }
 
-  @Override
   public Contact updateContact(@Valid final Contact contact, final String contactId) {
     return restClient.patch(withPath(contactId), Contact.class, contact);
   }
 
-  @Override
   public Contact getContact(final String contactId) {
     return restClient.get(withPath(contactId), Contact.class);
   }
 
-  @Override
   public void deleteContact(final String contactId) {
     restClient.delete(withPath(contactId));
   }
 
-  @Override
   public ListContactsResponse listContacts(final Integer pageSize, final String pageToken) {
     final String queryString =
         QueryStringBuilder.newInstance()
@@ -50,7 +44,6 @@ public class ContactServiceImpl extends ConversationApiService implements Contac
   }
 
   // TODO
-  @Override
   public Contact mergeContact(@Valid final MergeContactRequest mergeContactRequest) {
     return null;
   }

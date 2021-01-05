@@ -1,4 +1,4 @@
-package com.sinch.sdk.api.conversationapi;
+package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.BaseTest;
 import org.junit.jupiter.api.Tag;

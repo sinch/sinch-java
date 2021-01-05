@@ -1,14 +1,13 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
-import com.sinch.sdk.api.conversationapi.EventService;
 import com.sinch.sdk.model.conversationapi.event.service.SendEventRequest;
 import com.sinch.sdk.model.conversationapi.event.service.SendEventResponse;
 import javax.validation.Valid;
 
-public class EventServiceImpl extends ConversationApiService implements EventService {
+public class EventService extends ConversationApiService {
 
-  public EventServiceImpl(final ConversationApiConfig config) {
+  public EventService(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -17,7 +16,6 @@ public class EventServiceImpl extends ConversationApiService implements EventSer
     return "events:send";
   }
 
-  @Override
   public SendEventResponse sendEvent(@Valid final SendEventRequest sendEventRequest) {
     return restClient.post(serviceURI, SendEventResponse.class, sendEventRequest);
   }

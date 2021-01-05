@@ -3,8 +3,6 @@ package com.sinch.sdk.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.exception.ApiException;
-import lombok.SneakyThrows;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -14,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import lombok.SneakyThrows;
 
 public class SinchRestClient {
 
