@@ -10,7 +10,7 @@ import com.sinch.sdk.model.conversationapi.transcoding.service.TranscodeMessageR
 import com.sinch.sdk.utils.QueryStringBuilder;
 import javax.validation.Valid;
 
-public class MessageService extends ConversationApiService {
+public class MessageService extends AbstractService {
 
   public MessageService(final ConversationApiConfig config) {
     super(config);

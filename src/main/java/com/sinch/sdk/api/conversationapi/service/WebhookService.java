@@ -6,7 +6,7 @@ import com.sinch.sdk.model.conversationapi.webhook.service.ListWebhooksResponse;
 import java.util.List;
 import javax.validation.Valid;
 
-public class WebhookService extends ConversationApiService {
+public class WebhookService extends AbstractService {
 
   private final String appService;
 

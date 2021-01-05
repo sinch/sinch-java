@@ -6,7 +6,7 @@ import com.sinch.sdk.model.conversationapi.app.service.ListAppsResponse;
 import java.util.List;
 import javax.validation.Valid;
 
-public class AppService extends ConversationApiService {
+public class AppService extends AbstractService {
 
   public AppService(final ConversationApiConfig config) {
     super(config);

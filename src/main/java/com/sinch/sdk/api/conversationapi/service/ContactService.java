@@ -7,7 +7,7 @@ import com.sinch.sdk.model.conversationapi.contact.service.MergeContactRequest;
 import com.sinch.sdk.utils.QueryStringBuilder;
 import javax.validation.Valid;
 
-public class ContactService extends ConversationApiService {
+public class ContactService extends AbstractService {
 
   public ContactService(final ConversationApiConfig config) {
     super(config);

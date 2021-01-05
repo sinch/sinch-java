@@ -5,7 +5,7 @@ import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityReq
 import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityResponse;
 import javax.validation.Valid;
 
-public class CapabilityService extends ConversationApiService {
+public class CapabilityService extends AbstractService {
 
   public CapabilityService(final ConversationApiConfig config) {
     super(config);

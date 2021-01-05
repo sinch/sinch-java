@@ -8,7 +8,7 @@ import com.sinch.sdk.utils.QueryStringBuilder;
 import javax.validation.Valid;
 import lombok.NonNull;
 
-public class ConversationService extends ConversationApiService {
+public class ConversationService extends AbstractService {
 
   public ConversationService(final ConversationApiConfig config) {
     super(config);

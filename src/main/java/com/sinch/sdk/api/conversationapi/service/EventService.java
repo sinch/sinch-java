@@ -5,7 +5,7 @@ import com.sinch.sdk.model.conversationapi.event.service.SendEventRequest;
 import com.sinch.sdk.model.conversationapi.event.service.SendEventResponse;
 import javax.validation.Valid;
 
-public class EventService extends ConversationApiService {
+public class EventService extends AbstractService {
 
   public EventService(final ConversationApiConfig config) {
     super(config);

@@ -7,7 +7,7 @@ import com.sinch.sdk.model.conversationapi.optin.service.OptInResponse;
 import com.sinch.sdk.model.conversationapi.optin.service.OptOutResponse;
 import javax.validation.Valid;
 
-public class OptInService extends ConversationApiService {
+public class OptInService extends AbstractService {
 
   public OptInService(final ConversationApiConfig config) {
     super(config);
