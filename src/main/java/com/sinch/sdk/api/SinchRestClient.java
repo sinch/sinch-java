@@ -2,6 +2,8 @@ package com.sinch.sdk.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.api.authentication.AuthenticationService;
+import lombok.SneakyThrows;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -10,7 +12,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
-import lombok.SneakyThrows;
 
 public class SinchRestClient {
 
@@ -77,8 +78,8 @@ public class SinchRestClient {
             .build());
   }
 
-  public CompletableFuture<HttpResponse<InputStream>> delete(final URI uri) {
-    return sendAsync(requestBuilder(uri).DELETE().build());
+  public CompletableFuture<Void> delete(final URI uri) {
+    return sendAsync(requestBuilder(uri).DELETE().build()).thenAccept(res -> {});
   }
 
   public <T> CompletableFuture<T> sendAsync(final Class<T> clazz, final HttpRequest request) {
