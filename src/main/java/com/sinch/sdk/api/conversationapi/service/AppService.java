@@ -1,15 +1,14 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.api.conversationapi.AppService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.model.conversationapi.app.App;
 import com.sinch.sdk.model.conversationapi.app.service.ListAppsResponse;
 import java.util.List;
 import javax.validation.Valid;
 
-public class AppServiceImpl extends ConversationApiService implements AppService {
+public class AppService extends AbstractService {
 
-  public AppServiceImpl(final ConversationApiConfig config) {
+  public AppService(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -18,27 +17,22 @@ public class AppServiceImpl extends ConversationApiService implements AppService
     return "apps";
   }
 
-  @Override
   public App createApp(@Valid final App app) {
     return restClient.post(serviceURI, App.class, app);
   }
 
-  @Override
   public List<App> listApps() {
     return restClient.get(serviceURI, ListAppsResponse.class).getApps();
   }
 
-  @Override
   public App updateApp(@Valid final App app, final String appId) {
     return restClient.patch(withPath(appId), App.class, app);
   }
 
-  @Override
   public void deleteApp(final String appId) {
     restClient.delete(withPath(appId));
   }
 
-  @Override
   public App getApp(final String appId) {
     return restClient.get(withPath(appId), App.class);
   }

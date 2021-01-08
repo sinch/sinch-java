@@ -1,10 +1,10 @@
-package com.sinch.sdk.api.conversationapi.impl;
+package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import java.net.URI;
 
-public abstract class ConversationApiService {
+public abstract class AbstractService {
 
   protected static final String TEMPLATE_URL = "%s/%s/projects/%s/%s";
   protected static final String PAGE_SIZE_PARAM = "page_size";
@@ -18,7 +18,7 @@ public abstract class ConversationApiService {
   private final String serviceUrl;
   protected URI serviceURI;
 
-  public ConversationApiService(final ConversationApiConfig config) {
+  public AbstractService(final ConversationApiConfig config) {
     this.projectId = config.getProjectId();
     this.version = config.getVersion();
     this.restClient = config.getRestClient();

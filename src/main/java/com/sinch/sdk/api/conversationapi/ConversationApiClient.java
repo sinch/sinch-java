@@ -8,14 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.api.authentication.AuthenticationService;
-import com.sinch.sdk.api.conversationapi.impl.AppServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.CapabilityServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.ContactServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.ConversationServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.EventServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.MessageServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.OptInServiceImpl;
-import com.sinch.sdk.api.conversationapi.impl.WebhookServiceImpl;
+import com.sinch.sdk.api.conversationapi.service.*;
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.model.common.Region;
 import java.net.http.HttpClient;
@@ -57,35 +50,35 @@ public class ConversationApiClient {
   }
 
   public AppService getAppService() {
-    return new AppServiceImpl(config);
+    return new AppService(config);
   }
 
   public CapabilityService getCapabilityService() {
-    return new CapabilityServiceImpl(config);
+    return new CapabilityService(config);
   }
 
   public ContactService getContactService() {
-    return new ContactServiceImpl(config);
+    return new ContactService(config);
   }
 
   public ConversationService getConversationService() {
-    return new ConversationServiceImpl(config);
+    return new ConversationService(config);
   }
 
   public EventService getEventService() {
-    return new EventServiceImpl(config);
+    return new EventService(config);
   }
 
   public MessageService getMessageService() {
-    return new MessageServiceImpl(config);
+    return new MessageService(config);
   }
 
   public OptInService getOptInService() {
-    return new OptInServiceImpl(config);
+    return new OptInService(config);
   }
 
   public WebhookService getWebhookService() {
-    return new WebhookServiceImpl(config);
+    return new WebhookService(config);
   }
 
   private static ObjectMapper objectMapper() {
