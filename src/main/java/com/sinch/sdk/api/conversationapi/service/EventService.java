@@ -1,9 +1,12 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
-import com.sinch.sdk.model.conversationapi.event.service.SendEventRequest;
-import com.sinch.sdk.model.conversationapi.event.service.SendEventResponse;
-import javax.validation.Valid;
+import com.sinch.sdk.exception.ApiException;
+import com.sinch.sdk.model.conversationapi.V1SendEventRequest;
+import com.sinch.sdk.model.conversationapi.V1SendEventResponse;
+import com.sinch.sdk.utils.ExceptionUtils;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class EventService extends AbstractService {
 
@@ -16,7 +19,41 @@ public class EventService extends AbstractService {
     return "events:send";
   }
 
-  public SendEventResponse sendEvent(@Valid final SendEventRequest sendEventRequest) {
-    return restClient.post(serviceURI, SendEventResponse.class, sendEventRequest);
+  /**
+   * Send an event (blocking)
+   *
+   * <p>Sends an event to the referenced contact from the referenced app. Note that this operation
+   * enqueues the event in a queues so a successful response only indicates that the event has been
+   * queued.
+   *
+   * @param sendEventRequest (required)
+   * @return {@link V1SendEventResponse}
+   * @throws ApiException if fails to make API call
+   */
+  public V1SendEventResponse send(final V1SendEventRequest sendEventRequest) throws ApiException {
+    try {
+      return sendAsync(sendEventRequest).join();
+    } catch (final CompletionException ex) {
+      throw ExceptionUtils.getExpectedCause(ex);
+    }
+  }
+
+  /**
+   * Send an event
+   *
+   * <p>Sends an event to the referenced contact from the referenced app. Note that this operation
+   * enqueues the event in a queues so a successful response only indicates that the event has been
+   * queued.
+   *
+   * @param sendEventRequest (required)
+   * @return Async task generating a {@link V1SendEventResponse}
+   */
+  public CompletableFuture<V1SendEventResponse> sendAsync(
+      final V1SendEventRequest sendEventRequest) {
+    if (sendEventRequest == null) {
+      return ExceptionUtils.missingParam("sendEventRequest");
+    }
+    return restClient.post(
+        serviceURI, V1SendEventResponse.class, sendEventRequest.projectId(projectId));
   }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.api.authentication.AuthenticationService;
@@ -49,40 +50,45 @@ public class ConversationApiClient {
     return this;
   }
 
-  public AppService getAppService() {
+  public AppService apps() {
     return new AppService(config);
   }
 
-  public CapabilityService getCapabilityService() {
+  public CapabilityService capabilities() {
     return new CapabilityService(config);
   }
 
-  public ContactService getContactService() {
+  public ContactService contacts() {
     return new ContactService(config);
   }
 
-  public ConversationService getConversationService() {
+  public ConversationService conversations() {
     return new ConversationService(config);
   }
 
-  public EventService getEventService() {
+  public EventService events() {
     return new EventService(config);
   }
 
-  public MessageService getMessageService() {
+  public MessageService messages() {
     return new MessageService(config);
   }
 
-  public OptInService getOptInService() {
+  public OptInService optIns() {
     return new OptInService(config);
   }
 
-  public WebhookService getWebhookService() {
+  public TranscodingService transcoding() {
+    return new TranscodingService(config);
+  }
+
+  public WebhookService webhooks() {
     return new WebhookService(config);
   }
 
   private static ObjectMapper objectMapper() {
     return new ObjectMapper()
+        .registerModule(new JavaTimeModule())
         .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
         .setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY)
         .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)

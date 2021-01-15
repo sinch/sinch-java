@@ -1,85 +1,124 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.Sinch;
+import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
-import com.sinch.sdk.model.conversationapi.common.enums.ConversationChannel;
-import com.sinch.sdk.model.conversationapi.contact.Contact;
-import com.sinch.sdk.model.conversationapi.contact.service.ListContactsResponse;
-import java.util.List;
+import com.sinch.sdk.model.conversationapi.*;
+import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class ContactServiceTest extends BaseConvIntegrationTest {
 
-  private static final String appId = "your-app-id";
   private static final String contactId = "your-contact-id";
 
   private static ContactService contactService;
 
   @BeforeAll
   static void beforeAll() {
-    contactService = Sinch.conversationApi(Region.EU).getContactService();
+    contactService = Sinch.conversationApi(Region.EU).contacts();
   }
 
   @Test
-  void testCreateContact() {
-    final Contact con =
-        Contact.builder()
-            .channelIdentities(
-                List.of(
-                    Contact.ChannelIdentity.builder()
-                        .channel(ConversationChannel.MESSENGER)
+  void testCreateContact() throws ApiException {
+    final TypeContact contact =
+        contactService.create(
+            new TypeContact()
+                .displayName("SDK test contact")
+                .addChannelIdentitiesItem(
+                    new TypeChannelIdentity()
+                        .channel(TypeConversationChannel.MESSENGER)
                         .identity("6536947852974")
-                        .appId(appId)
-                        .build()))
-            .displayName("SDK test contact")
-            .build();
+                        .appId("your-app-id")));
 
-    Contact response = contactService.createContact(con);
+    prettyPrint(contact);
+  }
+
+  @Test
+  void testDeleteContact() throws ApiException {
+    contactService.delete(contactId);
+    final ApiException exception =
+        Assertions.assertThrows(ApiException.class, () -> contactService.get(contactId));
+    Assertions.assertEquals(404, exception.getCode());
+    Assertions.assertNotNull(exception.getResponseBody());
+    Assertions.assertNotNull(exception.getResponseHeaders());
+    Assertions.assertEquals(
+        Optional.of("404"), exception.getResponseHeaders().firstValue(":status"));
+    System.out.println(exception.getResponseBody());
+  }
+
+  @Test
+  void testGetContact() throws ApiException {
+    final TypeContact contact = contactService.get(contactId);
+    prettyPrint(contact);
+  }
+
+  @Test
+  void testListContacts() throws ApiException {
+    final V1ListContactsResponse response = contactService.list();
     prettyPrint(response);
   }
 
   @Test
-  void testUpdateContact() {
-    final Contact con =
-        Contact.builder()
-            .email("email@emial.com")
-            .channelIdentities(
-                List.of(
-                    Contact.ChannelIdentity.builder()
-                        .channel(ConversationChannel.MESSENGER)
-                        .identity("6536947852974")
-                        .appId(appId)
-                        .build()))
-            .displayName("SDK test contact")
-            .build();
-
-    Contact response = contactService.updateContact(con, contactId);
+  public void testListContactsSize() throws ApiException {
+    final V1ListContactsResponse response = contactService.list(new Pagination().size(1));
     prettyPrint(response);
   }
 
   @Test
-  void testGetContact() {
-    final Contact response = contactService.getContact(contactId);
+  public void testListContactsToken() throws ApiException {
+    final V1ListContactsResponse response =
+        contactService.list(new Pagination().token("nextPageToken"));
     prettyPrint(response);
   }
 
   @Test
-  void testDeleteContact() {
-    contactService.deleteContact(contactId);
-    final Contact response = contactService.getContact(contactId);
-    prettyPrint(response);
+  void testMergeContact() throws ApiException {
+    final TypeContact contact =
+        contactService.merge(
+            new V1MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
+    prettyPrint(contact);
   }
 
   @Test
-  void testListContacts() {
-    final ListContactsResponse response = contactService.listContacts(null, null);
-    prettyPrint(response);
+  void testUpdateContact() throws ApiException {
+    final TypeContact contact =
+        contactService.update(
+            contactId,
+            new TypeContact().displayName("Updated test contact").email("email@emial.com"));
+    prettyPrint(contact);
   }
 
   @Test
-  public void testListContactsSize() {
-    final ListContactsResponse response = contactService.listContacts(3, null);
-    prettyPrint(response);
+  void testMissingParamsThrows() {
+    ApiException exception =
+        Assertions.assertThrows(ApiException.class, () -> contactService.create(null));
+    assertClientSideException(exception);
+    exception = Assertions.assertThrows(ApiException.class, () -> contactService.delete(null));
+    assertClientSideException(exception);
+    exception = Assertions.assertThrows(ApiException.class, () -> contactService.get(null));
+    assertClientSideException(exception);
+    exception = Assertions.assertThrows(ApiException.class, () -> contactService.list(null));
+    assertClientSideException(exception);
+    exception = Assertions.assertThrows(ApiException.class, () -> contactService.merge(null));
+    assertClientSideException(exception);
+    exception =
+        Assertions.assertThrows(
+            ApiException.class,
+            () -> contactService.merge(new V1MergeContactRequest().sourceId(contactId)));
+    assertClientSideException(exception);
+    exception =
+        Assertions.assertThrows(
+            ApiException.class,
+            () -> contactService.merge(new V1MergeContactRequest().destinationId(contactId)));
+    assertClientSideException(exception);
+    exception =
+        Assertions.assertThrows(
+            ApiException.class, () -> contactService.update(null, new TypeContact()));
+    assertClientSideException(exception);
+    exception =
+        Assertions.assertThrows(ApiException.class, () -> contactService.update(contactId, null));
+    assertClientSideException(exception);
   }
 }

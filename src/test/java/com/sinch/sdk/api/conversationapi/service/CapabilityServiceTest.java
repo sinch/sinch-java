@@ -1,34 +1,43 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.Sinch;
+import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
-import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityRequest;
-import com.sinch.sdk.model.conversationapi.capability.service.QueryCapabilityResponse;
-import com.sinch.sdk.model.conversationapi.common.Recipient;
+import com.sinch.sdk.model.conversationapi.TypeRecipient;
+import com.sinch.sdk.model.conversationapi.V1QueryCapabilityRequest;
+import com.sinch.sdk.model.conversationapi.V1QueryCapabilityResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class CapabilityServiceTest extends BaseConvIntegrationTest {
 
-  private final String appId = "your-app-id";
-  private final String contactId = "your-contact-id";
-
   private static CapabilityService capabilityService;
 
   @BeforeAll
   static void beforeAll() {
-    capabilityService = Sinch.conversationApi(Region.EU).getCapabilityService();
+    capabilityService = Sinch.conversationApi(Region.EU).capabilities();
   }
 
   @Test
-  void testQueryCapability() {
-    final QueryCapabilityRequest rq =
-        QueryCapabilityRequest.builder()
-            .appId(appId)
-            .recipient(Recipient.fromContactId().contactId(contactId).build())
-            .build();
+  void testQueryCapability() throws ApiException {
+    final V1QueryCapabilityResponse response =
+        capabilityService.query(
+            new V1QueryCapabilityRequest()
+                .appId("your-app-id")
+                .recipient(new TypeRecipient().contactId("your-contact-id")));
 
-    QueryCapabilityResponse response = capabilityService.queryCapability(rq);
     prettyPrint(response);
+  }
+
+  @Test
+  void testMissingParamsThrows() {
+    ApiException exception =
+        Assertions.assertThrows(ApiException.class, () -> capabilityService.query(null));
+    assertClientSideException(exception);
+    exception =
+        Assertions.assertThrows(
+            ApiException.class, () -> capabilityService.query(new V1QueryCapabilityRequest()));
+    assertClientSideException(exception);
   }
 }

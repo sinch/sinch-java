@@ -3,7 +3,7 @@ package com.sinch.sdk.exception;
 import java.net.http.HttpHeaders;
 
 public class ApiException extends Exception {
-  private int code = 0;
+  private final int code;
   private HttpHeaders responseHeaders = null;
   private String responseBody = null;
 

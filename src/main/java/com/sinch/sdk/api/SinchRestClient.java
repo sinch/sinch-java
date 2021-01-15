@@ -31,47 +31,35 @@ public class SinchRestClient {
     this.objectMapper = objectMapper;
   }
 
-  public <T> T get(final URI uri, final Class<T> clazz) {
-    return getAsync(uri, clazz).join();
+  public <T> CompletableFuture<T> get(final URI uri, final Class<T> clazz) {
+    return send(clazz, requestBuilder(uri).GET().build());
   }
 
-  public <T> CompletableFuture<T> getAsync(final URI uri, final Class<T> clazz) {
-    return sendAsync(clazz, requestBuilder(uri).GET().build());
-  }
-
-  public <T, S> T post(final URI uri, final Class<T> clazz, final S body) {
-    return postAsync(uri, clazz, body).join();
-  }
-
-  public CompletableFuture<HttpResponse<InputStream>> post(final URI uri) {
-    return sendAsync(requestBuilder(uri).POST(HttpRequest.BodyPublishers.noBody()).build());
+  public CompletableFuture<Void> post(final URI uri) {
+    return send(requestBuilder(uri).POST(HttpRequest.BodyPublishers.noBody()).build())
+        .thenAccept(res -> {});
   }
 
   @SneakyThrows
-  public <T, S> CompletableFuture<T> postAsync(final URI uri, final Class<T> clazz, final S body) {
-    return sendAsync(
+  public <S> CompletableFuture<Void> post(final URI uri, final S body) {
+    return send(requestBuilder(uri)
+            .POST(HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body)))
+            .build())
+        .thenAccept(res -> {});
+  }
+
+  @SneakyThrows
+  public <T, S> CompletableFuture<T> post(final URI uri, final Class<T> clazz, final S body) {
+    return send(
         clazz,
         requestBuilder(uri)
             .POST(HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body)))
             .build());
   }
 
-  public <T, S> T patch(final URI uri, final Class<T> clazz, final S body) {
-    return patchAsync(uri, clazz, body).join();
-  }
-
   @SneakyThrows
-  public <S> CompletableFuture<HttpResponse<InputStream>> patch(final URI uri, final S body) {
-    return sendAsync(
-        requestBuilder(uri)
-            .method(
-                PATCH, HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body)))
-            .build());
-  }
-
-  @SneakyThrows
-  public <T, S> CompletableFuture<T> patchAsync(final URI uri, final Class<T> clazz, final S body) {
-    return sendAsync(
+  public <T, S> CompletableFuture<T> patch(final URI uri, final Class<T> clazz, final S body) {
+    return send(
         clazz,
         requestBuilder(uri)
             .method(
@@ -80,11 +68,11 @@ public class SinchRestClient {
   }
 
   public CompletableFuture<Void> delete(final URI uri) {
-    return sendAsync(requestBuilder(uri).DELETE().build()).thenAccept(res -> {});
+    return send(requestBuilder(uri).DELETE().build()).thenAccept(res -> {});
   }
 
-  public <T> CompletableFuture<T> sendAsync(final Class<T> clazz, final HttpRequest request) {
-    return sendAsync(request)
+  public <T> CompletableFuture<T> send(final Class<T> clazz, final HttpRequest request) {
+    return send(request)
         // TODO: Error handling? 401 -> authenticationService.reload()
         .thenApply(HttpResponse::body)
         .thenApply(
@@ -97,7 +85,7 @@ public class SinchRestClient {
             });
   }
 
-  public CompletableFuture<HttpResponse<InputStream>> sendAsync(final HttpRequest request) {
+  public CompletableFuture<HttpResponse<InputStream>> send(final HttpRequest request) {
     return client.sendAsync(request, BodyHandlers.ofInputStream()).thenApply(this::validate);
   }
 

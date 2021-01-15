@@ -6,32 +6,27 @@ import java.net.URI;
 
 public abstract class AbstractService {
 
+  protected static final String PARAMS = "params";
+  protected static final String SUB_APP_ID = ".appId";
+  protected static final String SUB_CHANNELS = ".channels";
+
   protected static final String TEMPLATE_URL = "%s/%s/projects/%s/%s";
-  protected static final String PAGE_SIZE_PARAM = "page_size";
-  protected static final String PAGE_TOKEN_PARAM = "page_token";
-  protected static final String CONTACT_PARAM = "contact_id";
 
   protected final String projectId;
-  protected final String version;
   protected final SinchRestClient restClient;
-
+  protected final URI serviceURI;
   private final String serviceUrl;
-  protected URI serviceURI;
 
   public AbstractService(final ConversationApiConfig config) {
     this.projectId = config.getProjectId();
-    this.version = config.getVersion();
     this.restClient = config.getRestClient();
     serviceUrl =
-        String.format(TEMPLATE_URL, config.getBaseUrl(), version, projectId, getServiceName());
+        String.format(
+            TEMPLATE_URL, config.getBaseUrl(), config.getVersion(), projectId, getServiceName());
     serviceURI = URI.create(serviceUrl);
   }
 
   protected URI withPath(final String path) {
-    return withPath(serviceUrl, path);
-  }
-
-  protected static URI withPath(final String serviceUrl, final String path) {
     return URI.create(serviceUrl.concat("/").concat(path));
   }
 
