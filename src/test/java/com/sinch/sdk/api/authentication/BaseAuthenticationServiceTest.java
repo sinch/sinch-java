@@ -1,6 +1,7 @@
 package com.sinch.sdk.api.authentication;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeast;
 
 import com.sinch.sdk.api.BaseTest;
@@ -70,7 +71,7 @@ public class BaseAuthenticationServiceTest extends BaseTest {
 
   @SneakyThrows
   protected void givenServiceKaputski() {
-    Mockito.doAnswer(invocation -> getResource("404_response.json")).when(mockHttpResponse).body();
+    Mockito.doAnswer(invocation -> getResource("404_response.html")).when(mockHttpResponse).body();
   }
 
   @SneakyThrows
