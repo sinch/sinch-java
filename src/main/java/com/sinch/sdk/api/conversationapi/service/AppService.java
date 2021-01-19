@@ -2,10 +2,10 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.TypeApp;
-import com.sinch.sdk.model.conversationapi.TypeWebhook;
+import com.sinch.sdk.model.conversationapi.App;
 import com.sinch.sdk.model.conversationapi.V1ListAppsResponse;
 import com.sinch.sdk.model.conversationapi.V1ListWebhooksResponse;
+import com.sinch.sdk.model.conversationapi.Webhook;
 import com.sinch.sdk.utils.ExceptionUtils;
 import com.sinch.sdk.utils.StringUtils;
 import java.util.List;
@@ -30,10 +30,10 @@ public class AppService extends AbstractService {
    * Creates an app (blocking)
    *
    * @param app The app to create. (required)
-   * @return {@link TypeApp}
+   * @return {@link App}
    * @throws ApiException if fails to make API call
    */
-  public TypeApp create(final TypeApp app) throws ApiException {
+  public App create(final App app) throws ApiException {
     try {
       return createAsync(app).join();
     } catch (final CompletionException ex) {
@@ -45,13 +45,13 @@ public class AppService extends AbstractService {
    * Creates an app
    *
    * @param app The app to create. (required)
-   * @return Async task providing a {@link TypeApp}
+   * @return Async task providing a {@link App}
    */
-  public CompletableFuture<TypeApp> createAsync(final TypeApp app) {
+  public CompletableFuture<App> createAsync(final App app) {
     if (app == null) {
       return ExceptionUtils.missingParam(PARAM_APP);
     }
-    return restClient.post(serviceURI, TypeApp.class, app);
+    return restClient.post(serviceURI, App.class, app);
   }
 
   /**
@@ -85,10 +85,10 @@ public class AppService extends AbstractService {
    * Get an app (blocking)
    *
    * @param appId The ID of the app to fetch. (required)
-   * @return {@link TypeApp}
+   * @return {@link App}
    * @throws ApiException if fails to make API call
    */
-  public TypeApp get(final String appId) throws ApiException {
+  public App get(final String appId) throws ApiException {
     try {
       return getAsync(appId).join();
     } catch (final CompletionException ex) {
@@ -100,22 +100,22 @@ public class AppService extends AbstractService {
    * Get an app
    *
    * @param appId The ID of the app to fetch. (required)
-   * @return Async task providing a {@link TypeApp}
+   * @return Async task providing a {@link App}
    */
-  public CompletableFuture<TypeApp> getAsync(final String appId) {
+  public CompletableFuture<App> getAsync(final String appId) {
     if (StringUtils.isEmpty(appId)) {
       return ExceptionUtils.missingParam(PARAM_APP_ID);
     }
-    return restClient.get(withPath(appId), TypeApp.class);
+    return restClient.get(withPath(appId), App.class);
   }
 
   /**
    * List all apps for a given project (blocking)
    *
-   * @return List of {@link TypeApp}
+   * @return List of {@link App}
    * @throws ApiException if fails to make API call
    */
-  public List<TypeApp> list() throws ApiException {
+  public List<App> list() throws ApiException {
     try {
       return listAsync().join();
     } catch (final CompletionException ex) {
@@ -126,9 +126,9 @@ public class AppService extends AbstractService {
   /**
    * List all apps for a given project
    *
-   * @return Async task generating a list of {@link TypeApp}
+   * @return Async task generating a list of {@link App}
    */
-  public CompletableFuture<List<TypeApp>> listAsync() {
+  public CompletableFuture<List<App>> listAsync() {
     return restClient
         .get(serviceURI, V1ListAppsResponse.class)
         .thenApply(V1ListAppsResponse::getApps);
@@ -139,10 +139,10 @@ public class AppService extends AbstractService {
    *
    * @param appId The ID of the app. (required)
    * @param app The updated app. (required)
-   * @return {@link TypeApp}
+   * @return {@link App}
    * @throws ApiException if fails to make API call
    */
-  public TypeApp update(final String appId, final TypeApp app) throws ApiException {
+  public App update(final String appId, final App app) throws ApiException {
     try {
       return updateAsync(appId, app).join();
     } catch (final CompletionException ex) {
@@ -155,26 +155,26 @@ public class AppService extends AbstractService {
    *
    * @param appId The ID of the app. (required)
    * @param app The updated app. (required)
-   * @return Async task providing a {@link TypeApp}
+   * @return Async task providing a {@link App}
    */
-  public CompletableFuture<TypeApp> updateAsync(final String appId, final TypeApp app) {
+  public CompletableFuture<App> updateAsync(final String appId, final App app) {
     if (StringUtils.isEmpty(appId)) {
       return ExceptionUtils.missingParam(PARAM_APP_ID);
     }
     if (app == null) {
       return ExceptionUtils.missingParam(PARAM_APP);
     }
-    return restClient.patch(withPath(appId), TypeApp.class, app);
+    return restClient.patch(withPath(appId), App.class, app);
   }
 
   /**
    * List all webhooks for a given app (blocking)
    *
    * @param appId The ID of the App to list webhooks for. (required)
-   * @return List of {@link TypeWebhook}
+   * @return List of {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public List<TypeWebhook> listWebhooks(final String appId) throws ApiException {
+  public List<Webhook> listWebhooks(final String appId) throws ApiException {
     try {
       return listWebhooksAsync(appId).join();
     } catch (final CompletionException ex) {
@@ -186,9 +186,9 @@ public class AppService extends AbstractService {
    * List all webhooks for a given app
    *
    * @param appId The ID of the App to list webhooks for. (required)
-   * @return Async task generating a list of {@link TypeWebhook}
+   * @return Async task generating a list of {@link Webhook}
    */
-  public CompletableFuture<List<TypeWebhook>> listWebhooksAsync(final String appId) {
+  public CompletableFuture<List<Webhook>> listWebhooksAsync(final String appId) {
     if (StringUtils.isEmpty(appId)) {
       return ExceptionUtils.missingParam(PARAM_APP_ID);
     }

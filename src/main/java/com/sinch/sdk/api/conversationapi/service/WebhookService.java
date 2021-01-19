@@ -2,7 +2,7 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.TypeWebhook;
+import com.sinch.sdk.model.conversationapi.Webhook;
 import com.sinch.sdk.utils.ExceptionUtils;
 import com.sinch.sdk.utils.StringUtils;
 import java.util.List;
@@ -35,10 +35,10 @@ public class WebhookService extends AbstractService {
    * webhooks per app.
    *
    * @param webhook The Webhook to create (required)
-   * @return {@link TypeWebhook}
+   * @return {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public TypeWebhook create(final TypeWebhook webhook) throws ApiException {
+  public Webhook create(final Webhook webhook) throws ApiException {
     try {
       return createAsync(webhook).join();
     } catch (final CompletionException ex) {
@@ -53,9 +53,9 @@ public class WebhookService extends AbstractService {
    * webhooks per app.
    *
    * @param webhook The Webhook to create (required)
-   * @return Async task generating a {@link TypeWebhook}
+   * @return Async task generating a {@link Webhook}
    */
-  public CompletableFuture<TypeWebhook> createAsync(final TypeWebhook webhook) {
+  public CompletableFuture<Webhook> createAsync(final Webhook webhook) {
     if (webhook == null) {
       return ExceptionUtils.missingParam(PARAM_WEBHOOK);
     }
@@ -65,7 +65,7 @@ public class WebhookService extends AbstractService {
     if (webhook.getTarget() == null) {
       return ExceptionUtils.missingParam(PARAM_WEBHOOK_TARGET);
     }
-    return restClient.post(serviceURI, TypeWebhook.class, webhook);
+    return restClient.post(serviceURI, Webhook.class, webhook);
   }
 
   /**
@@ -99,10 +99,10 @@ public class WebhookService extends AbstractService {
    * Get a webhook (blocking)
    *
    * @param webhookId The ID of the webhook to fetch. (required)
-   * @return {@link TypeWebhook}
+   * @return {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public TypeWebhook get(final String webhookId) throws ApiException {
+  public Webhook get(final String webhookId) throws ApiException {
     try {
       return getAsync(webhookId).join();
     } catch (final CompletionException ex) {
@@ -114,23 +114,23 @@ public class WebhookService extends AbstractService {
    * Get a webhook
    *
    * @param webhookId The ID of the webhook to fetch. (required)
-   * @return Async task generating a {@link TypeWebhook}
+   * @return Async task generating a {@link Webhook}
    */
-  public CompletableFuture<TypeWebhook> getAsync(final String webhookId) {
+  public CompletableFuture<Webhook> getAsync(final String webhookId) {
     if (StringUtils.isEmpty(webhookId)) {
       return ExceptionUtils.missingParam(PARAM_WEBHOOK_ID);
     }
-    return restClient.get(withPath(webhookId), TypeWebhook.class);
+    return restClient.get(withPath(webhookId), Webhook.class);
   }
 
   /**
    * List all webhooks for a given app (blocking)
    *
    * @param appId The ID of the App to list webhooks for. (required)
-   * @return List of {@link TypeWebhook}
+   * @return List of {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public List<TypeWebhook> list(final String appId) throws ApiException {
+  public List<Webhook> list(final String appId) throws ApiException {
     return appService.listWebhooks(appId);
   }
 
@@ -138,9 +138,9 @@ public class WebhookService extends AbstractService {
    * List all webhooks for a given app
    *
    * @param appId The ID of the App to list webhooks for. (required)
-   * @return Async task generating a list of {@link TypeWebhook}
+   * @return Async task generating a list of {@link Webhook}
    */
-  public CompletableFuture<List<TypeWebhook>> listAsync(final String appId) {
+  public CompletableFuture<List<Webhook>> listAsync(final String appId) {
     return appService.listWebhooksAsync(appId);
   }
 
@@ -149,10 +149,10 @@ public class WebhookService extends AbstractService {
    *
    * @param webhookId The ID of the webhook. (required)
    * @param webhook The Webhook to update (required)
-   * @return {@link TypeWebhook}
+   * @return {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public TypeWebhook update(final String webhookId, final TypeWebhook webhook) throws ApiException {
+  public Webhook update(final String webhookId, final Webhook webhook) throws ApiException {
     try {
       return updateAsync(webhookId, webhook).join();
     } catch (final CompletionException ex) {
@@ -165,16 +165,15 @@ public class WebhookService extends AbstractService {
    *
    * @param webhookId The ID of the webhook. (required)
    * @param webhook The Webhook to update (required)
-   * @return Async task generating a {@link TypeWebhook}
+   * @return Async task generating a {@link Webhook}
    */
-  public CompletableFuture<TypeWebhook> updateAsync(
-      final String webhookId, final TypeWebhook webhook) {
+  public CompletableFuture<Webhook> updateAsync(final String webhookId, final Webhook webhook) {
     if (StringUtils.isEmpty(webhookId)) {
       return ExceptionUtils.missingParam(PARAM_WEBHOOK_ID);
     }
     if (webhook == null) {
       return ExceptionUtils.missingParam(PARAM_WEBHOOK);
     }
-    return restClient.patch(withPath(webhookId), TypeWebhook.class, webhook);
+    return restClient.patch(withPath(webhookId), Webhook.class, webhook);
   }
 }

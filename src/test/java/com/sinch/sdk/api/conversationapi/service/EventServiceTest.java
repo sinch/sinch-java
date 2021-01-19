@@ -3,8 +3,8 @@ package com.sinch.sdk.api.conversationapi.service;
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
-import com.sinch.sdk.model.conversationapi.TypeAppEvent;
-import com.sinch.sdk.model.conversationapi.TypeRecipient;
+import com.sinch.sdk.model.conversationapi.AppEvent;
+import com.sinch.sdk.model.conversationapi.Recipient;
 import com.sinch.sdk.model.conversationapi.V1SendEventRequest;
 import com.sinch.sdk.model.conversationapi.V1SendEventResponse;
 import java.util.Map;
@@ -30,8 +30,8 @@ class EventServiceTest extends BaseConvIntegrationTest {
         eventService.send(
             new V1SendEventRequest()
                 .appId(appId)
-                .event(new TypeAppEvent().composingEvent(Map.of("a", "b")))
-                .recipient(new TypeRecipient().contactId(contactId)));
+                .event(new AppEvent().composingEvent(Map.of("a", "b")))
+                .recipient(new Recipient().contactId(contactId)));
     prettyPrint(response);
   }
 

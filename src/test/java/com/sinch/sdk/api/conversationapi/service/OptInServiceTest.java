@@ -25,10 +25,10 @@ class OptInServiceTest extends BaseConvIntegrationTest {
   void testRegisterOptIn() throws ApiException {
     final V1OptInResponse response =
         optInService.optIn(
-            new TypeOptIn()
+            new OptIn()
                 .appId(appId)
-                .addChannelsItem(TypeConversationChannel.WHATSAPP)
-                .recipient(new TypeRecipient().contactId(contactId)),
+                .addChannelsItem(ConversationChannel.WHATSAPP)
+                .recipient(new Recipient().contactId(contactId)),
             null);
     prettyPrint(response);
   }
@@ -37,10 +37,10 @@ class OptInServiceTest extends BaseConvIntegrationTest {
   void testRegisterOptOut() throws ApiException {
     final V1OptOutResponse response =
         optInService.optOut(
-            new TypeOptOut()
+            new OptOut()
                 .appId(appId)
-                .addChannelsItem(TypeConversationChannel.WHATSAPP)
-                .recipient(new TypeRecipient().contactId(contactId)),
+                .addChannelsItem(ConversationChannel.WHATSAPP)
+                .recipient(new Recipient().contactId(contactId)),
             null);
     prettyPrint(response);
   }
@@ -52,23 +52,21 @@ class OptInServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> optInService.optIn(new TypeOptIn().appId(appId), null));
+            ApiException.class, () -> optInService.optIn(new OptIn().appId(appId), null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class,
-            () -> optInService.optIn(new TypeOptIn().channels(List.of()), null));
+            ApiException.class, () -> optInService.optIn(new OptIn().channels(List.of()), null));
     assertClientSideException(exception);
     exception = Assertions.assertThrows(ApiException.class, () -> optInService.optOut(null, null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> optInService.optOut(new TypeOptOut().appId(appId), null));
+            ApiException.class, () -> optInService.optOut(new OptOut().appId(appId), null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class,
-            () -> optInService.optOut(new TypeOptOut().channels(List.of()), null));
+            ApiException.class, () -> optInService.optOut(new OptOut().channels(List.of()), null));
     assertClientSideException(exception);
   }
 }

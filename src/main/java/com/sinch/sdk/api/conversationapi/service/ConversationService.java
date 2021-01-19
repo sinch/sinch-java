@@ -44,10 +44,10 @@ public class ConversationService extends AbstractService {
    *
    * @param conversation The conversation to create. ID will be generated for the conversation and
    *     any ID in the given conversation will be ignored. (required)
-   * @return {@link TypeConversation}
+   * @return {@link Conversation}
    * @throws ApiException if fails to make API call
    */
-  public TypeConversation create(final TypeConversation conversation) throws ApiException {
+  public Conversation create(final Conversation conversation) throws ApiException {
     try {
       return createAsync(conversation).join();
     } catch (final CompletionException ex) {
@@ -67,13 +67,13 @@ public class ConversationService extends AbstractService {
    *
    * @param conversation The conversation to create. ID will be generated for the conversation and
    *     any ID in the given conversation will be ignored. (required)
-   * @return Async task generating a {@link TypeConversation}
+   * @return Async task generating a {@link Conversation}
    */
-  public CompletableFuture<TypeConversation> createAsync(final TypeConversation conversation) {
+  public CompletableFuture<Conversation> createAsync(final Conversation conversation) {
     if (conversation == null) {
       return ExceptionUtils.missingParam(PARAM_CONVERSATION);
     }
-    return restClient.post(serviceURI, TypeConversation.class, conversation);
+    return restClient.post(serviceURI, Conversation.class, conversation);
   }
 
   /**
@@ -82,10 +82,10 @@ public class ConversationService extends AbstractService {
    * <p>A conversation has two participating entities, an app and a contact.
    *
    * @param conversationId The ID of the conversation. (required)
-   * @return {@link TypeConversation}
+   * @return {@link Conversation}
    * @throws ApiException if fails to make API call
    */
-  public TypeConversation get(final String conversationId) throws ApiException {
+  public Conversation get(final String conversationId) throws ApiException {
     try {
       return getAsync(conversationId).join();
     } catch (final CompletionException ex) {
@@ -99,13 +99,13 @@ public class ConversationService extends AbstractService {
    * <p>A conversation has two participating entities, an app and a contact.
    *
    * @param conversationId The ID of the conversation. (required)
-   * @return Async task generating a {@link TypeConversation}
+   * @return Async task generating a {@link Conversation}
    */
-  public CompletableFuture<TypeConversation> getAsync(final String conversationId) {
+  public CompletableFuture<Conversation> getAsync(final String conversationId) {
     if (StringUtils.isEmpty(conversationId)) {
       return ExceptionUtils.missingParam(PARAM_CONVERSATION_ID);
     }
-    return restClient.get(withPath(conversationId), TypeConversation.class);
+    return restClient.get(withPath(conversationId), Conversation.class);
   }
 
   /**
@@ -118,7 +118,7 @@ public class ConversationService extends AbstractService {
    * @param conversationMessage Message to be injected. (required)
    * @throws ApiException if fails to make API call
    */
-  public void injectMessage(final TypeConversationMessage conversationMessage) throws ApiException {
+  public void injectMessage(final ConversationMessage conversationMessage) throws ApiException {
     try {
       injectMessageAsync(conversationMessage).join();
     } catch (final CompletionException ex) {
@@ -136,8 +136,7 @@ public class ConversationService extends AbstractService {
    * @param conversationMessage Message to be injected. (required)
    * @return Async task of the inject call
    */
-  public CompletableFuture<Void> injectMessageAsync(
-      final TypeConversationMessage conversationMessage) {
+  public CompletableFuture<Void> injectMessageAsync(final ConversationMessage conversationMessage) {
     if (conversationMessage == null) {
       return ExceptionUtils.missingParam(PARAM_CONVERSATION_MESSAGE);
     }
@@ -263,10 +262,10 @@ public class ConversationService extends AbstractService {
    *
    * @param conversationId The ID of the conversation. (required)
    * @param conversation The updated conversation. (required)
-   * @return {@link TypeConversation}
+   * @return {@link Conversation}
    * @throws ApiException if fails to make API call
    */
-  public TypeConversation update(final String conversationId, final TypeConversation conversation)
+  public Conversation update(final String conversationId, final Conversation conversation)
       throws ApiException {
     try {
       return updateAsync(conversationId, conversation).join();
@@ -283,16 +282,16 @@ public class ConversationService extends AbstractService {
    *
    * @param conversationId The ID of the conversation. (required)
    * @param conversation The updated conversation. (required)
-   * @return Async task generating a {@link TypeConversation}
+   * @return Async task generating a {@link Conversation}
    */
-  public CompletableFuture<TypeConversation> updateAsync(
-      final String conversationId, final TypeConversation conversation) {
+  public CompletableFuture<Conversation> updateAsync(
+      final String conversationId, final Conversation conversation) {
     if (StringUtils.isEmpty(conversationId)) {
       return ExceptionUtils.missingParam(PARAM_CONVERSATION_ID);
     }
     if (conversation == null) {
       return ExceptionUtils.missingParam(PARAM_CONVERSATION);
     }
-    return restClient.patch(withPath(conversationId), TypeConversation.class, conversation);
+    return restClient.patch(withPath(conversationId), Conversation.class, conversation);
   }
 }

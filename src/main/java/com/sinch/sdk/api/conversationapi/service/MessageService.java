@@ -33,10 +33,10 @@ public class MessageService extends AbstractService {
    * <p>Retrieves a message by id.
    *
    * @param messageId The conversation message ID. (required)
-   * @return {@link TypeConversationMessage}
+   * @return {@link ConversationMessage}
    * @throws ApiException if fails to make API call
    */
-  public TypeConversationMessage get(final String messageId) throws ApiException {
+  public ConversationMessage get(final String messageId) throws ApiException {
     try {
       return getAsync(messageId).join();
     } catch (final CompletionException ex) {
@@ -50,13 +50,13 @@ public class MessageService extends AbstractService {
    * <p>Retrieves a message by id.
    *
    * @param messageId The conversation message ID. (required)
-   * @return Async task generating a {@link TypeConversationMessage}
+   * @return Async task generating a {@link ConversationMessage}
    */
-  public CompletableFuture<TypeConversationMessage> getAsync(final String messageId) {
+  public CompletableFuture<ConversationMessage> getAsync(final String messageId) {
     if (StringUtils.isEmpty(messageId)) {
       return ExceptionUtils.missingParam(PARAM_MESSAGE_ID);
     }
-    return restClient.get(withPath(messageId), TypeConversationMessage.class);
+    return restClient.get(withPath(messageId), ConversationMessage.class);
   }
 
   /**
