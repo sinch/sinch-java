@@ -104,5 +104,3 @@ class AntDownload extends DefaultTask {
         ant.get(src: sourceUrl, dest: target)
     }
 }
-
-version = "0.0.1"
