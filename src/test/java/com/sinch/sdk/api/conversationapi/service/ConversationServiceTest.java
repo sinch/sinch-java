@@ -23,11 +23,11 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testCreateConversation() throws ApiException {
-    final TypeConversation response =
+    final Conversation response =
         conversationService.create(
-            new TypeConversation()
+            new Conversation()
                 .active(true)
-                .activeChannel(TypeConversationChannel.MESSENGER)
+                .activeChannel(ConversationChannel.MESSENGER)
                 .appId(appId)
                 .contactId(contactId));
     prettyPrint(response);
@@ -35,20 +35,19 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testGetConversation() throws ApiException {
-    final TypeConversation conversation = conversationService.get(conversationId);
+    final Conversation conversation = conversationService.get(conversationId);
     prettyPrint(conversation);
   }
 
   @Test
   void testInjectMessage() throws ApiException {
     conversationService.injectMessage(
-        new TypeConversationMessage()
+        new ConversationMessage()
             .contactId(contactId)
             .conversationId(conversationId)
-            .direction(TypeConversationDirection.TO_APP)
-            .channelIdentity(new TypeChannelIdentity().identity("channel identity"))
-            .contactMessage(
-                new TypeContactMessage().textMessage(new TypeTextMessage().text("Hi"))));
+            .direction(ConversationDirection.TO_APP)
+            .channelIdentity(new ChannelIdentity().identity("channel identity"))
+            .contactMessage(new ContactMessage().textMessage(new TextMessage().text("Hi"))));
   }
 
   @Test
@@ -68,16 +67,15 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testUpdateConversation() throws ApiException {
-    final TypeConversation conversation =
-        conversationService.update(
-            conversationId, new TypeConversation().metadata("some meta data"));
+    final Conversation conversation =
+        conversationService.update(conversationId, new Conversation().metadata("some meta data"));
     prettyPrint(conversation);
   }
 
   @Test
   void testStopActiveConversation() throws ApiException {
     conversationService.stopActive(conversationId);
-    final TypeConversation conversation = conversationService.get(conversationId);
+    final Conversation conversation = conversationService.get(conversationId);
     prettyPrint(conversation);
   }
 
@@ -86,8 +84,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
     ApiException exception =
         Assertions.assertThrows(ApiException.class, () -> conversationService.create(null));
     assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> conversationService.get(conversationId));
+    exception = Assertions.assertThrows(ApiException.class, () -> conversationService.get(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(ApiException.class, () -> conversationService.injectMessage(null));
@@ -97,14 +94,13 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
             ApiException.class,
             () ->
                 conversationService.injectMessage(
-                    new TypeConversationMessage().conversationId(conversationId)));
+                    new ConversationMessage().conversationId(conversationId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
             () ->
-                conversationService.injectMessage(
-                    new TypeConversationMessage().contactId(contactId)));
+                conversationService.injectMessage(new ConversationMessage().contactId(contactId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
@@ -120,7 +116,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> conversationService.update(null, new TypeConversation()));
+            ApiException.class, () -> conversationService.update(null, new Conversation()));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(

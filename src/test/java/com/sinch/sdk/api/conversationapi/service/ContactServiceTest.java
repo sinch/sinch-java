@@ -22,13 +22,13 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testCreateContact() throws ApiException {
-    final TypeContact contact =
+    final Contact contact =
         contactService.create(
-            new TypeContact()
+            new Contact()
                 .displayName("SDK test contact")
                 .addChannelIdentitiesItem(
-                    new TypeChannelIdentity()
-                        .channel(TypeConversationChannel.MESSENGER)
+                    new ChannelIdentity()
+                        .channel(ConversationChannel.MESSENGER)
                         .identity("6536947852974")
                         .appId("your-app-id")));
 
@@ -50,7 +50,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testGetContact() throws ApiException {
-    final TypeContact contact = contactService.get(contactId);
+    final Contact contact = contactService.get(contactId);
     prettyPrint(contact);
   }
 
@@ -75,7 +75,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testMergeContact() throws ApiException {
-    final TypeContact contact =
+    final Contact contact =
         contactService.merge(
             new V1MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
     prettyPrint(contact);
@@ -83,10 +83,9 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testUpdateContact() throws ApiException {
-    final TypeContact contact =
+    final Contact contact =
         contactService.update(
-            contactId,
-            new TypeContact().displayName("Updated test contact").email("email@emial.com"));
+            contactId, new Contact().displayName("Updated test contact").email("email@emial.com"));
     prettyPrint(contact);
   }
 
@@ -115,7 +114,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> contactService.update(null, new TypeContact()));
+            ApiException.class, () -> contactService.update(null, new Contact()));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(ApiException.class, () -> contactService.update(contactId, null));

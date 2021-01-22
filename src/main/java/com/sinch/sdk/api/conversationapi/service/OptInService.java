@@ -2,8 +2,8 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.TypeOptIn;
-import com.sinch.sdk.model.conversationapi.TypeOptOut;
+import com.sinch.sdk.model.conversationapi.OptIn;
+import com.sinch.sdk.model.conversationapi.OptOut;
 import com.sinch.sdk.model.conversationapi.V1OptInResponse;
 import com.sinch.sdk.model.conversationapi.V1OptOutResponse;
 import com.sinch.sdk.utils.ExceptionUtils;
@@ -43,7 +43,7 @@ public class OptInService extends AbstractService {
    * @return {@link V1OptInResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1OptInResponse optIn(final TypeOptIn optIn, final String requestId) throws ApiException {
+  public V1OptInResponse optIn(final OptIn optIn, final String requestId) throws ApiException {
     try {
       return optInAsync(optIn, requestId).join();
     } catch (final CompletionException ex) {
@@ -62,8 +62,7 @@ public class OptInService extends AbstractService {
    * @param requestId ID for the asynchronous request, will be generated if not set. (optional)
    * @return Async task generating a {@link V1OptInResponse}
    */
-  public CompletableFuture<V1OptInResponse> optInAsync(
-      final TypeOptIn optIn, final String requestId) {
+  public CompletableFuture<V1OptInResponse> optInAsync(final OptIn optIn, final String requestId) {
     if (optIn == null) {
       return ExceptionUtils.missingParam(PARAM_OPT_IN);
     }
@@ -93,8 +92,7 @@ public class OptInService extends AbstractService {
    * @return {@link V1OptOutResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1OptOutResponse optOut(final TypeOptOut optOut, final String requestId)
-      throws ApiException {
+  public V1OptOutResponse optOut(final OptOut optOut, final String requestId) throws ApiException {
     try {
       return optOutAsync(optOut, requestId).join();
     } catch (final CompletionException ex) {
@@ -114,7 +112,7 @@ public class OptInService extends AbstractService {
    * @return Async task generating a {@link V1OptOutResponse}
    */
   public CompletableFuture<V1OptOutResponse> optOutAsync(
-      final TypeOptOut optOut, final String requestId) {
+      final OptOut optOut, final String requestId) {
     if (optOut == null) {
       return ExceptionUtils.missingParam(PARAM_OPT_OUT);
     }

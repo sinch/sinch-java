@@ -22,30 +22,29 @@ class AppServiceTest extends BaseConvIntegrationTest {
   @Test
   void testCreateApp() throws ApiException {
     final String displayName = "SDK test";
-    final TypeApp app =
+    final App app =
         appService.create(
-            new TypeApp()
+            new App()
                 .displayName(displayName)
                 .addChannelCredentialsItem(
-                    new TypeConversationChannelCredential()
-                        .channel(TypeConversationChannel.MESSENGER)
-                        .staticToken(new TypeStaticTokenCredential().token("token")))
+                    new ConversationChannelCredential()
+                        .channel(ConversationChannel.MESSENGER)
+                        .staticToken(new StaticTokenCredential().token("token")))
                 .retentionPolicy(
-                    new TypeRetentionPolicy()
-                        .retentionType(TypeRetentionPolicyType.PERSIST_RETENTION_POLICY)));
+                    new RetentionPolicy()
+                        .retentionType(RetentionPolicyType.PERSIST_RETENTION_POLICY)));
 
     Assertions.assertEquals(displayName, app.getDisplayName());
     Assertions.assertNotNull(app.getRetentionPolicy());
     Assertions.assertEquals(
-        TypeRetentionPolicyType.PERSIST_RETENTION_POLICY,
-        app.getRetentionPolicy().getRetentionType());
+        RetentionPolicyType.PERSIST_RETENTION_POLICY, app.getRetentionPolicy().getRetentionType());
     prettyPrint(app);
     appService.delete(app.getId());
   }
 
   @Test
   void testDeleteApp() throws ApiException {
-    final TypeApp app = createApp("To be deleted");
+    final App app = createApp("To be deleted");
     appService.delete(app.getId());
     final ApiException exception =
         Assertions.assertThrows(ApiException.class, () -> appService.get(app.getId()));
@@ -58,24 +57,23 @@ class AppServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testGetApp() throws ApiException {
-    final TypeApp createdApp = createApp("Get app");
-    final TypeApp app = appService.get(createdApp.getId());
+    final App createdApp = createApp("Get app");
+    final App app = appService.get(createdApp.getId());
     prettyPrint(app);
     appService.delete(app.getId());
   }
 
   @Test
   void testListApps() throws ApiException {
-    final List<TypeApp> apps = appService.list();
+    final List<App> apps = appService.list();
     prettyPrint(apps);
   }
 
   @Test
   void testUpdateApp() throws ApiException {
-    final TypeApp update_app = createApp("Update app");
+    final App update_app = createApp("Update app");
     final String displayName = "Has been updated app";
-    final TypeApp app =
-        appService.update(update_app.getId(), new TypeApp().displayName(displayName));
+    final App app = appService.update(update_app.getId(), new App().displayName(displayName));
     Assertions.assertEquals(displayName, app.getDisplayName());
     prettyPrint(app);
     appService.delete(app.getId());
@@ -91,13 +89,13 @@ class AppServiceTest extends BaseConvIntegrationTest {
     exception = Assertions.assertThrows(ApiException.class, () -> appService.get(null));
     assertClientSideException(exception);
     exception =
-        Assertions.assertThrows(ApiException.class, () -> appService.update(null, new TypeApp()));
+        Assertions.assertThrows(ApiException.class, () -> appService.update(null, new App()));
     assertClientSideException(exception);
     exception = Assertions.assertThrows(ApiException.class, () -> appService.update("123", null));
     assertClientSideException(exception);
   }
 
-  private TypeApp createApp(final String displayName) throws ApiException {
-    return appService.create(new TypeApp().displayName(displayName));
+  private App createApp(final String displayName) throws ApiException {
+    return appService.create(new App().displayName(displayName));
   }
 }

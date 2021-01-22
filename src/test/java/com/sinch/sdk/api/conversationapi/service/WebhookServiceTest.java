@@ -4,10 +4,10 @@ import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.conversationapi.ConversationApiClient;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
-import com.sinch.sdk.model.conversationapi.TypeApp;
-import com.sinch.sdk.model.conversationapi.TypeWebhook;
-import com.sinch.sdk.model.conversationapi.TypeWebhookTargetType;
-import com.sinch.sdk.model.conversationapi.TypeWebhookTrigger;
+import com.sinch.sdk.model.conversationapi.App;
+import com.sinch.sdk.model.conversationapi.Webhook;
+import com.sinch.sdk.model.conversationapi.WebhookTargetType;
+import com.sinch.sdk.model.conversationapi.WebhookTrigger;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -22,14 +22,14 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
   private static AppService appService;
   private static WebhookService webhookService;
 
-  private static TypeApp app;
+  private static App app;
 
   @BeforeAll
   static void beforeAll() throws ApiException {
     final ConversationApiClient conversationApi = Sinch.conversationApi(Region.EU);
     appService = conversationApi.apps();
     webhookService = conversationApi.webhooks();
-    app = appService.create(new TypeApp().displayName("Webhook test app"));
+    app = appService.create(new App().displayName("Webhook test app"));
   }
 
   @AfterAll
@@ -39,29 +39,29 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testCreateWebhook() throws ApiException {
-    final TypeWebhook webhook =
+    final Webhook webhook =
         webhookService.create(
-            new TypeWebhook()
+            new Webhook()
                 .appId(app.getId())
                 .target(webhookUrl)
-                .addTriggersItem(TypeWebhookTrigger.CONTACT_CREATE)
-                .addTriggersItem(TypeWebhookTrigger.CAPABILITY)
-                .addTriggersItem(TypeWebhookTrigger.OPT_IN)
-                .addTriggersItem(TypeWebhookTrigger.OPT_OUT)
-                .addTriggersItem(TypeWebhookTrigger.MESSAGE_DELIVERY)
-                .targetType(TypeWebhookTargetType.HTTP));
+                .addTriggersItem(WebhookTrigger.CONTACT_CREATE)
+                .addTriggersItem(WebhookTrigger.CAPABILITY)
+                .addTriggersItem(WebhookTrigger.OPT_IN)
+                .addTriggersItem(WebhookTrigger.OPT_OUT)
+                .addTriggersItem(WebhookTrigger.MESSAGE_DELIVERY)
+                .targetType(WebhookTargetType.HTTP));
 
     Assertions.assertEquals(webhookUrl, webhook.getTarget());
     Assertions.assertNotNull(webhook.getTriggers());
     Assertions.assertEquals(5, webhook.getTriggers().size());
-    Assertions.assertEquals(TypeWebhookTargetType.HTTP, webhook.getTargetType());
+    Assertions.assertEquals(WebhookTargetType.HTTP, webhook.getTargetType());
     prettyPrint(webhook);
     webhookService.delete(webhook.getId());
   }
 
   @Test
   void deleteWebhook() throws ApiException {
-    final TypeWebhook webhook = createWebhook();
+    final Webhook webhook = createWebhook();
     webhookService.delete(webhook.getId());
     final ApiException exception =
         Assertions.assertThrows(ApiException.class, () -> webhookService.get(webhook.getId()));
@@ -74,25 +74,25 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void getWebhook() throws ApiException {
-    final TypeWebhook webhook = webhookService.get(createWebhook().getId());
+    final Webhook webhook = webhookService.get(createWebhook().getId());
     prettyPrint(webhook);
     webhookService.delete(webhook.getId());
   }
 
   @Test
   void listWebhooks() throws ApiException {
-    final List<TypeWebhook> response = webhookService.list(app.getId());
+    final List<Webhook> response = webhookService.list(app.getId());
     prettyPrint(response);
   }
 
   @Test
   void updateWebhook() throws ApiException {
-    final TypeWebhook update_webhook = createWebhook();
+    final Webhook update_webhook = createWebhook();
     final String expected_target = "https://www.google.com/";
-    final TypeWebhook webhook =
+    final Webhook webhook =
         webhookService.update(
             update_webhook.getId(),
-            new TypeWebhook().target(expected_target).targetType(TypeWebhookTargetType.GRPC));
+            new Webhook().target(expected_target).targetType(WebhookTargetType.GRPC));
     Assertions.assertEquals(expected_target, webhook.getTarget());
     prettyPrint(webhook);
   }
@@ -104,11 +104,11 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> webhookService.create(new TypeWebhook().appId("123")));
+            ApiException.class, () -> webhookService.create(new Webhook().appId("123")));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> webhookService.create(new TypeWebhook().target("123")));
+            ApiException.class, () -> webhookService.create(new Webhook().target("123")));
     assertClientSideException(exception);
     exception = Assertions.assertThrows(ApiException.class, () -> webhookService.delete(null));
     assertClientSideException(exception);
@@ -118,14 +118,14 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> webhookService.update(null, new TypeWebhook()));
+            ApiException.class, () -> webhookService.update(null, new Webhook()));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(ApiException.class, () -> webhookService.update("123", null));
     assertClientSideException(exception);
   }
 
-  private TypeWebhook createWebhook() throws ApiException {
-    return webhookService.create(new TypeWebhook().appId(app.getId()).target(webhookUrl));
+  private Webhook createWebhook() throws ApiException {
+    return webhookService.create(new Webhook().appId(app.getId()).target(webhookUrl));
   }
 }

@@ -2,8 +2,8 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
+import com.sinch.sdk.model.conversationapi.Contact;
 import com.sinch.sdk.model.conversationapi.Pagination;
-import com.sinch.sdk.model.conversationapi.TypeContact;
 import com.sinch.sdk.model.conversationapi.V1ListContactsResponse;
 import com.sinch.sdk.model.conversationapi.V1MergeContactRequest;
 import com.sinch.sdk.utils.ExceptionUtils;
@@ -32,10 +32,10 @@ public class ContactService extends AbstractService {
    * Create a Contact (blocking)
    *
    * @param contact The contact to be added. (required)
-   * @return {@link TypeContact}
+   * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public TypeContact create(final TypeContact contact) throws ApiException {
+  public Contact create(final Contact contact) throws ApiException {
     try {
       return createAsync(contact).join();
     } catch (final CompletionException ex) {
@@ -47,13 +47,13 @@ public class ContactService extends AbstractService {
    * Create a Contact
    *
    * @param contact The contact to be added. (required)
-   * @return Async task providing a {@link TypeContact}
+   * @return Async task providing a {@link Contact}
    */
-  public CompletableFuture<TypeContact> createAsync(final TypeContact contact) {
+  public CompletableFuture<Contact> createAsync(final Contact contact) {
     if (contact == null) {
       return ExceptionUtils.missingParam(PARAM_CONTACT);
     }
-    return restClient.post(serviceURI, TypeContact.class, contact);
+    return restClient.post(serviceURI, Contact.class, contact);
   }
 
   /**
@@ -87,10 +87,10 @@ public class ContactService extends AbstractService {
    * Get a Contact (blocking)
    *
    * @param contactId The ID of the contact. (required)
-   * @return {@link TypeContact}
+   * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public TypeContact get(final String contactId) throws ApiException {
+  public Contact get(final String contactId) throws ApiException {
     try {
       return getAsync(contactId).join();
     } catch (final CompletionException ex) {
@@ -102,13 +102,13 @@ public class ContactService extends AbstractService {
    * Get a Contact
    *
    * @param contactId The ID of the contact. (required)
-   * @return Async task providing a {@link TypeContact}
+   * @return Async task providing a {@link Contact}
    */
-  public CompletableFuture<TypeContact> getAsync(final String contactId) {
+  public CompletableFuture<Contact> getAsync(final String contactId) {
     if (StringUtils.isEmpty(contactId)) {
       return ExceptionUtils.missingParam(PARAM_CONTACT_ID);
     }
-    return restClient.get(withPath(contactId), TypeContact.class);
+    return restClient.get(withPath(contactId), Contact.class);
   }
 
   /**
@@ -185,10 +185,10 @@ public class ContactService extends AbstractService {
    * after this call.
    *
    * @param mergeRequest (required)
-   * @return {@link TypeContact}
+   * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public TypeContact merge(final V1MergeContactRequest mergeRequest) throws ApiException {
+  public Contact merge(final V1MergeContactRequest mergeRequest) throws ApiException {
     try {
       return mergeAsync(mergeRequest).join();
     } catch (final CompletionException ex) {
@@ -209,9 +209,9 @@ public class ContactService extends AbstractService {
    * after this call.
    *
    * @param mergeRequest (required)
-   * @return Async task generating a {@link TypeContact}
+   * @return Async task generating a {@link Contact}
    */
-  public CompletableFuture<TypeContact> mergeAsync(final V1MergeContactRequest mergeRequest) {
+  public CompletableFuture<Contact> mergeAsync(final V1MergeContactRequest mergeRequest) {
     if (mergeRequest == null) {
       return ExceptionUtils.missingParam(PARAM_MERGE);
     }
@@ -223,9 +223,7 @@ public class ContactService extends AbstractService {
       return ExceptionUtils.missingParam(PARAM_MERGE_SOURCE_ID);
     }
     return restClient.post(
-        withPath(destinationId.concat(":merge")),
-        TypeContact.class,
-        mergeRequest.projectId(projectId));
+        withPath(destinationId.concat(":merge")), Contact.class, mergeRequest.projectId(projectId));
   }
 
   /**
@@ -233,10 +231,10 @@ public class ContactService extends AbstractService {
    *
    * @param contactId The ID of the contact. (required)
    * @param contact The updated contact. (required)
-   * @return {@link TypeContact}
+   * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public TypeContact update(final String contactId, final TypeContact contact) throws ApiException {
+  public Contact update(final String contactId, final Contact contact) throws ApiException {
     try {
       return updateAsync(contactId, contact).join();
     } catch (final CompletionException ex) {
@@ -249,16 +247,15 @@ public class ContactService extends AbstractService {
    *
    * @param contactId The ID of the contact. (required)
    * @param contact The updated contact. (required)
-   * @return Async task generating a {@link TypeContact}
+   * @return Async task generating a {@link Contact}
    */
-  public CompletableFuture<TypeContact> updateAsync(
-      final String contactId, final TypeContact contact) {
+  public CompletableFuture<Contact> updateAsync(final String contactId, final Contact contact) {
     if (StringUtils.isEmpty(contactId)) {
       return ExceptionUtils.missingParam(PARAM_CONTACT_ID);
     }
     if (contact == null) {
       return ExceptionUtils.missingParam(PARAM_CONTACT);
     }
-    return restClient.patch(withPath(contactId), TypeContact.class, contact);
+    return restClient.patch(withPath(contactId), Contact.class, contact);
   }
 }

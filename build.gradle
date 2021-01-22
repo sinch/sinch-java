@@ -72,6 +72,12 @@ task getConversationApiSwagger(type: AntDownload) {
 }
 tasks.openApiGenerate.dependsOn getConversationApiSwagger
 
+task renameConvApiSwaggerModels(type: Exec) {
+    description "Removes the folder prefix from the swagger generated models."
+    commandLine "./remove_model_prefix.sh", "Type", "conversationapi"
+}
+tasks.openApiGenerate.finalizedBy renameConvApiSwaggerModels
+
 openApiGenerate {
     generatorName = "java"
     library = "native"
@@ -79,6 +85,7 @@ openApiGenerate {
     outputDir = "$buildDir/swagger"
     modelPackage = "com.sinch.sdk.model.conversationapi"
     generateModelTests = false
+    generateModelDocumentation = false
     modelFilesConstrainedTo = [""]
 }
 sourceSets.main.java.srcDir "$buildDir/swagger/src/main/java"
@@ -97,5 +104,3 @@ class AntDownload extends DefaultTask {
         ant.get(src: sourceUrl, dest: target)
     }
 }
-
-version = "0.0.1"

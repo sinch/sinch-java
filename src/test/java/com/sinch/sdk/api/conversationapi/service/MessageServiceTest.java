@@ -25,7 +25,7 @@ class MessageServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testGetMessage() throws ApiException {
-    final TypeConversationMessage response = messageService.get(messageId);
+    final ConversationMessage response = messageService.get(messageId);
     prettyPrint(response);
   }
 
@@ -42,11 +42,9 @@ class MessageServiceTest extends BaseConvIntegrationTest {
         messageService.send(
             new V1SendMessageRequest()
                 .appId(appId)
-                .message(
-                    new TypeAppMessage()
-                        .textMessage(new TypeTextMessage().text("SDK text message")))
-                .recipient(new TypeRecipient().contactId(contactId))
-                .addChannelPriorityOrderItem(TypeConversationChannel.SMS));
+                .message(new AppMessage().textMessage(new TextMessage().text("SDK text message")))
+                .recipient(new Recipient().contactId(contactId))
+                .addChannelPriorityOrderItem(ConversationChannel.SMS));
     prettyPrint(response);
   }
 
@@ -56,10 +54,9 @@ class MessageServiceTest extends BaseConvIntegrationTest {
         messageService.transcode(
             new V1TranscodeMessageRequest()
                 .appMessage(
-                    new TypeAppMessage()
-                        .textMessage(new TypeTextMessage().text("SDK text message")))
-                .addChannelsItem(TypeConversationChannel.VIBER)
-                .addChannelsItem(TypeConversationChannel.WHATSAPP)
+                    new AppMessage().textMessage(new TextMessage().text("SDK text message")))
+                .addChannelsItem(ConversationChannel.VIBER)
+                .addChannelsItem(ConversationChannel.WHATSAPP)
                 .appId(appId));
     prettyPrint(response);
   }
@@ -67,7 +64,7 @@ class MessageServiceTest extends BaseConvIntegrationTest {
   @Test
   void testMissingParamsThrows() {
     ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> messageService.get(messageId));
+        Assertions.assertThrows(ApiException.class, () -> messageService.get(null));
     assertClientSideException(exception);
     exception = Assertions.assertThrows(ApiException.class, () -> messageService.list(null));
     assertClientSideException(exception);

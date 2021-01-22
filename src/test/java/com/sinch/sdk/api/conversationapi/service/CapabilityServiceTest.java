@@ -3,7 +3,7 @@ package com.sinch.sdk.api.conversationapi.service;
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
-import com.sinch.sdk.model.conversationapi.TypeRecipient;
+import com.sinch.sdk.model.conversationapi.Recipient;
 import com.sinch.sdk.model.conversationapi.V1QueryCapabilityRequest;
 import com.sinch.sdk.model.conversationapi.V1QueryCapabilityResponse;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +25,7 @@ class CapabilityServiceTest extends BaseConvIntegrationTest {
         capabilityService.query(
             new V1QueryCapabilityRequest()
                 .appId("your-app-id")
-                .recipient(new TypeRecipient().contactId("your-contact-id")));
+                .recipient(new Recipient().contactId("your-contact-id")));
 
     prettyPrint(response);
   }
