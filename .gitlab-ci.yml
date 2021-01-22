@@ -1,6 +1,17 @@
 image: openjdk:11.0-jdk-slim
 
+stages:
+  - test
+  - publish
+
 validation:
   stage: test
   script:
     - ./gradlew check
+
+publish:
+  stage: publish
+  retry: 2
+  when: manual
+  script:
+    - ./gradlew publish

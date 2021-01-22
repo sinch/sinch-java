@@ -1,5 +1,6 @@
 plugins {
     id "java-library"
+    id "maven-publish"
     id "org.openapi.generator" version "4.3.0"
     id "io.freefair.lombok" version "5.3.0"
     id "com.diffplug.spotless" version "5.8.2"
@@ -9,6 +10,25 @@ plugins {
 repositories {
     mavenLocal()
     jcenter()
+}
+
+publishing {
+    publications {
+        "$project.name"(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            def repo = version.endsWith('-SNAPSHOT') ? "snapshots" : "releases"
+            url = "https://nexus.int.clxnetworks.net/repository/clx-$repo-hosted"
+            credentials {
+                username "$clxRepoUser"
+                password "$clxRepoPassword"
+            }
+        }
+    }
 }
 
 dependencies {
