@@ -4,9 +4,9 @@ import static com.sinch.sdk.utils.StringUtils.isEmpty;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiClient;
 import com.sinch.sdk.configuration.ExternalConfiguration;
+import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.Region;
 import java.util.Optional;
-import javax.naming.ConfigurationException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
