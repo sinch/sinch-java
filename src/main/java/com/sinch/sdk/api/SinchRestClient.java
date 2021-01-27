@@ -1,5 +1,7 @@
 package com.sinch.sdk.api;
 
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.exception.ApiException;
@@ -32,19 +34,22 @@ public class SinchRestClient {
   }
 
   public <T> CompletableFuture<T> get(final URI uri, final Class<T> clazz) {
-    return send(clazz, requestBuilder(uri).GET().build());
+    return send(clazz, supplyAsync(() -> requestBuilder(uri).GET().build()));
   }
 
   public CompletableFuture<Void> post(final URI uri) {
-    return send(requestBuilder(uri).POST(HttpRequest.BodyPublishers.noBody()).build())
+    return send(supplyAsync(
+            () -> requestBuilder(uri).POST(HttpRequest.BodyPublishers.noBody()).build()))
         .thenAccept(res -> {});
   }
 
   @SneakyThrows
   public <S> CompletableFuture<Void> post(final URI uri, final S body) {
-    return send(requestBuilder(uri)
-            .POST(HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body)))
-            .build())
+    return send(supplyAsync(
+            () ->
+                requestBuilder(uri)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
+                    .build()))
         .thenAccept(res -> {});
   }
 
@@ -52,28 +57,31 @@ public class SinchRestClient {
   public <T, S> CompletableFuture<T> post(final URI uri, final Class<T> clazz, final S body) {
     return send(
         clazz,
-        requestBuilder(uri)
-            .POST(HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body)))
-            .build());
+        supplyAsync(
+            () ->
+                requestBuilder(uri)
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
+                    .build()));
   }
 
   @SneakyThrows
   public <T, S> CompletableFuture<T> patch(final URI uri, final Class<T> clazz, final S body) {
     return send(
         clazz,
-        requestBuilder(uri)
-            .method(
-                PATCH, HttpRequest.BodyPublishers.ofByteArray(objectMapper.writeValueAsBytes(body)))
-            .build());
+        supplyAsync(
+            () ->
+                requestBuilder(uri)
+                    .method(PATCH, HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
+                    .build()));
   }
 
   public CompletableFuture<Void> delete(final URI uri) {
-    return send(requestBuilder(uri).DELETE().build()).thenAccept(res -> {});
+    return send(supplyAsync(() -> requestBuilder(uri).DELETE().build())).thenAccept(res -> {});
   }
 
-  public <T> CompletableFuture<T> send(final Class<T> clazz, final HttpRequest request) {
+  public <T> CompletableFuture<T> send(
+      final Class<T> clazz, final CompletableFuture<HttpRequest> request) {
     return send(request)
-        // TODO: Error handling? 401 -> authenticationService.reload()
         .thenApply(HttpResponse::body)
         .thenApply(
             bodyInputStream -> {
@@ -85,11 +93,14 @@ public class SinchRestClient {
             });
   }
 
-  public CompletableFuture<HttpResponse<InputStream>> send(final HttpRequest request) {
-    return client.sendAsync(request, BodyHandlers.ofInputStream()).thenApply(this::validate);
+  public CompletableFuture<HttpResponse<InputStream>> send(
+      final CompletableFuture<HttpRequest> requestFuture) {
+    return requestFuture
+        .thenCompose(request -> client.sendAsync(request, BodyHandlers.ofInputStream()))
+        .thenApply(SinchRestClient::validate);
   }
 
-  private HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
+  public static HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
     final int statusCode = response.statusCode();
     if (statusCode / 100 != 2) {
       final String responseBody;
@@ -112,5 +123,10 @@ public class SinchRestClient {
     return HttpRequest.newBuilder()
         .uri(uri)
         .header(AuthenticationService.HEADER_KEY_AUTH, authenticationService.getHeaderValue());
+  }
+
+  @SneakyThrows
+  private byte[] getBytes(final Object body) {
+    return objectMapper.writeValueAsBytes(body);
   }
 }
