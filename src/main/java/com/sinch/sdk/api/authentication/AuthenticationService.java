@@ -1,8 +1,12 @@
 package com.sinch.sdk.api.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.configuration.Configuration;
+import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.auth.service.AuthResponse;
+import com.sinch.sdk.utils.ExceptionUtils;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -28,9 +32,9 @@ public class AuthenticationService {
 
   private final HttpClient httpClient;
   private final ObjectMapper objectMapper;
+
   private final long fallbackRetryDelay;
   private final Timer refreshTimer;
-  private final String basicHeaderValue;
   private final HttpRequest bearerTokenRequest;
   private CompletableFuture<String> authHeaderFuture;
 
@@ -44,16 +48,17 @@ public class AuthenticationService {
     this.objectMapper = objectMapper;
     this.fallbackRetryDelay = config.getFallbackRetryDelay();
     this.refreshTimer = new Timer("BearerTokenRefreshTimer");
-    this.basicHeaderValue =
-        String.format(
-            TEMPLATE_BASIC_AUTH,
-            Base64.getEncoder()
-                .encodeToString(String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes()));
     this.bearerTokenRequest =
         HttpRequest.newBuilder()
             .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
             .uri(URI.create(config.getUrl()))
-            .header(HEADER_KEY_AUTH, basicHeaderValue)
+            .header(
+                HEADER_KEY_AUTH,
+                String.format(
+                    TEMPLATE_BASIC_AUTH,
+                    Base64.getEncoder()
+                        .encodeToString(
+                            String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes())))
             .header(HEADER_KEY_CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
             .timeout(Duration.ofSeconds(config.getHttpTimeout()))
             .build();
@@ -61,9 +66,10 @@ public class AuthenticationService {
   }
 
   /**
-   * Retrieves Bearer token if possible and falls back to Basic token
+   * Gets the header value (blocking)
    *
-   * <p>Note: Blocking call
+   * <p>NOTE: throws {@link ConfigurationException} if the response is 401, and {@link
+   * com.sinch.sdk.exception.ApiException} for other http errors
    *
    * @return header value to use with @{HEADER_KEY_AUTH}
    */
@@ -72,26 +78,26 @@ public class AuthenticationService {
     return authHeaderFuture.get();
   }
 
-  /** Asynchronous call to request a new Bearer token */
-  public void reload() {
+  private void reload() {
     authHeaderFuture =
         CompletableFuture.supplyAsync(this::getAuthResponse)
-            .handle(
-                (authResponse, exception) -> {
-                  if (authResponse != null) {
-                    scheduleReload(Math.max(authResponse.getExpiresIn() - 60, 1));
-                    return String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken());
-                  }
-                  scheduleReload(fallbackRetryDelay);
-                  return basicHeaderValue;
+            .thenApply(
+                authResponse -> {
+                  scheduleReload(Math.max(authResponse.getExpiresIn() - 60, fallbackRetryDelay));
+                  return String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken());
                 });
   }
 
   @SneakyThrows
   private AuthResponse getAuthResponse() {
-    return objectMapper.readValue(
-        httpClient.send(bearerTokenRequest, HttpResponse.BodyHandlers.ofInputStream()).body(),
-        AuthResponse.class);
+    final HttpResponse<InputStream> response =
+        httpClient.send(bearerTokenRequest, HttpResponse.BodyHandlers.ofInputStream());
+    if (response.statusCode() == 401) {
+      throw new ConfigurationException(
+          "Invalid credentials, verify the keyId and keySecret",
+          ExceptionUtils.getResponseBody(response));
+    }
+    return objectMapper.readValue(SinchRestClient.validate(response).body(), AuthResponse.class);
   }
 
   private void scheduleReload(final long delay) {

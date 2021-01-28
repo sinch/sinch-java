@@ -5,6 +5,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.exception.ApiException;
+import com.sinch.sdk.utils.ExceptionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -103,18 +104,12 @@ public class SinchRestClient {
   public static HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
     final int statusCode = response.statusCode();
     if (statusCode / 100 != 2) {
-      final String responseBody;
-      try {
-        responseBody = response.body() == null ? null : new String(response.body().readAllBytes());
-      } catch (IOException e) {
-        throw new CompletionException(e);
-      }
       throw new CompletionException(
           new ApiException(
               statusCode,
               "Call to " + response.uri() + " received non-success response",
               response.headers(),
-              responseBody));
+              ExceptionUtils.getResponseBody(response)));
     }
     return response;
   }

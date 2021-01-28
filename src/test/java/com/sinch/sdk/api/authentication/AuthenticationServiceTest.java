@@ -1,7 +1,9 @@
 package com.sinch.sdk.api.authentication;
 
+import com.sinch.sdk.exception.ApiException;
+import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.test.utils.AwaitUtil;
-import org.awaitility.core.ThrowingRunnable;
+import java.net.http.HttpTimeoutException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,13 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
 
-  private final ThrowingRunnable assertBasicHeader =
-      () ->
-          Assertions.assertEquals("Basic dGVzdENsaWVudDp0ZXN0U2VjcmV0", underTest.getHeaderValue());
-
-  private final ThrowingRunnable assertBearerHeader =
-      () -> Assertions.assertEquals("Bearer access_token", underTest.getHeaderValue());
-
   @Test
   void testReloadTokenEveryExpiresIn() {
     AwaitUtil.delaySeconds(3);
@@ -24,29 +19,26 @@ class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
   }
 
   @Test
-  void testGetReturnsBearerTokenOnSuccess() throws Throwable {
-    assertBearerHeader.run();
+  void testGetReturnsBearerTokenOnSuccess() {
+    Assertions.assertEquals("Bearer access_token", underTest.getHeaderValue());
     thenExpectThatHttpClientSendCalledAtLeast(1);
   }
 
   @Test
-  void testExceptionGivesBasicAuth() {
+  void testTimeoutThrows() {
     givenSendThrows();
-    AwaitUtil.awaitValidAssertion(assertBasicHeader);
+    thenExpectGetHeaderValueTrows(HttpTimeoutException.class);
   }
 
   @Test
-  void testKapuskiServiceGivesBasicAuth() {
-    givenServiceKaputski();
-    AwaitUtil.awaitValidAssertion(assertBasicHeader);
+  void testUnauthorizedThrowsConfigurationException() {
+    givenUnauthorized();
+    thenExpectGetHeaderValueTrows(ConfigurationException.class);
   }
 
   @Test
-  void testFailedRequestStillRetries() {
-    AwaitUtil.delaySeconds(1);
-    givenServiceKaputski();
-    AwaitUtil.awaitValidAssertion(assertBasicHeader);
-    givenServiceWorks();
-    AwaitUtil.awaitValidAssertion(assertBearerHeader);
+  void testTooManyRequestsThrowsAuthorizationException() {
+    givenTooManyRequests();
+    thenExpectGetHeaderValueTrows(ApiException.class);
   }
 }
