@@ -30,6 +30,8 @@ public interface Configuration {
     long getHttpTimeout();
 
     long getFallbackRetryDelay();
+
+    boolean useBasicAuth();
   }
 
   interface ConversationApi {

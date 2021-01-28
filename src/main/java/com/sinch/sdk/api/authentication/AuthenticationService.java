@@ -33,9 +33,9 @@ public class AuthenticationService {
   private final HttpClient httpClient;
   private final ObjectMapper objectMapper;
 
-  private final long fallbackRetryDelay;
-  private final Timer refreshTimer;
-  private final HttpRequest bearerTokenRequest;
+  private long fallbackRetryDelay;
+  private Timer refreshTimer;
+  private HttpRequest bearerTokenRequest;
   private CompletableFuture<String> authHeaderFuture;
 
   public AuthenticationService(
@@ -46,23 +46,26 @@ public class AuthenticationService {
       @NonNull final String keySecret) {
     this.httpClient = httpClient;
     this.objectMapper = objectMapper;
-    this.fallbackRetryDelay = config.getFallbackRetryDelay();
-    this.refreshTimer = new Timer("BearerTokenRefreshTimer");
-    this.bearerTokenRequest =
-        HttpRequest.newBuilder()
-            .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
-            .uri(URI.create(config.getUrl()))
-            .header(
-                HEADER_KEY_AUTH,
-                String.format(
-                    TEMPLATE_BASIC_AUTH,
-                    Base64.getEncoder()
-                        .encodeToString(
-                            String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes())))
-            .header(HEADER_KEY_CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-            .timeout(Duration.ofSeconds(config.getHttpTimeout()))
-            .build();
-    reload();
+    final String basicHeaderValue =
+        String.format(
+            TEMPLATE_BASIC_AUTH,
+            Base64.getEncoder()
+                .encodeToString(String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes()));
+    if (config.useBasicAuth()) {
+      authHeaderFuture = CompletableFuture.completedFuture(basicHeaderValue);
+    } else {
+      this.fallbackRetryDelay = config.getFallbackRetryDelay();
+      this.refreshTimer = new Timer("BearerTokenRefreshTimer");
+      this.bearerTokenRequest =
+          HttpRequest.newBuilder()
+              .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
+              .uri(URI.create(config.getUrl()))
+              .header(HEADER_KEY_AUTH, basicHeaderValue)
+              .header(HEADER_KEY_CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
+              .timeout(Duration.ofSeconds(config.getHttpTimeout()))
+              .build();
+      reload();
+    }
   }
 
   /**

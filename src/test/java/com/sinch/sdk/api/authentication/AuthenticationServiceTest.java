@@ -41,4 +41,10 @@ class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
     givenTooManyRequests();
     thenExpectGetHeaderValueTrows(ApiException.class);
   }
+
+  @Test
+  void testBasicAuthWorks() {
+    givenBasicAuthConfigured();
+    Assertions.assertEquals("Basic dGVzdENsaWVudDp0ZXN0U2VjcmV0", underTest.getHeaderValue());
+  }
 }

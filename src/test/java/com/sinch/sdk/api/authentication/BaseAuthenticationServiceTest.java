@@ -74,6 +74,26 @@ public class BaseAuthenticationServiceTest extends BaseTest {
         });
   }
 
+  protected void givenBasicAuthConfigured() {
+    underTest =
+        new AuthenticationService(
+            mockHttpClient,
+            OM,
+            new ConfigurationEU.AuthenticationEU() {
+              @Override
+              public long getFallbackRetryDelay() {
+                return 1;
+              }
+
+              @Override
+              public boolean useBasicAuth() {
+                return true;
+              }
+            },
+            TEST_ID,
+            TEST_SECRET);
+  }
+
   protected void givenServiceWorks() {
     Mockito.lenient()
         .doAnswer(invocation -> getResource("response.json"))

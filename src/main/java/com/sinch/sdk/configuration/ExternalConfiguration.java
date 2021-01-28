@@ -38,11 +38,16 @@ public class ExternalConfiguration {
       return null;
     }
 
+    public static boolean getBasicAuth() {
+      return Boolean.parseBoolean(System.getProperty(Keys.BASIC_AUTH));
+    }
+
     private static class Keys {
       private static final String KEY_PREFIX =
           ExternalConfiguration.Keys.KEY_PREFIX + "authentication.";
       private static final String URL = KEY_PREFIX + "url";
       private static final String HTTP_TIMEOUT = KEY_PREFIX + "http_timeout";
+      private static final String BASIC_AUTH = KEY_PREFIX + "basic_auth";
     }
   }
 
