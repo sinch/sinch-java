@@ -3,7 +3,6 @@ package com.sinch.sdk.configuration.impl;
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.configuration.ExternalConfiguration;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractConfiguration implements Configuration {
 
@@ -22,8 +21,13 @@ public abstract class AbstractConfiguration implements Configuration {
     }
 
     @Override
+    public boolean useBasicAuth() {
+      return ExternalConfiguration.Authentication.getBasicAuth();
+    }
+
+    @Override
     public long getFallbackRetryDelay() {
-      return TimeUnit.MINUTES.toSeconds(5);
+      return 10L;
     }
   }
 

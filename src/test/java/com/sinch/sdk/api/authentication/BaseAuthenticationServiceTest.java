@@ -6,20 +6,23 @@ import static org.mockito.Mockito.atLeast;
 
 import com.sinch.sdk.api.BaseTest;
 import com.sinch.sdk.configuration.impl.ConfigurationEU;
+import com.sinch.sdk.test.utils.AwaitUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
+import java.util.concurrent.ExecutionException;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
 public class BaseAuthenticationServiceTest extends BaseTest {
-  protected static final String testClientId = "testClient";
-  protected static final String testClientSecret = "testSecret";
+  protected static final String TEST_ID = "testClient";
+  protected static final String TEST_SECRET = "testSecret";
 
   @Mock private HttpClient mockHttpClient;
   @Mock private HttpResponse<InputStream> mockHttpResponse;
@@ -52,8 +55,8 @@ public class BaseAuthenticationServiceTest extends BaseTest {
                 return 1;
               }
             },
-            testClientId,
-            testClientSecret);
+            TEST_ID,
+            TEST_SECRET);
   }
 
   @SneakyThrows
@@ -61,17 +64,52 @@ public class BaseAuthenticationServiceTest extends BaseTest {
     Mockito.verify(mockHttpClient, atLeast(times)).send(any(), any());
   }
 
-  @SneakyThrows
+  protected <T extends Throwable> void thenExpectGetHeaderValueTrows(
+      final Class<T> expectedException) {
+    AwaitUtil.awaitValidAssertion(
+        () -> {
+          final ExecutionException exception =
+              Assertions.assertThrows(ExecutionException.class, () -> underTest.getHeaderValue());
+          Assertions.assertTrue(expectedException.isInstance(exception.getCause()));
+        });
+  }
+
+  protected void givenBasicAuthConfigured() {
+    underTest =
+        new AuthenticationService(
+            mockHttpClient,
+            OM,
+            new ConfigurationEU.AuthenticationEU() {
+              @Override
+              public long getFallbackRetryDelay() {
+                return 1;
+              }
+
+              @Override
+              public boolean useBasicAuth() {
+                return true;
+              }
+            },
+            TEST_ID,
+            TEST_SECRET);
+  }
+
   protected void givenServiceWorks() {
     Mockito.lenient()
         .doAnswer(invocation -> getResource("response.json"))
         .when(mockHttpResponse)
         .body();
+    Mockito.lenient().doReturn(200).when(mockHttpResponse).statusCode();
   }
 
-  @SneakyThrows
-  protected void givenServiceKaputski() {
-    Mockito.doAnswer(invocation -> getResource("404_response.html")).when(mockHttpResponse).body();
+  protected void givenUnauthorized() {
+    Mockito.doAnswer(invocation -> getResource("401_response.json")).when(mockHttpResponse).body();
+    Mockito.doReturn(401).when(mockHttpResponse).statusCode();
+  }
+
+  protected void givenTooManyRequests() {
+    AwaitUtil.delaySeconds(0); // Needed to delay mock slightly
+    Mockito.lenient().doReturn(429).when(mockHttpResponse).statusCode();
   }
 
   @SneakyThrows
