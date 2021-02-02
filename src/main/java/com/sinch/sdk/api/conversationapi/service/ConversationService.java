@@ -77,6 +77,34 @@ public class ConversationService extends AbstractService {
   }
 
   /**
+   * Deletes the conversation together with all the messages sent as part of the conversation.
+   * (blocking)
+   *
+   * @param conversationId The ID of the conversation to be deleted. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void delete(final String conversationId) throws ApiException {
+    try {
+      deleteAsync(conversationId).join();
+    } catch (final CompletionException ex) {
+      throw ExceptionUtils.getExpectedCause(ex);
+    }
+  }
+
+  /**
+   * Deletes the conversation together with all the messages sent as part of the conversation.
+   *
+   * @param conversationId The ID of the conversation to be deleted. (required)
+   * @return Async task of the delete call
+   */
+  public CompletableFuture<Void> deleteAsync(final String conversationId) {
+    if (StringUtils.isEmpty(conversationId)) {
+      return ExceptionUtils.missingParam(PARAM_CONVERSATION_ID);
+    }
+    return restClient.delete(withPath(conversationId));
+  }
+
+  /**
    * Get a conversation (blocking)
    *
    * <p>A conversation has two participating entities, an app and a contact.

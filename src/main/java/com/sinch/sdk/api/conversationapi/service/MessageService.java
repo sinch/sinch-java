@@ -28,6 +28,37 @@ public class MessageService extends AbstractService {
   }
 
   /**
+   * Deletes a message that is part of a conversation. (blocking)
+   *
+   * <p>Removing the last message of a conversation will not delete the conversation.
+   *
+   * @param messageId The ID of the message to be deleted. (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void delete(final String messageId) throws ApiException {
+    try {
+      deleteAsync(messageId).join();
+    } catch (final CompletionException ex) {
+      throw ExceptionUtils.getExpectedCause(ex);
+    }
+  }
+
+  /**
+   * Deletes a message that is part of a conversation.
+   *
+   * <p>Removing the last message of a conversation will not delete the conversation.
+   *
+   * @param messageId The ID of the message to be deleted. (required)
+   * @return Async task of the delete call
+   */
+  public CompletableFuture<Void> deleteAsync(final String messageId) {
+    if (StringUtils.isEmpty(messageId)) {
+      return ExceptionUtils.missingParam(PARAM_MESSAGE_ID);
+    }
+    return restClient.delete(withPath(messageId));
+  }
+
+  /**
    * Get a message (blocking)
    *
    * <p>Retrieves a message by id.

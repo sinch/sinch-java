@@ -4,6 +4,7 @@ import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.*;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,19 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
                 .appId(appId)
                 .contactId(contactId));
     prettyPrint(response);
+  }
+
+  @Test
+  void testDeleteConversation() throws ApiException {
+    conversationService.delete(conversationId);
+    final ApiException exception =
+        Assertions.assertThrows(ApiException.class, () -> conversationService.get(conversationId));
+    Assertions.assertEquals(404, exception.getCode());
+    Assertions.assertNotNull(exception.getResponseBody());
+    Assertions.assertNotNull(exception.getResponseHeaders());
+    Assertions.assertEquals(
+        Optional.of("404"), exception.getResponseHeaders().firstValue(":status"));
+    System.out.println(exception.getResponseBody());
   }
 
   @Test
