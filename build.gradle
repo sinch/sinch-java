@@ -24,8 +24,8 @@ publishing {
             def repo = version.endsWith('-SNAPSHOT') ? "snapshots" : "releases"
             url = "https://nexus.int.clxnetworks.net/repository/clx-$repo-hosted"
             credentials {
-                username "$clxRepoUser"
-                password "$clxRepoPassword"
+                username = project.findProperty("clxRepoUser")
+                password = project.findProperty("clxRepoPassword")
             }
         }
     }
