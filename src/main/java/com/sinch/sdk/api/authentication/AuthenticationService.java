@@ -40,12 +40,11 @@ public class AuthenticationService {
 
   public AuthenticationService(
       final HttpClient httpClient,
-      final ObjectMapper objectMapper,
       final Configuration.Authentication config,
       @NonNull final String keyId,
       @NonNull final String keySecret) {
     this.httpClient = httpClient;
-    this.objectMapper = objectMapper;
+    this.objectMapper = new ObjectMapper();
     final String basicHeaderValue =
         String.format(
             TEMPLATE_BASIC_AUTH,

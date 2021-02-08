@@ -36,7 +36,6 @@ public class ConversationApiClient {
     final AuthenticationService authenticationService =
         new AuthenticationService(
             httpClient,
-            objectMapper,
             regionConfig.authentication(),
             sinchConfig.getKeyId(),
             sinchConfig.getKeySecret());
