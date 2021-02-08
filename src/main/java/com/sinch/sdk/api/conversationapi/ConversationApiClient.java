@@ -21,6 +21,15 @@ public class ConversationApiClient {
   private ConversationApiConfig config;
 
   public ConversationApiClient(final Region region, final Sinch.Config sinchConfig) {
+    this(region, createConfig(region, sinchConfig));
+  }
+
+  public ConversationApiClient(final Region region, final ConversationApiConfig config) {
+    this.region = region;
+    this.config = config;
+  }
+
+  private static ConversationApiConfig createConfig(Region region, Sinch.Config sinchConfig) {
     final HttpClient httpClient = HttpClient.newHttpClient();
     final ObjectMapper objectMapper = objectMapper();
     final Configuration regionConfig = Configuration.forRegion(region);
@@ -32,13 +41,11 @@ public class ConversationApiClient {
             sinchConfig.getKeyId(),
             sinchConfig.getKeySecret());
 
-    this.region = region;
-    this.config =
-        ConversationApiConfig.builder()
-            .projectId(sinchConfig.getProjectId())
-            .baseUrl(regionConfig.conversationApi().getUrl())
-            .restClient(new SinchRestClient(authenticationService, httpClient, objectMapper))
-            .build();
+    return ConversationApiConfig.builder()
+        .projectId(sinchConfig.getProjectId())
+        .baseUrl(regionConfig.conversationApi().getUrl())
+        .restClient(new SinchRestClient(authenticationService, httpClient, objectMapper))
+        .build();
   }
 
   public Region region() {
