@@ -48,7 +48,6 @@ public class BaseAuthenticationServiceTest extends BaseTest {
     underTest =
         new AuthenticationService(
             mockHttpClient,
-            OM,
             new ConfigurationEU.AuthenticationEU() {
               @Override
               public long getFallbackRetryDelay() {
@@ -78,7 +77,6 @@ public class BaseAuthenticationServiceTest extends BaseTest {
     underTest =
         new AuthenticationService(
             mockHttpClient,
-            OM,
             new ConfigurationEU.AuthenticationEU() {
               @Override
               public long getFallbackRetryDelay() {
