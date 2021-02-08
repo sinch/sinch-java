@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.net.http.HttpTimeoutException;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletionException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,8 +68,9 @@ public class BaseAuthenticationServiceTest extends BaseTest {
       final Class<T> expectedException) {
     AwaitUtil.awaitValidAssertion(
         () -> {
-          final ExecutionException exception =
-              Assertions.assertThrows(ExecutionException.class, () -> underTest.getHeaderValue());
+          final CompletionException exception =
+              Assertions.assertThrows(
+                  CompletionException.class, () -> underTest.getHeaderValue().join());
           Assertions.assertTrue(expectedException.isInstance(exception.getCause()));
         });
   }

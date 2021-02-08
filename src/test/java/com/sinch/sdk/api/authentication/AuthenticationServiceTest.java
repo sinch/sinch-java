@@ -20,7 +20,7 @@ class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
 
   @Test
   void testGetReturnsBearerTokenOnSuccess() {
-    Assertions.assertEquals("Bearer access_token", underTest.getHeaderValue());
+    Assertions.assertEquals("Bearer access_token", underTest.getHeaderValue().join());
     thenExpectThatHttpClientSendCalledAtLeast(1);
   }
 
@@ -45,6 +45,7 @@ class AuthenticationServiceTest extends BaseAuthenticationServiceTest {
   @Test
   void testBasicAuthWorks() {
     givenBasicAuthConfigured();
-    Assertions.assertEquals("Basic dGVzdENsaWVudDp0ZXN0U2VjcmV0", underTest.getHeaderValue());
+    Assertions.assertEquals(
+        "Basic dGVzdENsaWVudDp0ZXN0U2VjcmV0", underTest.getHeaderValue().join());
   }
 }
