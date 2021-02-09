@@ -1,7 +1,5 @@
 package com.sinch.sdk.api;
 
-import static java.util.concurrent.CompletableFuture.supplyAsync;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.exception.ApiException;
@@ -35,22 +33,21 @@ public class SinchRestClient {
   }
 
   public <T> CompletableFuture<T> get(final URI uri, final Class<T> clazz) {
-    return send(clazz, supplyAsync(() -> requestBuilder(uri).GET().build()));
+    return send(clazz, requestBuilder(uri).thenApply(builder -> builder.GET().build()));
   }
 
   public CompletableFuture<Void> post(final URI uri) {
-    return send(supplyAsync(
-            () -> requestBuilder(uri).POST(HttpRequest.BodyPublishers.noBody()).build()))
+    return send(requestBuilder(uri)
+            .thenApply(builder -> builder.POST(HttpRequest.BodyPublishers.noBody()).build()))
         .thenAccept(res -> {});
   }
 
   @SneakyThrows
   public <S> CompletableFuture<Void> post(final URI uri, final S body) {
-    return send(supplyAsync(
-            () ->
-                requestBuilder(uri)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
-                    .build()))
+    return send(requestBuilder(uri)
+            .thenApply(
+                builder ->
+                    builder.POST(HttpRequest.BodyPublishers.ofByteArray(getBytes(body))).build()))
         .thenAccept(res -> {});
   }
 
@@ -58,26 +55,27 @@ public class SinchRestClient {
   public <T, S> CompletableFuture<T> post(final URI uri, final Class<T> clazz, final S body) {
     return send(
         clazz,
-        supplyAsync(
-            () ->
-                requestBuilder(uri)
-                    .POST(HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
-                    .build()));
+        requestBuilder(uri)
+            .thenApply(
+                builder ->
+                    builder.POST(HttpRequest.BodyPublishers.ofByteArray(getBytes(body))).build()));
   }
 
   @SneakyThrows
   public <T, S> CompletableFuture<T> patch(final URI uri, final Class<T> clazz, final S body) {
     return send(
         clazz,
-        supplyAsync(
-            () ->
-                requestBuilder(uri)
-                    .method(PATCH, HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
-                    .build()));
+        requestBuilder(uri)
+            .thenApply(
+                builder ->
+                    builder
+                        .method(PATCH, HttpRequest.BodyPublishers.ofByteArray(getBytes(body)))
+                        .build()));
   }
 
   public CompletableFuture<Void> delete(final URI uri) {
-    return send(supplyAsync(() -> requestBuilder(uri).DELETE().build())).thenAccept(res -> {});
+    return send(requestBuilder(uri).thenApply(builder -> builder.DELETE().build()))
+        .thenAccept(res -> {});
   }
 
   public <T> CompletableFuture<T> send(
@@ -114,10 +112,14 @@ public class SinchRestClient {
     return response;
   }
 
-  private HttpRequest.Builder requestBuilder(final URI uri) {
-    return HttpRequest.newBuilder()
-        .uri(uri)
-        .header(AuthenticationService.HEADER_KEY_AUTH, authenticationService.getHeaderValue());
+  private CompletableFuture<HttpRequest.Builder> requestBuilder(final URI uri) {
+    return authenticationService
+        .getHeaderValue()
+        .thenApply(
+            authHeaderValue ->
+                HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header(AuthenticationService.HEADER_KEY_AUTH, authHeaderValue));
   }
 
   @SneakyThrows

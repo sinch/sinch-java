@@ -68,16 +68,15 @@ public class AuthenticationService {
   }
 
   /**
-   * Gets the header value (blocking)
+   * Gets the header value
    *
-   * <p>NOTE: throws {@link ConfigurationException} if the response is 401, and {@link
+   * <p>NOTE: fails with {@link ConfigurationException} if the response is 401, and {@link
    * com.sinch.sdk.exception.ApiException} for other http errors
    *
-   * @return header value to use with @{HEADER_KEY_AUTH}
+   * @return async task for the header value to use with @{HEADER_KEY_AUTH}
    */
-  @SneakyThrows
-  public String getHeaderValue() {
-    return authHeaderFuture.get();
+  public CompletableFuture<String> getHeaderValue() {
+    return authHeaderFuture;
   }
 
   private void reload() {
