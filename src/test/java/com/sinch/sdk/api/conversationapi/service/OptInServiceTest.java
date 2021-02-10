@@ -22,7 +22,7 @@ class OptInServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testRegisterOptIn() throws ApiException {
+  void testRegisterOptIn() {
     final V1OptInResponse response =
         optInService.optIn(
             new OptIn()
@@ -34,7 +34,7 @@ class OptInServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testRegisterOptOut() throws ApiException {
+  void testRegisterOptOut() {
     final V1OptOutResponse response =
         optInService.optOut(
             new OptOut()

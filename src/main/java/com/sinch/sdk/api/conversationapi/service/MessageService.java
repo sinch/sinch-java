@@ -35,7 +35,7 @@ public class MessageService extends AbstractService {
    * @param messageId The ID of the message to be deleted. (required)
    * @throws ApiException if fails to make API call
    */
-  public void delete(final String messageId) throws ApiException {
+  public void delete(final String messageId) {
     try {
       deleteAsync(messageId).join();
     } catch (final CompletionException ex) {
@@ -67,7 +67,7 @@ public class MessageService extends AbstractService {
    * @return {@link ConversationMessage}
    * @throws ApiException if fails to make API call
    */
-  public ConversationMessage get(final String messageId) throws ApiException {
+  public ConversationMessage get(final String messageId) {
     try {
       return getAsync(messageId).join();
     } catch (final CompletionException ex) {
@@ -102,7 +102,7 @@ public class MessageService extends AbstractService {
    * @return {@link V1ListMessagesResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListMessagesResponse list(final ListMessagesParams params) throws ApiException {
+  public V1ListMessagesResponse list(final ListMessagesParams params) {
     try {
       return listAsync(params).join();
     } catch (final CompletionException ex) {
@@ -144,8 +144,7 @@ public class MessageService extends AbstractService {
    * @return {@link V1SendMessageResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1SendMessageResponse send(final V1SendMessageRequest sendMessageRequest)
-      throws ApiException {
+  public V1SendMessageResponse send(final V1SendMessageRequest sendMessageRequest) {
     try {
       return sendAsync(sendMessageRequest).join();
     } catch (final CompletionException ex) {
@@ -186,8 +185,7 @@ public class MessageService extends AbstractService {
    * @return {@link V1TranscodeMessageResponse}
    * @throws ApiException if fails to make API call
    */
-  public Map<String, String> transcode(final V1TranscodeMessageRequest transcodeMessageRequest)
-      throws ApiException {
+  public Map<String, String> transcode(final V1TranscodeMessageRequest transcodeMessageRequest) {
     try {
       return transcodeAsync(transcodeMessageRequest).join();
     } catch (final CompletionException ex) {

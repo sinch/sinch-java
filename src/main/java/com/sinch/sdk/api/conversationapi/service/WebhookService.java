@@ -38,7 +38,7 @@ public class WebhookService extends AbstractService {
    * @return {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public Webhook create(final Webhook webhook) throws ApiException {
+  public Webhook create(final Webhook webhook) {
     try {
       return createAsync(webhook).join();
     } catch (final CompletionException ex) {
@@ -74,7 +74,7 @@ public class WebhookService extends AbstractService {
    * @param webhookId The ID of the webhook to delete. (required)
    * @throws ApiException if fails to make API call
    */
-  public void delete(final String webhookId) throws ApiException {
+  public void delete(final String webhookId) {
     try {
       deleteAsync(webhookId).join();
     } catch (final CompletionException ex) {
@@ -102,7 +102,7 @@ public class WebhookService extends AbstractService {
    * @return {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public Webhook get(final String webhookId) throws ApiException {
+  public Webhook get(final String webhookId) {
     try {
       return getAsync(webhookId).join();
     } catch (final CompletionException ex) {
@@ -130,7 +130,7 @@ public class WebhookService extends AbstractService {
    * @return List of {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public List<Webhook> list(final String appId) throws ApiException {
+  public List<Webhook> list(final String appId) {
     return appService.listWebhooks(appId);
   }
 
@@ -152,7 +152,7 @@ public class WebhookService extends AbstractService {
    * @return {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public Webhook update(final String webhookId, final Webhook webhook) throws ApiException {
+  public Webhook update(final String webhookId, final Webhook webhook) {
     try {
       return updateAsync(webhookId, webhook).join();
     } catch (final CompletionException ex) {

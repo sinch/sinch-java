@@ -21,7 +21,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testCreateContact() throws ApiException {
+  void testCreateContact() {
     final Contact contact =
         contactService.create(
             new Contact()
@@ -36,7 +36,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testDeleteContact() throws ApiException {
+  void testDeleteContact() {
     contactService.delete(contactId);
     final ApiException exception =
         Assertions.assertThrows(ApiException.class, () -> contactService.get(contactId));
@@ -49,32 +49,32 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testGetContact() throws ApiException {
+  void testGetContact() {
     final Contact contact = contactService.get(contactId);
     prettyPrint(contact);
   }
 
   @Test
-  void testListContacts() throws ApiException {
+  void testListContacts() {
     final V1ListContactsResponse response = contactService.list();
     prettyPrint(response);
   }
 
   @Test
-  public void testListContactsSize() throws ApiException {
+  public void testListContactsSize() {
     final V1ListContactsResponse response = contactService.list(new Pagination().size(1));
     prettyPrint(response);
   }
 
   @Test
-  public void testListContactsToken() throws ApiException {
+  public void testListContactsToken() {
     final V1ListContactsResponse response =
         contactService.list(new Pagination().token("nextPageToken"));
     prettyPrint(response);
   }
 
   @Test
-  void testMergeContact() throws ApiException {
+  void testMergeContact() {
     final Contact contact =
         contactService.merge(
             new V1MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
@@ -82,7 +82,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testUpdateContact() throws ApiException {
+  void testUpdateContact() {
     final Contact contact =
         contactService.update(
             contactId, new Contact().displayName("Updated test contact").email("email@emial.com"));

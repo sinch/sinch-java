@@ -25,7 +25,7 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
   private static App app;
 
   @BeforeAll
-  static void beforeAll() throws ApiException {
+  static void beforeAll() {
     final ConversationApiClient conversationApi = Sinch.conversationApi(Region.EU);
     appService = conversationApi.apps();
     webhookService = conversationApi.webhooks();
@@ -33,12 +33,12 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
   }
 
   @AfterAll
-  static void afterAll() throws ApiException {
+  static void afterAll() {
     appService.delete(app.getId());
   }
 
   @Test
-  void testCreateWebhook() throws ApiException {
+  void testCreateWebhook() {
     final Webhook webhook =
         webhookService.create(
             new Webhook()
@@ -60,7 +60,7 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void deleteWebhook() throws ApiException {
+  void deleteWebhook() {
     final Webhook webhook = createWebhook();
     webhookService.delete(webhook.getId());
     final ApiException exception =
@@ -73,20 +73,20 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void getWebhook() throws ApiException {
+  void getWebhook() {
     final Webhook webhook = webhookService.get(createWebhook().getId());
     prettyPrint(webhook);
     webhookService.delete(webhook.getId());
   }
 
   @Test
-  void listWebhooks() throws ApiException {
+  void listWebhooks() {
     final List<Webhook> response = webhookService.list(app.getId());
     prettyPrint(response);
   }
 
   @Test
-  void updateWebhook() throws ApiException {
+  void updateWebhook() {
     final Webhook update_webhook = createWebhook();
     final String expected_target = "https://www.google.com/";
     final Webhook webhook =
@@ -125,7 +125,7 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
   }
 
-  private Webhook createWebhook() throws ApiException {
+  private Webhook createWebhook() {
     return webhookService.create(new Webhook().appId(app.getId()).target(webhookUrl));
   }
 }

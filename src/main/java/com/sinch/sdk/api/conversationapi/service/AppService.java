@@ -33,7 +33,7 @@ public class AppService extends AbstractService {
    * @return {@link App}
    * @throws ApiException if fails to make API call
    */
-  public App create(final App app) throws ApiException {
+  public App create(final App app) {
     try {
       return createAsync(app).join();
     } catch (final CompletionException ex) {
@@ -60,7 +60,7 @@ public class AppService extends AbstractService {
    * @param appId The ID of the app. (required)
    * @throws ApiException if fails to make API call
    */
-  public void delete(final String appId) throws ApiException {
+  public void delete(final String appId) {
     try {
       deleteAsync(appId).join();
     } catch (final CompletionException ex) {
@@ -88,7 +88,7 @@ public class AppService extends AbstractService {
    * @return {@link App}
    * @throws ApiException if fails to make API call
    */
-  public App get(final String appId) throws ApiException {
+  public App get(final String appId) {
     try {
       return getAsync(appId).join();
     } catch (final CompletionException ex) {
@@ -115,7 +115,7 @@ public class AppService extends AbstractService {
    * @return List of {@link App}
    * @throws ApiException if fails to make API call
    */
-  public List<App> list() throws ApiException {
+  public List<App> list() {
     try {
       return listAsync().join();
     } catch (final CompletionException ex) {
@@ -142,7 +142,7 @@ public class AppService extends AbstractService {
    * @return {@link App}
    * @throws ApiException if fails to make API call
    */
-  public App update(final String appId, final App app) throws ApiException {
+  public App update(final String appId, final App app) {
     try {
       return updateAsync(appId, app).join();
     } catch (final CompletionException ex) {
@@ -174,7 +174,7 @@ public class AppService extends AbstractService {
    * @return List of {@link Webhook}
    * @throws ApiException if fails to make API call
    */
-  public List<Webhook> listWebhooks(final String appId) throws ApiException {
+  public List<Webhook> listWebhooks(final String appId) {
     try {
       return listWebhooksAsync(appId).join();
     } catch (final CompletionException ex) {

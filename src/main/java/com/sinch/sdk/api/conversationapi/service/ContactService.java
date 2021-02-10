@@ -35,7 +35,7 @@ public class ContactService extends AbstractService {
    * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public Contact create(final Contact contact) throws ApiException {
+  public Contact create(final Contact contact) {
     try {
       return createAsync(contact).join();
     } catch (final CompletionException ex) {
@@ -62,7 +62,7 @@ public class ContactService extends AbstractService {
    * @param contactId The ID of the contact to be deleted. (required)
    * @throws ApiException if fails to make API call
    */
-  public void delete(final String contactId) throws ApiException {
+  public void delete(final String contactId) {
     try {
       deleteAsync(contactId).join();
     } catch (final CompletionException ex) {
@@ -90,7 +90,7 @@ public class ContactService extends AbstractService {
    * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public Contact get(final String contactId) throws ApiException {
+  public Contact get(final String contactId) {
     try {
       return getAsync(contactId).join();
     } catch (final CompletionException ex) {
@@ -122,7 +122,7 @@ public class ContactService extends AbstractService {
    * @return {@link V1ListContactsResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListContactsResponse list() throws ApiException {
+  public V1ListContactsResponse list() {
     try {
       return listAsync().join();
     } catch (final CompletionException ex) {
@@ -137,7 +137,7 @@ public class ContactService extends AbstractService {
    * @return {@link V1ListContactsResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListContactsResponse list(final Pagination pagination) throws ApiException {
+  public V1ListContactsResponse list(final Pagination pagination) {
     try {
       return listAsync(pagination).join();
     } catch (final CompletionException ex) {
@@ -188,7 +188,7 @@ public class ContactService extends AbstractService {
    * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public Contact merge(final V1MergeContactRequest mergeRequest) throws ApiException {
+  public Contact merge(final V1MergeContactRequest mergeRequest) {
     try {
       return mergeAsync(mergeRequest).join();
     } catch (final CompletionException ex) {
@@ -234,7 +234,7 @@ public class ContactService extends AbstractService {
    * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public Contact update(final String contactId, final Contact contact) throws ApiException {
+  public Contact update(final String contactId, final Contact contact) {
     try {
       return updateAsync(contactId, contact).join();
     } catch (final CompletionException ex) {

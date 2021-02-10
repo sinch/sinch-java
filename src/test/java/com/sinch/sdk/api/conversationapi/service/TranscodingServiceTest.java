@@ -1,7 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.AppMessage;
 import com.sinch.sdk.model.conversationapi.ConversationChannel;
@@ -23,7 +22,7 @@ class TranscodingServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testTranscodeMessage() throws ApiException {
+  void testTranscodeMessage() {
     final Map<String, String> response =
         transcodingService.transcodeMessage(
             new V1TranscodeMessageRequest()

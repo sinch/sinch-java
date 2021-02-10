@@ -47,7 +47,7 @@ public class ConversationService extends AbstractService {
    * @return {@link Conversation}
    * @throws ApiException if fails to make API call
    */
-  public Conversation create(final Conversation conversation) throws ApiException {
+  public Conversation create(final Conversation conversation) {
     try {
       return createAsync(conversation).join();
     } catch (final CompletionException ex) {
@@ -83,7 +83,7 @@ public class ConversationService extends AbstractService {
    * @param conversationId The ID of the conversation to be deleted. (required)
    * @throws ApiException if fails to make API call
    */
-  public void delete(final String conversationId) throws ApiException {
+  public void delete(final String conversationId) {
     try {
       deleteAsync(conversationId).join();
     } catch (final CompletionException ex) {
@@ -113,7 +113,7 @@ public class ConversationService extends AbstractService {
    * @return {@link Conversation}
    * @throws ApiException if fails to make API call
    */
-  public Conversation get(final String conversationId) throws ApiException {
+  public Conversation get(final String conversationId) {
     try {
       return getAsync(conversationId).join();
     } catch (final CompletionException ex) {
@@ -146,7 +146,7 @@ public class ConversationService extends AbstractService {
    * @param conversationMessage Message to be injected. (required)
    * @throws ApiException if fails to make API call
    */
-  public void injectMessage(final ConversationMessage conversationMessage) throws ApiException {
+  public void injectMessage(final ConversationMessage conversationMessage) {
     try {
       injectMessageAsync(conversationMessage).join();
     } catch (final CompletionException ex) {
@@ -187,8 +187,7 @@ public class ConversationService extends AbstractService {
    * @return {@link V1ListConversationsResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListConversationsResponse listConversations(final ListConversationsParams params)
-      throws ApiException {
+  public V1ListConversationsResponse listConversations(final ListConversationsParams params) {
     try {
       return listConversationsAsync(params).join();
     } catch (final CompletionException ex) {
@@ -227,7 +226,7 @@ public class ConversationService extends AbstractService {
    * @return {@link V1ListMessagesResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListMessagesResponse listMessages(final ListMessagesParams params) throws ApiException {
+  public V1ListMessagesResponse listMessages(final ListMessagesParams params) {
     return messageService.list(params);
   }
 
@@ -257,7 +256,7 @@ public class ConversationService extends AbstractService {
    * @param conversationId The ID of the conversation to be stopped. (required)
    * @throws ApiException if fails to make API call
    */
-  public void stopActive(final String conversationId) throws ApiException {
+  public void stopActive(final String conversationId) {
     try {
       stopActiveAsync(conversationId).join();
     } catch (final CompletionException ex) {
@@ -293,8 +292,7 @@ public class ConversationService extends AbstractService {
    * @return {@link Conversation}
    * @throws ApiException if fails to make API call
    */
-  public Conversation update(final String conversationId, final Conversation conversation)
-      throws ApiException {
+  public Conversation update(final String conversationId, final Conversation conversation) {
     try {
       return updateAsync(conversationId, conversation).join();
     } catch (final CompletionException ex) {
