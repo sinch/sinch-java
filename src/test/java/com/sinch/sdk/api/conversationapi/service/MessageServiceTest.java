@@ -25,7 +25,7 @@ class MessageServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testDeleteMessage() throws ApiException {
+  void testDeleteMessage() {
     messageService.delete(messageId);
     final ApiException exception =
         Assertions.assertThrows(ApiException.class, () -> messageService.get(messageId));
@@ -38,20 +38,20 @@ class MessageServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testGetMessage() throws ApiException {
+  void testGetMessage() {
     final ConversationMessage response = messageService.get(messageId);
     prettyPrint(response);
   }
 
   @Test
-  void testListMessages() throws ApiException {
+  void testListMessages() {
     final V1ListMessagesResponse response =
         messageService.list(new ListMessagesParams().contactId(contactId));
     prettyPrint(response);
   }
 
   @Test
-  void testSendAppMessage() throws ApiException {
+  void testSendAppMessage() {
     final V1SendMessageResponse response =
         messageService.send(
             new V1SendMessageRequest()
@@ -63,7 +63,7 @@ class MessageServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testTranscodeMessage() throws ApiException {
+  void testTranscodeMessage() {
     final Map<String, String> response =
         messageService.transcode(
             new V1TranscodeMessageRequest()

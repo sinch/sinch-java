@@ -25,7 +25,7 @@ class EventServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testSendEvent() throws ApiException {
+  void testSendEvent() {
     final V1SendEventResponse response =
         eventService.send(
             new V1SendEventRequest()

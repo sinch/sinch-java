@@ -30,7 +30,7 @@ public class EventService extends AbstractService {
    * @return {@link V1SendEventResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1SendEventResponse send(final V1SendEventRequest sendEventRequest) throws ApiException {
+  public V1SendEventResponse send(final V1SendEventRequest sendEventRequest) {
     try {
       return sendAsync(sendEventRequest).join();
     } catch (final CompletionException ex) {

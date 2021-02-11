@@ -36,8 +36,7 @@ public class CapabilityService extends AbstractService {
    * @return {@link V1QueryCapabilityResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1QueryCapabilityResponse query(final V1QueryCapabilityRequest capabilityRequest)
-      throws ApiException {
+  public V1QueryCapabilityResponse query(final V1QueryCapabilityRequest capabilityRequest) {
     try {
       return queryAsync(capabilityRequest).join();
     } catch (final CompletionException ex) {

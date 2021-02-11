@@ -43,7 +43,7 @@ public class OptInService extends AbstractService {
    * @return {@link V1OptInResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1OptInResponse optIn(final OptIn optIn, final String requestId) throws ApiException {
+  public V1OptInResponse optIn(final OptIn optIn, final String requestId) {
     try {
       return optInAsync(optIn, requestId).join();
     } catch (final CompletionException ex) {
@@ -92,7 +92,7 @@ public class OptInService extends AbstractService {
    * @return {@link V1OptOutResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1OptOutResponse optOut(final OptOut optOut, final String requestId) throws ApiException {
+  public V1OptOutResponse optOut(final OptOut optOut, final String requestId) {
     try {
       return optOutAsync(optOut, requestId).join();
     } catch (final CompletionException ex) {

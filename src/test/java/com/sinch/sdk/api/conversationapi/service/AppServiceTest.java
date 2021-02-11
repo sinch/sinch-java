@@ -20,7 +20,7 @@ class AppServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testCreateApp() throws ApiException {
+  void testCreateApp() {
     final String displayName = "SDK test";
     final App app =
         appService.create(
@@ -43,7 +43,7 @@ class AppServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testDeleteApp() throws ApiException {
+  void testDeleteApp() {
     final App app = createApp("To be deleted");
     appService.delete(app.getId());
     final ApiException exception =
@@ -56,7 +56,7 @@ class AppServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testGetApp() throws ApiException {
+  void testGetApp() {
     final App createdApp = createApp("Get app");
     final App app = appService.get(createdApp.getId());
     prettyPrint(app);
@@ -64,13 +64,13 @@ class AppServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testListApps() throws ApiException {
+  void testListApps() {
     final List<App> apps = appService.list();
     prettyPrint(apps);
   }
 
   @Test
-  void testUpdateApp() throws ApiException {
+  void testUpdateApp() {
     final App update_app = createApp("Update app");
     final String displayName = "Has been updated app";
     final App app = appService.update(update_app.getId(), new App().displayName(displayName));
@@ -95,7 +95,7 @@ class AppServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
   }
 
-  private App createApp(final String displayName) throws ApiException {
+  private App createApp(final String displayName) {
     return appService.create(new App().displayName(displayName));
   }
 }

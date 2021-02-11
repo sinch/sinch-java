@@ -32,7 +32,7 @@ public class TranscodingService extends AbstractService {
    * @throws ApiException if fails to make API call
    */
   public Map<String, String> transcodeMessage(
-      final V1TranscodeMessageRequest transcodeMessageRequest) throws ApiException {
+      final V1TranscodeMessageRequest transcodeMessageRequest) {
     return messageService.transcode(transcodeMessageRequest);
   }
 

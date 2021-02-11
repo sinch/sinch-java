@@ -23,7 +23,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testCreateConversation() throws ApiException {
+  void testCreateConversation() {
     final Conversation response =
         conversationService.create(
             new Conversation()
@@ -35,7 +35,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testDeleteConversation() throws ApiException {
+  void testDeleteConversation() {
     conversationService.delete(conversationId);
     final ApiException exception =
         Assertions.assertThrows(ApiException.class, () -> conversationService.get(conversationId));
@@ -48,13 +48,13 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testGetConversation() throws ApiException {
+  void testGetConversation() {
     final Conversation conversation = conversationService.get(conversationId);
     prettyPrint(conversation);
   }
 
   @Test
-  void testInjectMessage() throws ApiException {
+  void testInjectMessage() {
     conversationService.injectMessage(
         new ConversationMessage()
             .contactId(contactId)
@@ -65,7 +65,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testListConversations() throws ApiException {
+  void testListConversations() {
     final V1ListConversationsResponse response =
         conversationService.listConversations(
             new ListConversationsParams().onlyActive(true).appId(appId).size(1));
@@ -73,21 +73,21 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testListMessages() throws ApiException {
+  void testListMessages() {
     final V1ListMessagesResponse response =
         conversationService.listMessages(new ListMessagesParams().conversationId(conversationId));
     prettyPrint(response);
   }
 
   @Test
-  void testUpdateConversation() throws ApiException {
+  void testUpdateConversation() {
     final Conversation conversation =
         conversationService.update(conversationId, new Conversation().metadata("some meta data"));
     prettyPrint(conversation);
   }
 
   @Test
-  void testStopActiveConversation() throws ApiException {
+  void testStopActiveConversation() {
     conversationService.stopActive(conversationId);
     final Conversation conversation = conversationService.get(conversationId);
     prettyPrint(conversation);

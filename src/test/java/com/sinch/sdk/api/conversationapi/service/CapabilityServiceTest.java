@@ -20,7 +20,7 @@ class CapabilityServiceTest extends BaseConvIntegrationTest {
   }
 
   @Test
-  void testQueryCapability() throws ApiException {
+  void testQueryCapability() {
     final V1QueryCapabilityResponse response =
         capabilityService.query(
             new V1QueryCapabilityRequest()
