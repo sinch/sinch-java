@@ -1,5 +1,6 @@
 package com.sinch.sdk.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sinch.sdk.api.conversationapi.ConversationApiClient;
@@ -17,8 +18,8 @@ public class BaseTest {
   }
 
   @SneakyThrows
-  protected <T> T getResource(final String filePath, final Class<T> clazz) {
-    return OM.readValue(getResource(filePath), clazz);
+  protected <T> T getResource(final String filePath, final TypeReference<T> typeReference) {
+    return OM.readValue(getResource(filePath), typeReference);
   }
 
   protected InputStream getResource(final String filePath) {
