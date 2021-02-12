@@ -2,8 +2,8 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.V1SendEventRequest;
-import com.sinch.sdk.model.conversationapi.V1SendEventResponse;
+import com.sinch.sdk.model.conversationapi.SendEventRequest;
+import com.sinch.sdk.model.conversationapi.SendEventResponse;
 import com.sinch.sdk.utils.ExceptionUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -27,10 +27,10 @@ public class EventService extends AbstractService {
    * queued.
    *
    * @param sendEventRequest (required)
-   * @return {@link V1SendEventResponse}
+   * @return {@link SendEventResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1SendEventResponse send(final V1SendEventRequest sendEventRequest) {
+  public SendEventResponse send(final SendEventRequest sendEventRequest) {
     try {
       return sendAsync(sendEventRequest).join();
     } catch (final CompletionException ex) {
@@ -46,14 +46,13 @@ public class EventService extends AbstractService {
    * queued.
    *
    * @param sendEventRequest (required)
-   * @return Async task generating a {@link V1SendEventResponse}
+   * @return Async task generating a {@link SendEventResponse}
    */
-  public CompletableFuture<V1SendEventResponse> sendAsync(
-      final V1SendEventRequest sendEventRequest) {
+  public CompletableFuture<SendEventResponse> sendAsync(final SendEventRequest sendEventRequest) {
     if (sendEventRequest == null) {
       return ExceptionUtils.missingParam("sendEventRequest");
     }
     return restClient.post(
-        serviceURI, V1SendEventResponse.class, sendEventRequest.projectId(projectId));
+        serviceURI, SendEventResponse.class, sendEventRequest.projectId(projectId));
   }
 }

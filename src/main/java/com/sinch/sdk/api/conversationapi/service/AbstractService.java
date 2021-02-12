@@ -6,6 +6,8 @@ import java.net.URI;
 
 public abstract class AbstractService {
 
+  private static final String API_VERSION = "v1";
+
   protected static final String PARAMS = "params";
   protected static final String SUB_APP_ID = ".appId";
   protected static final String SUB_CHANNELS = ".channels";
@@ -21,8 +23,7 @@ public abstract class AbstractService {
     this.projectId = config.getProjectId();
     this.restClient = config.getRestClient();
     serviceUrl =
-        String.format(
-            TEMPLATE_URL, config.getBaseUrl(), config.getVersion(), projectId, getServiceName());
+        String.format(TEMPLATE_URL, config.getBaseUrl(), API_VERSION, projectId, getServiceName());
     serviceURI = URI.create(serviceUrl);
   }
 

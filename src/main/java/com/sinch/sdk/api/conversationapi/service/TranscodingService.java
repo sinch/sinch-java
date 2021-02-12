@@ -2,8 +2,8 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.V1TranscodeMessageRequest;
-import com.sinch.sdk.model.conversationapi.V1TranscodeMessageResponse;
+import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
+import com.sinch.sdk.model.conversationapi.TranscodeMessageResponse;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,11 +28,11 @@ public class TranscodingService extends AbstractService {
    * the requested channels. No message is sent to the contact.
    *
    * @param transcodeMessageRequest (required)
-   * @return {@link V1TranscodeMessageResponse}
+   * @return {@link TranscodeMessageResponse}
    * @throws ApiException if fails to make API call
    */
   public Map<String, String> transcodeMessage(
-      final V1TranscodeMessageRequest transcodeMessageRequest) {
+      final TranscodeMessageRequest transcodeMessageRequest) {
     return messageService.transcode(transcodeMessageRequest);
   }
 
@@ -43,10 +43,10 @@ public class TranscodingService extends AbstractService {
    * the requested channels. No message is sent to the contact.
    *
    * @param transcodeMessageRequest (required)
-   * @return Async call generating a {@link V1TranscodeMessageResponse}
+   * @return Async call generating a {@link TranscodeMessageResponse}
    */
   public CompletableFuture<Map<String, String>> transcodeMessageAsync(
-      final V1TranscodeMessageRequest transcodeMessageRequest) {
+      final TranscodeMessageRequest transcodeMessageRequest) {
     return messageService.transcodeAsync(transcodeMessageRequest);
   }
 }

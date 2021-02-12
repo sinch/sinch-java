@@ -3,9 +3,9 @@ package com.sinch.sdk.api.conversationapi.service;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.OptIn;
+import com.sinch.sdk.model.conversationapi.OptInResponse;
 import com.sinch.sdk.model.conversationapi.OptOut;
-import com.sinch.sdk.model.conversationapi.V1OptInResponse;
-import com.sinch.sdk.model.conversationapi.V1OptOutResponse;
+import com.sinch.sdk.model.conversationapi.OptOutResponse;
 import com.sinch.sdk.utils.ExceptionUtils;
 import com.sinch.sdk.utils.QueryStringBuilder;
 import com.sinch.sdk.utils.StringUtils;
@@ -40,10 +40,10 @@ public class OptInService extends AbstractService {
    *
    * @param optIn (required)
    * @param requestId ID for the asynchronous request, will be generated if not set. (optional)
-   * @return {@link V1OptInResponse}
+   * @return {@link OptInResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1OptInResponse optIn(final OptIn optIn, final String requestId) {
+  public OptInResponse optIn(final OptIn optIn, final String requestId) {
     try {
       return optInAsync(optIn, requestId).join();
     } catch (final CompletionException ex) {
@@ -60,9 +60,9 @@ public class OptInService extends AbstractService {
    *
    * @param optIn (required)
    * @param requestId ID for the asynchronous request, will be generated if not set. (optional)
-   * @return Async task generating a {@link V1OptInResponse}
+   * @return Async task generating a {@link OptInResponse}
    */
-  public CompletableFuture<V1OptInResponse> optInAsync(final OptIn optIn, final String requestId) {
+  public CompletableFuture<OptInResponse> optInAsync(final OptIn optIn, final String requestId) {
     if (optIn == null) {
       return ExceptionUtils.missingParam(PARAM_OPT_IN);
     }
@@ -74,10 +74,10 @@ public class OptInService extends AbstractService {
     }
     final String queryString =
         QueryStringBuilder.newInstance()
-            .add(V1OptInResponse.JSON_PROPERTY_REQUEST_ID, requestId)
+            .add(OptInResponse.JSON_PROPERTY_REQUEST_ID, requestId)
             .build();
     return restClient.post(
-        withQuery("optins:register".concat(queryString)), V1OptInResponse.class, optIn);
+        withQuery("optins:register".concat(queryString)), OptInResponse.class, optIn);
   }
 
   /**
@@ -89,10 +89,10 @@ public class OptInService extends AbstractService {
    *
    * @param optOut (required)
    * @param requestId ID for the asynchronous request, will be generated if not set. (optional)
-   * @return {@link V1OptOutResponse}
+   * @return {@link OptOutResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1OptOutResponse optOut(final OptOut optOut, final String requestId) {
+  public OptOutResponse optOut(final OptOut optOut, final String requestId) {
     try {
       return optOutAsync(optOut, requestId).join();
     } catch (final CompletionException ex) {
@@ -109,9 +109,9 @@ public class OptInService extends AbstractService {
    *
    * @param optOut (required)
    * @param requestId ID for the asynchronous request, will be generated if not set. (optional)
-   * @return Async task generating a {@link V1OptOutResponse}
+   * @return Async task generating a {@link OptOutResponse}
    */
-  public CompletableFuture<V1OptOutResponse> optOutAsync(
+  public CompletableFuture<OptOutResponse> optOutAsync(
       final OptOut optOut, final String requestId) {
     if (optOut == null) {
       return ExceptionUtils.missingParam(PARAM_OPT_OUT);
@@ -124,9 +124,9 @@ public class OptInService extends AbstractService {
     }
     final String queryString =
         QueryStringBuilder.newInstance()
-            .add(V1OptOutResponse.JSON_PROPERTY_REQUEST_ID, requestId)
+            .add(OptOutResponse.JSON_PROPERTY_REQUEST_ID, requestId)
             .build();
     return restClient.post(
-        withQuery("optouts:register".concat(queryString)), V1OptOutResponse.class, optOut);
+        withQuery("optouts:register".concat(queryString)), OptOutResponse.class, optOut);
   }
 }

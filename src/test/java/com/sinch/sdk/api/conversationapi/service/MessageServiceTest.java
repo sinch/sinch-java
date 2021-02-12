@@ -45,16 +45,16 @@ class MessageServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testListMessages() {
-    final V1ListMessagesResponse response =
+    final ListMessagesResponse response =
         messageService.list(new ListMessagesParams().contactId(contactId));
     prettyPrint(response);
   }
 
   @Test
   void testSendAppMessage() {
-    final V1SendMessageResponse response =
+    final SendMessageResponse response =
         messageService.send(
-            new V1SendMessageRequest()
+            new SendMessageRequest()
                 .appId(appId)
                 .message(new AppMessage().textMessage(new TextMessage().text("SDK text message")))
                 .recipient(new Recipient().contactId(contactId))
@@ -66,7 +66,7 @@ class MessageServiceTest extends BaseConvIntegrationTest {
   void testTranscodeMessage() {
     final Map<String, String> response =
         messageService.transcode(
-            new V1TranscodeMessageRequest()
+            new TranscodeMessageRequest()
                 .appMessage(
                     new AppMessage().textMessage(new TextMessage().text("SDK text message")))
                 .addChannelsItem(ConversationChannel.VIBER)
@@ -90,19 +90,19 @@ class MessageServiceTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> messageService.send(new V1SendMessageRequest()));
+            ApiException.class, () -> messageService.send(new SendMessageRequest()));
     assertClientSideException(exception);
     exception = Assertions.assertThrows(ApiException.class, () -> messageService.transcode(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> messageService.transcode(new V1TranscodeMessageRequest().appId(appId)));
+            () -> messageService.transcode(new TranscodeMessageRequest().appId(appId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> messageService.transcode(new V1TranscodeMessageRequest().channels(List.of())));
+            () -> messageService.transcode(new TranscodeMessageRequest().channels(List.of())));
     assertClientSideException(exception);
   }
 }

@@ -17,7 +17,7 @@ public class ListMessagesParams extends Pagination implements Validated {
 
   protected String conversationId;
   protected String contactId;
-  protected V1ConversationMessagesView view;
+  protected ConversationMessagesView view;
 
   /**
    * Set the conversation id
@@ -51,7 +51,7 @@ public class ListMessagesParams extends Pagination implements Validated {
    * @param view (optional, default to WITH_METADATA)
    * @return {@link ListMessagesParams}
    */
-  public ListMessagesParams view(final V1ConversationMessagesView view) {
+  public ListMessagesParams view(final ConversationMessagesView view) {
     this.view = view;
     return this;
   }

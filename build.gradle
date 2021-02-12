@@ -93,8 +93,8 @@ task getConversationApiSwagger(type: AntDownload) {
 tasks.openApiGenerate.dependsOn getConversationApiSwagger
 
 task renameConvApiSwaggerModels(type: Exec) {
-    description "Removes the folder prefix from the swagger generated models."
-    commandLine "./remove_model_prefix.sh", "Type", "conversationapi"
+    description "Removes the prefixes from the swagger generated models."
+    commandLine "./remove_model_prefix.sh", "conversationapi", "Type", "V1"
 }
 tasks.openApiGenerate.finalizedBy renameConvApiSwaggerModels
 
