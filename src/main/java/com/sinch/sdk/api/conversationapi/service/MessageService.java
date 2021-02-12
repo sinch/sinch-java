@@ -99,10 +99,10 @@ public class MessageService extends AbstractService {
    * recently will be listed first.
    *
    * @param params Object holding the parameters (required)
-   * @return {@link V1ListMessagesResponse}
+   * @return {@link ListMessagesResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListMessagesResponse list(final ListMessagesParams params) {
+  public ListMessagesResponse list(final ListMessagesParams params) {
     try {
       return listAsync(params).join();
     } catch (final CompletionException ex) {
@@ -119,9 +119,9 @@ public class MessageService extends AbstractService {
    * recently will be listed first.
    *
    * @param params Object holding the parameters (required)
-   * @return Async task generating {@link V1ListMessagesResponse}
+   * @return Async task generating {@link ListMessagesResponse}
    */
-  public CompletableFuture<V1ListMessagesResponse> listAsync(final ListMessagesParams params) {
+  public CompletableFuture<ListMessagesResponse> listAsync(final ListMessagesParams params) {
     if (params == null) {
       return ExceptionUtils.missingParam(PARAMS);
     }
@@ -129,7 +129,7 @@ public class MessageService extends AbstractService {
       return ExceptionUtils.missingOneOf(
           ConversationService.PARAM_CONVERSATION_ID, ContactService.PARAM_CONTACT_ID);
     }
-    return restClient.get(withQuery(params.build()), V1ListMessagesResponse.class);
+    return restClient.get(withQuery(params.build()), ListMessagesResponse.class);
   }
 
   /**
@@ -141,10 +141,10 @@ public class MessageService extends AbstractService {
    * conversation exists. If no active conversation exists a new one is started automatically.
    *
    * @param sendMessageRequest (required)
-   * @return {@link V1SendMessageResponse}
+   * @return {@link SendMessageResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1SendMessageResponse send(final V1SendMessageRequest sendMessageRequest) {
+  public SendMessageResponse send(final SendMessageRequest sendMessageRequest) {
     try {
       return sendAsync(sendMessageRequest).join();
     } catch (final CompletionException ex) {
@@ -161,10 +161,10 @@ public class MessageService extends AbstractService {
    * conversation exists. If no active conversation exists a new one is started automatically.
    *
    * @param sendMessageRequest (required)
-   * @return Async task generating a {@link V1SendMessageResponse}
+   * @return Async task generating a {@link SendMessageResponse}
    */
-  public CompletableFuture<V1SendMessageResponse> sendAsync(
-      final V1SendMessageRequest sendMessageRequest) {
+  public CompletableFuture<SendMessageResponse> sendAsync(
+      final SendMessageRequest sendMessageRequest) {
     if (sendMessageRequest == null) {
       return ExceptionUtils.missingParam(PARAM_SEND);
     }
@@ -172,7 +172,7 @@ public class MessageService extends AbstractService {
       return ExceptionUtils.missingParam(PARAM_SEND_APP_ID);
     }
     return restClient.post(
-        withQuery(":send"), V1SendMessageResponse.class, sendMessageRequest.projectId(projectId));
+        withQuery(":send"), SendMessageResponse.class, sendMessageRequest.projectId(projectId));
   }
 
   /**
@@ -182,10 +182,10 @@ public class MessageService extends AbstractService {
    * the requested channels. No message is sent to the contact.
    *
    * @param transcodeMessageRequest (required)
-   * @return {@link V1TranscodeMessageResponse}
+   * @return {@link TranscodeMessageResponse}
    * @throws ApiException if fails to make API call
    */
-  public Map<String, String> transcode(final V1TranscodeMessageRequest transcodeMessageRequest) {
+  public Map<String, String> transcode(final TranscodeMessageRequest transcodeMessageRequest) {
     try {
       return transcodeAsync(transcodeMessageRequest).join();
     } catch (final CompletionException ex) {
@@ -200,10 +200,10 @@ public class MessageService extends AbstractService {
    * the requested channels. No message is sent to the contact.
    *
    * @param transcodeMessageRequest (required)
-   * @return Async call generating a {@link V1TranscodeMessageResponse}
+   * @return Async call generating a {@link TranscodeMessageResponse}
    */
   public CompletableFuture<Map<String, String>> transcodeAsync(
-      final V1TranscodeMessageRequest transcodeMessageRequest) {
+      final TranscodeMessageRequest transcodeMessageRequest) {
     if (transcodeMessageRequest == null) {
       return ExceptionUtils.missingParam(PARAM_TRANSCODE);
     }
@@ -216,8 +216,8 @@ public class MessageService extends AbstractService {
     return restClient
         .post(
             withQuery(":transcode"),
-            V1TranscodeMessageResponse.class,
+            TranscodeMessageResponse.class,
             transcodeMessageRequest.projectId(projectId))
-        .thenApply(V1TranscodeMessageResponse::getTranscodedMessage);
+        .thenApply(TranscodeMessageResponse::getTranscodedMessage);
   }
 }

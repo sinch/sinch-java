@@ -23,7 +23,7 @@ class OptInServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testRegisterOptIn() {
-    final V1OptInResponse response =
+    final OptInResponse response =
         optInService.optIn(
             new OptIn()
                 .appId(appId)
@@ -35,7 +35,7 @@ class OptInServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testRegisterOptOut() {
-    final V1OptOutResponse response =
+    final OptOutResponse response =
         optInService.optOut(
             new OptOut()
                 .appId(appId)

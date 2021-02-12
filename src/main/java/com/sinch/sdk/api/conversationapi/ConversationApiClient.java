@@ -12,12 +12,11 @@ import com.sinch.sdk.api.conversationapi.service.*;
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.model.common.Region;
 import java.net.http.HttpClient;
-import lombok.NonNull;
 
 public class ConversationApiClient {
 
   private final Region region;
-  private ConversationApiConfig config;
+  private final ConversationApiConfig config;
 
   public ConversationApiClient(final Region region, final Sinch.Config sinchConfig) {
     this(region, createConfig(region, sinchConfig));
@@ -48,11 +47,6 @@ public class ConversationApiClient {
 
   public Region region() {
     return region;
-  }
-
-  public ConversationApiClient withVersion(@NonNull final String version) {
-    config = config.toBuilder().version(version).build();
-    return this;
   }
 
   public AppService apps() {

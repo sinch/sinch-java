@@ -3,9 +3,9 @@ package com.sinch.sdk.api.conversationapi.service;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.Contact;
+import com.sinch.sdk.model.conversationapi.ListContactsResponse;
+import com.sinch.sdk.model.conversationapi.MergeContactRequest;
 import com.sinch.sdk.model.conversationapi.Pagination;
-import com.sinch.sdk.model.conversationapi.V1ListContactsResponse;
-import com.sinch.sdk.model.conversationapi.V1MergeContactRequest;
 import com.sinch.sdk.utils.ExceptionUtils;
 import com.sinch.sdk.utils.StringUtils;
 import java.util.concurrent.CompletableFuture;
@@ -119,10 +119,10 @@ public class ContactService extends AbstractService {
    * <p>If a nextPageToken is returned use it as the 'token' in {@link
    * ContactService#list(Pagination)}
    *
-   * @return {@link V1ListContactsResponse}
+   * @return {@link ListContactsResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListContactsResponse list() {
+  public ListContactsResponse list() {
     try {
       return listAsync().join();
     } catch (final CompletionException ex) {
@@ -134,10 +134,10 @@ public class ContactService extends AbstractService {
    * Get contacts (blocking)
    *
    * @param pagination Object specifying the pageSize and pageToken for the list call
-   * @return {@link V1ListContactsResponse}
+   * @return {@link ListContactsResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListContactsResponse list(final Pagination pagination) {
+  public ListContactsResponse list(final Pagination pagination) {
     try {
       return listAsync(pagination).join();
     } catch (final CompletionException ex) {
@@ -153,23 +153,23 @@ public class ContactService extends AbstractService {
    * <p>If a nextPageToken is returned use it as the 'token' in {@link
    * ContactService#list(Pagination)}
    *
-   * @return Async task generating a {@link V1ListContactsResponse}
+   * @return Async task generating a {@link ListContactsResponse}
    */
-  public CompletableFuture<V1ListContactsResponse> listAsync() {
-    return restClient.get(serviceURI, V1ListContactsResponse.class);
+  public CompletableFuture<ListContactsResponse> listAsync() {
+    return restClient.get(serviceURI, ListContactsResponse.class);
   }
 
   /**
    * Get contacts
    *
    * @param pagination Object specifying the pageSize and pageToken for the list call
-   * @return Async task generating a {@link V1ListContactsResponse}
+   * @return Async task generating a {@link ListContactsResponse}
    */
-  public CompletableFuture<V1ListContactsResponse> listAsync(final Pagination pagination) {
+  public CompletableFuture<ListContactsResponse> listAsync(final Pagination pagination) {
     if (pagination == null) {
       return ExceptionUtils.missingParam("pagination");
     }
-    return restClient.get(withQuery(pagination.build()), V1ListContactsResponse.class);
+    return restClient.get(withQuery(pagination.build()), ListContactsResponse.class);
   }
 
   /**
@@ -188,7 +188,7 @@ public class ContactService extends AbstractService {
    * @return {@link Contact}
    * @throws ApiException if fails to make API call
    */
-  public Contact merge(final V1MergeContactRequest mergeRequest) {
+  public Contact merge(final MergeContactRequest mergeRequest) {
     try {
       return mergeAsync(mergeRequest).join();
     } catch (final CompletionException ex) {
@@ -211,7 +211,7 @@ public class ContactService extends AbstractService {
    * @param mergeRequest (required)
    * @return Async task generating a {@link Contact}
    */
-  public CompletableFuture<Contact> mergeAsync(final V1MergeContactRequest mergeRequest) {
+  public CompletableFuture<Contact> mergeAsync(final MergeContactRequest mergeRequest) {
     if (mergeRequest == null) {
       return ExceptionUtils.missingParam(PARAM_MERGE);
     }

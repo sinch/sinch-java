@@ -56,19 +56,19 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testListContacts() {
-    final V1ListContactsResponse response = contactService.list();
+    final ListContactsResponse response = contactService.list();
     prettyPrint(response);
   }
 
   @Test
   public void testListContactsSize() {
-    final V1ListContactsResponse response = contactService.list(new Pagination().size(1));
+    final ListContactsResponse response = contactService.list(new Pagination().size(1));
     prettyPrint(response);
   }
 
   @Test
   public void testListContactsToken() {
-    final V1ListContactsResponse response =
+    final ListContactsResponse response =
         contactService.list(new Pagination().token("nextPageToken"));
     prettyPrint(response);
   }
@@ -77,7 +77,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   void testMergeContact() {
     final Contact contact =
         contactService.merge(
-            new V1MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
+            new MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
     prettyPrint(contact);
   }
 
@@ -105,12 +105,12 @@ class ContactServiceTest extends BaseConvIntegrationTest {
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> contactService.merge(new V1MergeContactRequest().sourceId(contactId)));
+            () -> contactService.merge(new MergeContactRequest().sourceId(contactId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> contactService.merge(new V1MergeContactRequest().destinationId(contactId)));
+            () -> contactService.merge(new MergeContactRequest().destinationId(contactId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(

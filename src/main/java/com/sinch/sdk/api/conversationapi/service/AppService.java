@@ -3,8 +3,8 @@ package com.sinch.sdk.api.conversationapi.service;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.App;
-import com.sinch.sdk.model.conversationapi.V1ListAppsResponse;
-import com.sinch.sdk.model.conversationapi.V1ListWebhooksResponse;
+import com.sinch.sdk.model.conversationapi.ListAppsResponse;
+import com.sinch.sdk.model.conversationapi.ListWebhooksResponse;
 import com.sinch.sdk.model.conversationapi.Webhook;
 import com.sinch.sdk.utils.ExceptionUtils;
 import com.sinch.sdk.utils.StringUtils;
@@ -129,9 +129,7 @@ public class AppService extends AbstractService {
    * @return Async task generating a list of {@link App}
    */
   public CompletableFuture<List<App>> listAsync() {
-    return restClient
-        .get(serviceURI, V1ListAppsResponse.class)
-        .thenApply(V1ListAppsResponse::getApps);
+    return restClient.get(serviceURI, ListAppsResponse.class).thenApply(ListAppsResponse::getApps);
   }
 
   /**
@@ -193,7 +191,7 @@ public class AppService extends AbstractService {
       return ExceptionUtils.missingParam(PARAM_APP_ID);
     }
     return restClient
-        .get(withPath(appId.concat("/webhooks")), V1ListWebhooksResponse.class)
-        .thenApply(V1ListWebhooksResponse::getWebhooks);
+        .get(withPath(appId.concat("/webhooks")), ListWebhooksResponse.class)
+        .thenApply(ListWebhooksResponse::getWebhooks);
   }
 }

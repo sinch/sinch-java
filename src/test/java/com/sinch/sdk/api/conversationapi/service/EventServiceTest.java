@@ -5,8 +5,8 @@ import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.AppEvent;
 import com.sinch.sdk.model.conversationapi.Recipient;
-import com.sinch.sdk.model.conversationapi.V1SendEventRequest;
-import com.sinch.sdk.model.conversationapi.V1SendEventResponse;
+import com.sinch.sdk.model.conversationapi.SendEventRequest;
+import com.sinch.sdk.model.conversationapi.SendEventResponse;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,9 +26,9 @@ class EventServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testSendEvent() {
-    final V1SendEventResponse response =
+    final SendEventResponse response =
         eventService.send(
-            new V1SendEventRequest()
+            new SendEventRequest()
                 .appId(appId)
                 .event(new AppEvent().composingEvent(Map.of("a", "b")))
                 .recipient(new Recipient().contactId(contactId)));

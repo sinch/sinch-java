@@ -66,7 +66,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testListConversations() {
-    final V1ListConversationsResponse response =
+    final ListConversationsResponse response =
         conversationService.listConversations(
             new ListConversationsParams().onlyActive(true).appId(appId).size(1));
     prettyPrint(response);
@@ -74,7 +74,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testListMessages() {
-    final V1ListMessagesResponse response =
+    final ListMessagesResponse response =
         conversationService.listMessages(new ListMessagesParams().conversationId(conversationId));
     prettyPrint(response);
   }

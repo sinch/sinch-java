@@ -184,10 +184,10 @@ public class ConversationService extends AbstractService {
    * <p>This operation lists all conversations that are associated with an app and/or a contact.
    *
    * @param params Object holding the parameters (required)
-   * @return {@link V1ListConversationsResponse}
+   * @return {@link ListConversationsResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListConversationsResponse listConversations(final ListConversationsParams params) {
+  public ListConversationsResponse listConversations(final ListConversationsParams params) {
     try {
       return listConversationsAsync(params).join();
     } catch (final CompletionException ex) {
@@ -201,9 +201,9 @@ public class ConversationService extends AbstractService {
    * <p>This operation lists all conversations that are associated with an app and/or a contact.
    *
    * @param params Object holding the parameters (required)
-   * @return Async task generating {@link V1ListConversationsResponse}
+   * @return Async task generating {@link ListConversationsResponse}
    */
-  public CompletableFuture<V1ListConversationsResponse> listConversationsAsync(
+  public CompletableFuture<ListConversationsResponse> listConversationsAsync(
       final ListConversationsParams params) {
     if (params == null) {
       return ExceptionUtils.missingParam(PARAMS);
@@ -211,7 +211,7 @@ public class ConversationService extends AbstractService {
     if (!params.isValid()) {
       return ExceptionUtils.missingOneOf(AppService.PARAM_APP_ID, PARAM_CONTACT_ID);
     }
-    return restClient.get(withQuery(params.build()), V1ListConversationsResponse.class);
+    return restClient.get(withQuery(params.build()), ListConversationsResponse.class);
   }
 
   /**
@@ -223,10 +223,10 @@ public class ConversationService extends AbstractService {
    * recently will be listed first.
    *
    * @param params Object holding the parameters (required)
-   * @return {@link V1ListMessagesResponse}
+   * @return {@link ListMessagesResponse}
    * @throws ApiException if fails to make API call
    */
-  public V1ListMessagesResponse listMessages(final ListMessagesParams params) {
+  public ListMessagesResponse listMessages(final ListMessagesParams params) {
     return messageService.list(params);
   }
 
@@ -239,9 +239,9 @@ public class ConversationService extends AbstractService {
    * recently will be listed first.
    *
    * @param params Object holding the parameters (required)
-   * @return Async task generating {@link V1ListMessagesResponse}
+   * @return Async task generating {@link ListMessagesResponse}
    */
-  public CompletableFuture<V1ListMessagesResponse> listMessagesAsync(
+  public CompletableFuture<ListMessagesResponse> listMessagesAsync(
       final ListMessagesParams params) {
     return messageService.listAsync(params);
   }
