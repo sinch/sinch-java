@@ -43,6 +43,7 @@ public class CallbackValidator {
    * <p>Default duration is 2min
    *
    * @param duration The duration
+   * @return {@link CallbackValidator} this
    */
   public CallbackValidator durationWindow(@NonNull final Duration duration) {
     this.duration = duration;
@@ -59,6 +60,7 @@ public class CallbackValidator {
    *
    * @param nonceValidator Predicate receiving the header value and returning whether it is
    *     considered valid
+   * @return {@link CallbackValidator} this
    */
   public CallbackValidator nonceValidator(@NonNull final Predicate<String> nonceValidator) {
     this.nonceValidator = nonceValidator;
@@ -72,6 +74,7 @@ public class CallbackValidator {
    *
    * @param oauthValidator Predicate receiving the header value and returning whether it is
    *     considered valid
+   * @return {@link CallbackValidator} this
    */
   public CallbackValidator oauth2Validator(@NonNull final Predicate<String> oauthValidator) {
     this.oauthValidator = oauthValidator;
