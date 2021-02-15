@@ -9,21 +9,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ContactServiceTest extends BaseConvIntegrationTest {
+class ContactsTest extends BaseConvIntegrationTest {
 
   private static final String contactId = "your-contact-id";
 
-  private static ContactService contactService;
+  private static Contacts contacts;
 
   @BeforeAll
   static void beforeAll() {
-    contactService = Sinch.conversationApi(Region.EU).contacts();
+    contacts = Sinch.conversationApi(Region.EU).contacts();
   }
 
   @Test
   void testCreateContact() {
     final Contact contact =
-        contactService.create(
+        contacts.create(
             new Contact()
                 .displayName("SDK test contact")
                 .addChannelIdentitiesItem(
@@ -37,9 +37,9 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testDeleteContact() {
-    contactService.delete(contactId);
+    contacts.delete(contactId);
     final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> contactService.get(contactId));
+        Assertions.assertThrows(ApiException.class, () -> contacts.get(contactId));
     Assertions.assertEquals(404, exception.getCode());
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
@@ -50,33 +50,32 @@ class ContactServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testGetContact() {
-    final Contact contact = contactService.get(contactId);
+    final Contact contact = contacts.get(contactId);
     prettyPrint(contact);
   }
 
   @Test
   void testListContacts() {
-    final ListContactsResponse response = contactService.list();
+    final ListContactsResponse response = contacts.list();
     prettyPrint(response);
   }
 
   @Test
   public void testListContactsSize() {
-    final ListContactsResponse response = contactService.list(new Pagination().size(1));
+    final ListContactsResponse response = contacts.list(new Pagination().size(1));
     prettyPrint(response);
   }
 
   @Test
   public void testListContactsToken() {
-    final ListContactsResponse response =
-        contactService.list(new Pagination().token("nextPageToken"));
+    final ListContactsResponse response = contacts.list(new Pagination().token("nextPageToken"));
     prettyPrint(response);
   }
 
   @Test
   void testMergeContact() {
     final Contact contact =
-        contactService.merge(
+        contacts.merge(
             new MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
     prettyPrint(contact);
   }
@@ -84,7 +83,7 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   @Test
   void testUpdateContact() {
     final Contact contact =
-        contactService.update(
+        contacts.update(
             contactId, new Contact().displayName("Updated test contact").email("email@emial.com"));
     prettyPrint(contact);
   }
@@ -92,32 +91,30 @@ class ContactServiceTest extends BaseConvIntegrationTest {
   @Test
   void testMissingParamsThrows() {
     ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> contactService.create(null));
+        Assertions.assertThrows(ApiException.class, () -> contacts.create(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contactService.delete(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> contacts.delete(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contactService.get(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> contacts.get(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contactService.list(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> contacts.list(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contactService.merge(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class,
-            () -> contactService.merge(new MergeContactRequest().sourceId(contactId)));
+    exception = Assertions.assertThrows(ApiException.class, () -> contacts.merge(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> contactService.merge(new MergeContactRequest().destinationId(contactId)));
+            () -> contacts.merge(new MergeContactRequest().sourceId(contactId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> contactService.update(null, new Contact()));
+            ApiException.class,
+            () -> contacts.merge(new MergeContactRequest().destinationId(contactId)));
     assertClientSideException(exception);
     exception =
-        Assertions.assertThrows(ApiException.class, () -> contactService.update(contactId, null));
+        Assertions.assertThrows(ApiException.class, () -> contacts.update(null, new Contact()));
+    assertClientSideException(exception);
+    exception = Assertions.assertThrows(ApiException.class, () -> contacts.update(contactId, null));
     assertClientSideException(exception);
   }
 }

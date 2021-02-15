@@ -8,9 +8,9 @@ import com.sinch.sdk.utils.ExceptionUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class EventService extends AbstractService {
+public class Events extends AbstractService {
 
-  public EventService(final ConversationApiConfig config) {
+  public Events(final ConversationApiConfig config) {
     super(config);
   }
 

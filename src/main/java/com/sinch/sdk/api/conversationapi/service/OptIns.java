@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 @SuppressWarnings("DuplicatedCode")
-public class OptInService extends AbstractService {
+public class OptIns extends AbstractService {
 
   private static final String PARAM_OPT_IN = "optIn";
   private static final String PARAM_IN_APP_ID = PARAM_OPT_IN + SUB_APP_ID;
@@ -22,7 +22,7 @@ public class OptInService extends AbstractService {
   private static final String PARAM_OUT_APP_ID = PARAM_OPT_OUT + SUB_APP_ID;
   private static final String PARAM_OUT_CHANNELS = PARAM_OPT_OUT + SUB_CHANNELS;
 
-  public OptInService(final ConversationApiConfig config) {
+  public OptIns(final ConversationApiConfig config) {
     super(config);
   }
 

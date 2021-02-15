@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class AppService extends AbstractService {
+public class Apps extends AbstractService {
 
   static final String PARAM_APP_ID = "appId";
   private static final String PARAM_APP = "app";
 
-  public AppService(final ConversationApiConfig config) {
+  public Apps(final ConversationApiConfig config) {
     super(config);
   }
 

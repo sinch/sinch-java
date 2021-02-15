@@ -10,19 +10,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class CapabilityServiceTest extends BaseConvIntegrationTest {
+class CapabilitiesTest extends BaseConvIntegrationTest {
 
-  private static CapabilityService capabilityService;
+  private static Capabilities capabilities;
 
   @BeforeAll
   static void beforeAll() {
-    capabilityService = Sinch.conversationApi(Region.EU).capabilities();
+    capabilities = Sinch.conversationApi(Region.EU).capabilities();
   }
 
   @Test
   void testQueryCapability() {
     final QueryCapabilityResponse response =
-        capabilityService.query(
+        capabilities.query(
             new QueryCapabilityRequest()
                 .appId("your-app-id")
                 .recipient(new Recipient().contactId("your-contact-id")));
@@ -33,11 +33,11 @@ class CapabilityServiceTest extends BaseConvIntegrationTest {
   @Test
   void testMissingParamsThrows() {
     ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> capabilityService.query(null));
+        Assertions.assertThrows(ApiException.class, () -> capabilities.query(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> capabilityService.query(new QueryCapabilityRequest()));
+            ApiException.class, () -> capabilities.query(new QueryCapabilityRequest()));
     assertClientSideException(exception);
   }
 }

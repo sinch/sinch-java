@@ -2,7 +2,7 @@ package com.sinch.sdk;
 
 import static com.sinch.sdk.utils.StringUtils.isEmpty;
 
-import com.sinch.sdk.api.conversationapi.ConversationApiClient;
+import com.sinch.sdk.api.conversationapi.ConversationApi;
 import com.sinch.sdk.configuration.ExternalConfiguration;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.Region;
@@ -17,7 +17,7 @@ import lombok.experimental.UtilityClass;
 public class Sinch {
 
   private Config sinchConfig;
-  private ConversationApiClient conversationApi;
+  private ConversationApi conversationApi;
 
   static {
     final String keyId = ExternalConfiguration.getKeyId();
@@ -43,13 +43,13 @@ public class Sinch {
     sinchConfig = Config.builder().keyId(keyId).keySecret(keySecret).projectId(projectId).build();
   }
 
-  public ConversationApiClient conversationApi(@NonNull final Region region) {
+  public ConversationApi conversationApi(@NonNull final Region region) {
     validate();
     return Optional.ofNullable(conversationApi)
         .filter(client -> client.region() == region)
         .orElseGet(
             () -> {
-              conversationApi = new ConversationApiClient(region, sinchConfig);
+              conversationApi = new ConversationApi(region, sinchConfig);
               return conversationApi;
             });
   }

@@ -7,13 +7,13 @@ import com.sinch.sdk.model.conversationapi.TranscodeMessageResponse;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class TranscodingService extends AbstractService {
+public class Transcoding extends AbstractService {
 
-  private final MessageService messageService;
+  private final Messages messages;
 
-  public TranscodingService(final ConversationApiConfig config) {
+  public Transcoding(final ConversationApiConfig config) {
     super(config);
-    messageService = new MessageService(config);
+    messages = new Messages(config);
   }
 
   @Override
@@ -33,7 +33,7 @@ public class TranscodingService extends AbstractService {
    */
   public Map<String, String> transcodeMessage(
       final TranscodeMessageRequest transcodeMessageRequest) {
-    return messageService.transcode(transcodeMessageRequest);
+    return messages.transcode(transcodeMessageRequest);
   }
 
   /**
@@ -47,6 +47,6 @@ public class TranscodingService extends AbstractService {
    */
   public CompletableFuture<Map<String, String>> transcodeMessageAsync(
       final TranscodeMessageRequest transcodeMessageRequest) {
-    return messageService.transcodeAsync(transcodeMessageRequest);
+    return messages.transcodeAsync(transcodeMessageRequest);
   }
 }

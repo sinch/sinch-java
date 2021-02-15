@@ -10,21 +10,21 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class TranscodingServiceTest extends BaseConvIntegrationTest {
+class TranscodingTest extends BaseConvIntegrationTest {
 
-  private static TranscodingService transcodingService;
+  private static Transcoding transcoding;
 
   private final String appId = "your-app-id";
 
   @BeforeAll
   static void beforeAll() {
-    transcodingService = Sinch.conversationApi(Region.EU).transcoding();
+    transcoding = Sinch.conversationApi(Region.EU).transcoding();
   }
 
   @Test
   void testTranscodeMessage() {
     final Map<String, String> response =
-        transcodingService.transcodeMessage(
+        transcoding.transcodeMessage(
             new TranscodeMessageRequest()
                 .appMessage(
                     new AppMessage().textMessage(new TextMessage().text("SDK text message")))

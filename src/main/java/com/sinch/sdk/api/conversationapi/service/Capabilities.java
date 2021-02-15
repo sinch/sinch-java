@@ -9,13 +9,13 @@ import com.sinch.sdk.utils.StringUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class CapabilityService extends AbstractService {
+public class Capabilities extends AbstractService {
 
   private static final String PARAM_CAPABILITY_REQUEST = "capabilityRequest";
   private static final String PARAM_CAPABILITY_REQUEST_APP_ID =
       PARAM_CAPABILITY_REQUEST + SUB_APP_ID;
 
-  public CapabilityService(final ConversationApiConfig config) {
+  public Capabilities(final ConversationApiConfig config) {
     super(config);
   }
 

@@ -9,18 +9,18 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class WebhookService extends AbstractService {
+public class Webhooks extends AbstractService {
 
   private static final String PARAM_WEBHOOK_ID = "webhookId";
   private static final String PARAM_WEBHOOK = "webhook";
   private static final String PARAM_WEBHOOK_APP_ID = PARAM_WEBHOOK + SUB_APP_ID;
   private static final String PARAM_WEBHOOK_TARGET = PARAM_WEBHOOK + ".target";
 
-  private final AppService appService;
+  private final Apps apps;
 
-  public WebhookService(final ConversationApiConfig config) {
+  public Webhooks(final ConversationApiConfig config) {
     super(config);
-    appService = new AppService(config);
+    apps = new Apps(config);
   }
 
   @Override
@@ -131,7 +131,7 @@ public class WebhookService extends AbstractService {
    * @throws ApiException if fails to make API call
    */
   public List<Webhook> list(final String appId) {
-    return appService.listWebhooks(appId);
+    return apps.listWebhooks(appId);
   }
 
   /**
@@ -141,7 +141,7 @@ public class WebhookService extends AbstractService {
    * @return Async task generating a list of {@link Webhook}
    */
   public CompletableFuture<List<Webhook>> listAsync(final String appId) {
-    return appService.listWebhooksAsync(appId);
+    return apps.listWebhooksAsync(appId);
   }
 
   /**
