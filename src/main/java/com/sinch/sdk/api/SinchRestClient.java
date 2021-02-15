@@ -12,7 +12,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import lombok.SneakyThrows;
 
 public class SinchRestClient {
@@ -102,12 +101,11 @@ public class SinchRestClient {
   public static HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
     final int statusCode = response.statusCode();
     if (statusCode / 100 != 2) {
-      throw new CompletionException(
-          new ApiException(
-              statusCode,
-              "Call to " + response.uri() + " received non-success response",
-              response.headers(),
-              ExceptionUtils.getResponseBody(response)));
+      throw new ApiException(
+          statusCode,
+          "Call to " + response.uri() + " received non-success response",
+          response.headers(),
+          ExceptionUtils.getResponseBody(response));
     }
     return response;
   }
