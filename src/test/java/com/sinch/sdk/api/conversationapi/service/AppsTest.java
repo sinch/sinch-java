@@ -5,7 +5,6 @@ import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.*;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -51,8 +50,6 @@ class AppsTest extends BaseConvIntegrationTest {
     Assertions.assertEquals(404, exception.getCode());
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
-    Assertions.assertEquals(
-        Optional.of("404"), exception.getResponseHeaders().firstValue(":status"));
   }
 
   @Test

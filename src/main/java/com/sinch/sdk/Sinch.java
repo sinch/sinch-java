@@ -3,10 +3,13 @@ package com.sinch.sdk;
 import static com.sinch.sdk.utils.StringUtils.isEmpty;
 
 import com.sinch.sdk.api.conversationapi.ConversationApi;
+import com.sinch.sdk.api.conversationapi.restclient.SinchRestClientFactory;
 import com.sinch.sdk.configuration.ExternalConfiguration;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.Region;
+import java.net.http.HttpClient;
 import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -44,12 +47,17 @@ public class Sinch {
   }
 
   public ConversationApi conversationApi(@NonNull final Region region) {
+    return conversationApi(region, () -> SinchRestClientFactory.create(HttpClient.newHttpClient()));
+  }
+
+  public ConversationApi conversationApi(
+      @NonNull final Region region, final Supplier<SinchRestClientFactory> factorySupplier) {
     validate();
     return Optional.ofNullable(conversationApi)
         .filter(client -> client.region() == region)
         .orElseGet(
             () -> {
-              conversationApi = new ConversationApi(region, sinchConfig);
+              conversationApi = new ConversationApi(region, factorySupplier.get(), sinchConfig);
               return conversationApi;
             });
   }

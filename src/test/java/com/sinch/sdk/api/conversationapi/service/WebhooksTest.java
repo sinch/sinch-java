@@ -9,7 +9,6 @@ import com.sinch.sdk.model.conversationapi.Webhook;
 import com.sinch.sdk.model.conversationapi.WebhookTargetType;
 import com.sinch.sdk.model.conversationapi.WebhookTrigger;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -68,8 +67,6 @@ class WebhooksTest extends BaseConvIntegrationTest {
     Assertions.assertEquals(404, exception.getCode());
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
-    Assertions.assertEquals(
-        Optional.of("404"), exception.getResponseHeaders().firstValue(":status"));
   }
 
   @Test
