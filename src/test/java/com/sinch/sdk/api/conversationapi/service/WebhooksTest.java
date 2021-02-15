@@ -1,7 +1,7 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.conversationapi.ConversationApiClient;
+import com.sinch.sdk.api.conversationapi.ConversationApi;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.App;
@@ -15,32 +15,32 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class WebhookServiceTest extends BaseConvIntegrationTest {
+class WebhooksTest extends BaseConvIntegrationTest {
 
   private final String webhookUrl = "https://webhook.site/d9cb2b5f-5ecd-4c19-ac34-b059b6e5eae1";
 
-  private static AppService appService;
-  private static WebhookService webhookService;
+  private static Apps apps;
+  private static Webhooks webhooks;
 
   private static App app;
 
   @BeforeAll
   static void beforeAll() {
-    final ConversationApiClient conversationApi = Sinch.conversationApi(Region.EU);
-    appService = conversationApi.apps();
-    webhookService = conversationApi.webhooks();
-    app = appService.create(new App().displayName("Webhook test app"));
+    final ConversationApi conversationApi = Sinch.conversationApi(Region.EU);
+    apps = conversationApi.apps();
+    webhooks = conversationApi.webhooks();
+    app = apps.create(new App().displayName("Webhook test app"));
   }
 
   @AfterAll
   static void afterAll() {
-    appService.delete(app.getId());
+    apps.delete(app.getId());
   }
 
   @Test
   void testCreateWebhook() {
     final Webhook webhook =
-        webhookService.create(
+        webhooks.create(
             new Webhook()
                 .appId(app.getId())
                 .target(webhookUrl)
@@ -56,15 +56,15 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
     Assertions.assertEquals(5, webhook.getTriggers().size());
     Assertions.assertEquals(WebhookTargetType.HTTP, webhook.getTargetType());
     prettyPrint(webhook);
-    webhookService.delete(webhook.getId());
+    webhooks.delete(webhook.getId());
   }
 
   @Test
   void deleteWebhook() {
     final Webhook webhook = createWebhook();
-    webhookService.delete(webhook.getId());
+    webhooks.delete(webhook.getId());
     final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> webhookService.get(webhook.getId()));
+        Assertions.assertThrows(ApiException.class, () -> webhooks.get(webhook.getId()));
     Assertions.assertEquals(404, exception.getCode());
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
@@ -74,14 +74,14 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void getWebhook() {
-    final Webhook webhook = webhookService.get(createWebhook().getId());
+    final Webhook webhook = webhooks.get(createWebhook().getId());
     prettyPrint(webhook);
-    webhookService.delete(webhook.getId());
+    webhooks.delete(webhook.getId());
   }
 
   @Test
   void listWebhooks() {
-    final List<Webhook> response = webhookService.list(app.getId());
+    final List<Webhook> response = webhooks.list(app.getId());
     prettyPrint(response);
   }
 
@@ -90,7 +90,7 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
     final Webhook update_webhook = createWebhook();
     final String expected_target = "https://www.google.com/";
     final Webhook webhook =
-        webhookService.update(
+        webhooks.update(
             update_webhook.getId(),
             new Webhook().target(expected_target).targetType(WebhookTargetType.GRPC));
     Assertions.assertEquals(expected_target, webhook.getTarget());
@@ -100,32 +100,30 @@ class WebhookServiceTest extends BaseConvIntegrationTest {
   @Test
   void testMissingParamsThrows() {
     ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> webhookService.create(null));
+        Assertions.assertThrows(ApiException.class, () -> webhooks.create(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> webhookService.create(new Webhook().appId("123")));
+            ApiException.class, () -> webhooks.create(new Webhook().appId("123")));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> webhookService.create(new Webhook().target("123")));
+            ApiException.class, () -> webhooks.create(new Webhook().target("123")));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhookService.delete(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.delete(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhookService.get(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.get(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhookService.list(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> webhookService.update(null, new Webhook()));
+    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.list(null));
     assertClientSideException(exception);
     exception =
-        Assertions.assertThrows(ApiException.class, () -> webhookService.update("123", null));
+        Assertions.assertThrows(ApiException.class, () -> webhooks.update(null, new Webhook()));
+    assertClientSideException(exception);
+    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.update("123", null));
     assertClientSideException(exception);
   }
 
   private Webhook createWebhook() {
-    return webhookService.create(new Webhook().appId(app.getId()).target(webhookUrl));
+    return webhooks.create(new Webhook().appId(app.getId()).target(webhookUrl));
   }
 }

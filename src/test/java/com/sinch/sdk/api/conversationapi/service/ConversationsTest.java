@@ -9,23 +9,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ConversationServiceTest extends BaseConvIntegrationTest {
+class ConversationsTest extends BaseConvIntegrationTest {
 
   private final String appId = "your-app-id";
   private final String contactId = "your-contact-id";
   private final String conversationId = "your-conversation-id";
 
-  private static ConversationService conversationService;
+  private static Conversations conversations;
 
   @BeforeAll
   static void beforeAll() {
-    conversationService = Sinch.conversationApi(Region.EU).conversations();
+    conversations = Sinch.conversationApi(Region.EU).conversations();
   }
 
   @Test
   void testCreateConversation() {
     final Conversation response =
-        conversationService.create(
+        conversations.create(
             new Conversation()
                 .active(true)
                 .activeChannel(ConversationChannel.MESSENGER)
@@ -36,9 +36,9 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testDeleteConversation() {
-    conversationService.delete(conversationId);
+    conversations.delete(conversationId);
     final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> conversationService.get(conversationId));
+        Assertions.assertThrows(ApiException.class, () -> conversations.get(conversationId));
     Assertions.assertEquals(404, exception.getCode());
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
@@ -49,13 +49,13 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testGetConversation() {
-    final Conversation conversation = conversationService.get(conversationId);
+    final Conversation conversation = conversations.get(conversationId);
     prettyPrint(conversation);
   }
 
   @Test
   void testInjectMessage() {
-    conversationService.injectMessage(
+    conversations.injectMessage(
         new ConversationMessage()
             .contactId(contactId)
             .conversationId(conversationId)
@@ -67,7 +67,7 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   @Test
   void testListConversations() {
     final ListConversationsResponse response =
-        conversationService.listConversations(
+        conversations.listConversations(
             new ListConversationsParams().onlyActive(true).appId(appId).size(1));
     prettyPrint(response);
   }
@@ -75,66 +75,63 @@ class ConversationServiceTest extends BaseConvIntegrationTest {
   @Test
   void testListMessages() {
     final ListMessagesResponse response =
-        conversationService.listMessages(new ListMessagesParams().conversationId(conversationId));
+        conversations.listMessages(new ListMessagesParams().conversationId(conversationId));
     prettyPrint(response);
   }
 
   @Test
   void testUpdateConversation() {
     final Conversation conversation =
-        conversationService.update(conversationId, new Conversation().metadata("some meta data"));
+        conversations.update(conversationId, new Conversation().metadata("some meta data"));
     prettyPrint(conversation);
   }
 
   @Test
   void testStopActiveConversation() {
-    conversationService.stopActive(conversationId);
-    final Conversation conversation = conversationService.get(conversationId);
+    conversations.stopActive(conversationId);
+    final Conversation conversation = conversations.get(conversationId);
     prettyPrint(conversation);
   }
 
   @Test
   void testMissingParamsThrows() {
     ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> conversationService.create(null));
+        Assertions.assertThrows(ApiException.class, () -> conversations.create(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> conversationService.get(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> conversations.get(null));
     assertClientSideException(exception);
     exception =
-        Assertions.assertThrows(ApiException.class, () -> conversationService.injectMessage(null));
+        Assertions.assertThrows(ApiException.class, () -> conversations.injectMessage(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
             () ->
-                conversationService.injectMessage(
+                conversations.injectMessage(
                     new ConversationMessage().conversationId(conversationId)));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () ->
-                conversationService.injectMessage(new ConversationMessage().contactId(contactId)));
+            () -> conversations.injectMessage(new ConversationMessage().contactId(contactId)));
     assertClientSideException(exception);
     exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> conversationService.listConversations(null));
+        Assertions.assertThrows(ApiException.class, () -> conversations.listConversations(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> conversationService.listConversations(new ListConversationsParams()));
+            () -> conversations.listConversations(new ListConversationsParams()));
     assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> conversationService.stopActive(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> conversationService.update(null, new Conversation()));
+    exception = Assertions.assertThrows(ApiException.class, () -> conversations.stopActive(null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> conversationService.update(conversationId, null));
+            ApiException.class, () -> conversations.update(null, new Conversation()));
+    assertClientSideException(exception);
+    exception =
+        Assertions.assertThrows(
+            ApiException.class, () -> conversations.update(conversationId, null));
     assertClientSideException(exception);
   }
 }

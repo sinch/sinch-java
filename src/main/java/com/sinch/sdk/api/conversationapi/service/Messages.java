@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class MessageService extends AbstractService {
+public class Messages extends AbstractService {
 
   private static final String PARAM_MESSAGE_ID = "messageId";
   private static final String PARAM_SEND = "sendMessageRequest";
@@ -18,7 +18,7 @@ public class MessageService extends AbstractService {
   private static final String PARAM_TRANSCODE_APP_ID = PARAM_TRANSCODE + SUB_APP_ID;
   private static final String PARAM_TRANSCODE_CHANNELS = PARAM_TRANSCODE + SUB_CHANNELS;
 
-  public MessageService(final ConversationApiConfig config) {
+  public Messages(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -127,7 +127,7 @@ public class MessageService extends AbstractService {
     }
     if (!params.isValid()) {
       return ExceptionUtils.missingOneOf(
-          ConversationService.PARAM_CONVERSATION_ID, ContactService.PARAM_CONTACT_ID);
+          Conversations.PARAM_CONVERSATION_ID, Contacts.PARAM_CONTACT_ID);
     }
     return restClient.get(withQuery(params.build()), ListMessagesResponse.class);
   }

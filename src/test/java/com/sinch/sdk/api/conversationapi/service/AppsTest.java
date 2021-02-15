@@ -10,20 +10,20 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class AppServiceTest extends BaseConvIntegrationTest {
+class AppsTest extends BaseConvIntegrationTest {
 
-  private static AppService appService;
+  private static Apps apps;
 
   @BeforeAll
   static void beforeAll() {
-    appService = Sinch.conversationApi(Region.EU).apps();
+    apps = Sinch.conversationApi(Region.EU).apps();
   }
 
   @Test
   void testCreateApp() {
     final String displayName = "SDK test";
     final App app =
-        appService.create(
+        apps.create(
             new App()
                 .displayName(displayName)
                 .addChannelCredentialsItem(
@@ -39,15 +39,15 @@ class AppServiceTest extends BaseConvIntegrationTest {
     Assertions.assertEquals(
         RetentionPolicyType.PERSIST_RETENTION_POLICY, app.getRetentionPolicy().getRetentionType());
     prettyPrint(app);
-    appService.delete(app.getId());
+    apps.delete(app.getId());
   }
 
   @Test
   void testDeleteApp() {
     final App app = createApp("To be deleted");
-    appService.delete(app.getId());
+    apps.delete(app.getId());
     final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> appService.get(app.getId()));
+        Assertions.assertThrows(ApiException.class, () -> apps.get(app.getId()));
     Assertions.assertEquals(404, exception.getCode());
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
@@ -58,14 +58,14 @@ class AppServiceTest extends BaseConvIntegrationTest {
   @Test
   void testGetApp() {
     final App createdApp = createApp("Get app");
-    final App app = appService.get(createdApp.getId());
+    final App app = apps.get(createdApp.getId());
     prettyPrint(app);
-    appService.delete(app.getId());
+    apps.delete(app.getId());
   }
 
   @Test
   void testListApps() {
-    final List<App> apps = appService.list();
+    final List<App> apps = AppsTest.apps.list();
     prettyPrint(apps);
   }
 
@@ -73,29 +73,27 @@ class AppServiceTest extends BaseConvIntegrationTest {
   void testUpdateApp() {
     final App update_app = createApp("Update app");
     final String displayName = "Has been updated app";
-    final App app = appService.update(update_app.getId(), new App().displayName(displayName));
+    final App app = apps.update(update_app.getId(), new App().displayName(displayName));
     Assertions.assertEquals(displayName, app.getDisplayName());
     prettyPrint(app);
-    appService.delete(app.getId());
+    apps.delete(app.getId());
   }
 
   @Test
   void testMissingParamsThrows() {
-    ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> appService.create(null));
+    ApiException exception = Assertions.assertThrows(ApiException.class, () -> apps.create(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> appService.delete(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> apps.delete(null));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> appService.get(null));
+    exception = Assertions.assertThrows(ApiException.class, () -> apps.get(null));
     assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> appService.update(null, new App()));
+    exception = Assertions.assertThrows(ApiException.class, () -> apps.update(null, new App()));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> appService.update("123", null));
+    exception = Assertions.assertThrows(ApiException.class, () -> apps.update("123", null));
     assertClientSideException(exception);
   }
 
   private App createApp(final String displayName) {
-    return appService.create(new App().displayName(displayName));
+    return apps.create(new App().displayName(displayName));
   }
 }

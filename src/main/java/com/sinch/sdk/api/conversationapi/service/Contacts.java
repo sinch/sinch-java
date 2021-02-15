@@ -11,7 +11,7 @@ import com.sinch.sdk.utils.StringUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class ContactService extends AbstractService {
+public class Contacts extends AbstractService {
 
   static final String PARAM_CONTACT_ID = "contactId";
   private static final String PARAM_CONTACT = "contact";
@@ -19,7 +19,7 @@ public class ContactService extends AbstractService {
   private static final String PARAM_MERGE_DESTINATION_ID = PARAM_MERGE + ".destinationId";
   private static final String PARAM_MERGE_SOURCE_ID = PARAM_MERGE + ".sourceId";
 
-  public ContactService(final ConversationApiConfig config) {
+  public Contacts(final ConversationApiConfig config) {
     super(config);
   }
 
@@ -116,8 +116,7 @@ public class ContactService extends AbstractService {
    *
    * <p>Will fetch up to 10 contacts.
    *
-   * <p>If a nextPageToken is returned use it as the 'token' in {@link
-   * ContactService#list(Pagination)}
+   * <p>If a nextPageToken is returned use it as the 'token' in {@link Contacts#list(Pagination)}
    *
    * @return {@link ListContactsResponse}
    * @throws ApiException if fails to make API call
@@ -150,8 +149,7 @@ public class ContactService extends AbstractService {
    *
    * <p>Will fetch up to 10 contacts.
    *
-   * <p>If a nextPageToken is returned use it as the 'token' in {@link
-   * ContactService#list(Pagination)}
+   * <p>If a nextPageToken is returned use it as the 'token' in {@link Contacts#list(Pagination)}
    *
    * @return Async task generating a {@link ListContactsResponse}
    */

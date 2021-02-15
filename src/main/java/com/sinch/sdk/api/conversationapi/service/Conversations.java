@@ -1,6 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
-import static com.sinch.sdk.api.conversationapi.service.ContactService.PARAM_CONTACT_ID;
+import static com.sinch.sdk.api.conversationapi.service.Contacts.PARAM_CONTACT_ID;
 
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
@@ -10,7 +10,7 @@ import com.sinch.sdk.utils.StringUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class ConversationService extends AbstractService {
+public class Conversations extends AbstractService {
 
   static final String PARAM_CONVERSATION_ID = "conversationId";
   private static final String PARAM_CONVERSATION = "conversation";
@@ -20,11 +20,11 @@ public class ConversationService extends AbstractService {
   private static final String PARAM_MESSAGE_CONTACT_ID =
       PARAM_CONVERSATION_MESSAGE + "." + PARAM_CONTACT_ID;
 
-  private final MessageService messageService;
+  private final Messages messages;
 
-  public ConversationService(final ConversationApiConfig config) {
+  public Conversations(final ConversationApiConfig config) {
     super(config);
-    messageService = new MessageService(config);
+    messages = new Messages(config);
   }
 
   @Override
@@ -209,7 +209,7 @@ public class ConversationService extends AbstractService {
       return ExceptionUtils.missingParam(PARAMS);
     }
     if (!params.isValid()) {
-      return ExceptionUtils.missingOneOf(AppService.PARAM_APP_ID, PARAM_CONTACT_ID);
+      return ExceptionUtils.missingOneOf(Apps.PARAM_APP_ID, PARAM_CONTACT_ID);
     }
     return restClient.get(withQuery(params.build()), ListConversationsResponse.class);
   }
@@ -227,7 +227,7 @@ public class ConversationService extends AbstractService {
    * @throws ApiException if fails to make API call
    */
   public ListMessagesResponse listMessages(final ListMessagesParams params) {
-    return messageService.list(params);
+    return messages.list(params);
   }
 
   /**
@@ -243,7 +243,7 @@ public class ConversationService extends AbstractService {
    */
   public CompletableFuture<ListMessagesResponse> listMessagesAsync(
       final ListMessagesParams params) {
-    return messageService.listAsync(params);
+    return messages.listAsync(params);
   }
 
   /**

@@ -12,22 +12,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class EventServiceTest extends BaseConvIntegrationTest {
+class EventsTest extends BaseConvIntegrationTest {
 
   private final String contactId = "your-contact-id";
   private final String appId = "your-app-id";
 
-  private static EventService eventService;
+  private static Events events;
 
   @BeforeAll
   static void beforeAll() {
-    eventService = Sinch.conversationApi(Region.EU).events();
+    events = Sinch.conversationApi(Region.EU).events();
   }
 
   @Test
   void testSendEvent() {
     final SendEventResponse response =
-        eventService.send(
+        events.send(
             new SendEventRequest()
                 .appId(appId)
                 .event(new AppEvent().composingEvent(Map.of("a", "b")))
@@ -37,8 +37,7 @@ class EventServiceTest extends BaseConvIntegrationTest {
 
   @Test
   void testMissingParamsThrows() {
-    ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> eventService.send(null));
+    ApiException exception = Assertions.assertThrows(ApiException.class, () -> events.send(null));
     assertClientSideException(exception);
   }
 }

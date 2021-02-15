@@ -13,16 +13,16 @@ import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.model.common.Region;
 import java.net.http.HttpClient;
 
-public class ConversationApiClient {
+public class ConversationApi {
 
   private final Region region;
   private final ConversationApiConfig config;
 
-  public ConversationApiClient(final Region region, final Sinch.Config sinchConfig) {
+  public ConversationApi(final Region region, final Sinch.Config sinchConfig) {
     this(region, createConfig(region, sinchConfig));
   }
 
-  public ConversationApiClient(final Region region, final ConversationApiConfig config) {
+  public ConversationApi(final Region region, final ConversationApiConfig config) {
     this.region = region;
     this.config = config;
   }
@@ -49,40 +49,40 @@ public class ConversationApiClient {
     return region;
   }
 
-  public AppService apps() {
-    return new AppService(config);
+  public Apps apps() {
+    return new Apps(config);
   }
 
-  public CapabilityService capabilities() {
-    return new CapabilityService(config);
+  public Capabilities capabilities() {
+    return new Capabilities(config);
   }
 
-  public ContactService contacts() {
-    return new ContactService(config);
+  public Contacts contacts() {
+    return new Contacts(config);
   }
 
-  public ConversationService conversations() {
-    return new ConversationService(config);
+  public Conversations conversations() {
+    return new Conversations(config);
   }
 
-  public EventService events() {
-    return new EventService(config);
+  public Events events() {
+    return new Events(config);
   }
 
-  public MessageService messages() {
-    return new MessageService(config);
+  public Messages messages() {
+    return new Messages(config);
   }
 
-  public OptInService optIns() {
-    return new OptInService(config);
+  public OptIns optIns() {
+    return new OptIns(config);
   }
 
-  public TranscodingService transcoding() {
-    return new TranscodingService(config);
+  public Transcoding transcoding() {
+    return new Transcoding(config);
   }
 
-  public WebhookService webhooks() {
-    return new WebhookService(config);
+  public Webhooks webhooks() {
+    return new Webhooks(config);
   }
 
   private static ObjectMapper objectMapper() {
