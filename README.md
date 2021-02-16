@@ -15,6 +15,7 @@ This will use newly created HttpClient shipped with JDK 11. It is possible to ch
 SDK currently provides the support for two Http clients:
 1. HttpClient from JDK 11
 2. OkHttpClient (https://square.github.io/okhttp/)
+3. Apache HttpClient (https://hc.apache.org/httpcomponents-client-5.0.x/index.html)
 
 It is possible to create Sinch API Client by providing your own instance of Http client. Example:
 ```
