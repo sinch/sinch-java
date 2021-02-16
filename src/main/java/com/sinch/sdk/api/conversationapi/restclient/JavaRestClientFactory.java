@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
 
-class JavaRestClientFactory implements SinchRestClientFactory {
+public class JavaRestClientFactory implements SinchRestClientFactory {
 
   private final HttpClient httpClient;
 
