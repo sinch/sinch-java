@@ -1,6 +1,6 @@
 package com.sinch.sdk.api.conversationapi;
 
-import com.sinch.sdk.api.SinchRestClient;
+import com.sinch.sdk.api.conversationapi.restclient.SinchRestClient;
 import lombok.Builder;
 import lombok.Getter;
 

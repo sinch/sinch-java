@@ -1,8 +1,6 @@
 package com.sinch.sdk.utils;
 
 import com.sinch.sdk.exception.ApiException;
-import java.io.InputStream;
-import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -39,10 +37,5 @@ public class ExceptionUtils {
       return apiException;
     }
     throw throwable;
-  }
-
-  @SneakyThrows
-  public String getResponseBody(final HttpResponse<InputStream> response) {
-    return response.body() == null ? null : new String(response.body().readAllBytes());
   }
 }

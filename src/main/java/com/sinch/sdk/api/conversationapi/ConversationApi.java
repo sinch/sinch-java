@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.api.authentication.AuthenticationService;
+import com.sinch.sdk.api.conversationapi.restclient.SinchRestClientFactory;
 import com.sinch.sdk.api.conversationapi.service.*;
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.model.common.Region;
@@ -18,8 +18,11 @@ public class ConversationApi {
   private final Region region;
   private final ConversationApiConfig config;
 
-  public ConversationApi(final Region region, final Sinch.Config sinchConfig) {
-    this(region, createConfig(region, sinchConfig));
+  public ConversationApi(
+      final Region region,
+      final SinchRestClientFactory clientFactory,
+      final Sinch.Config sinchConfig) {
+    this(region, createConfig(region, clientFactory, sinchConfig));
   }
 
   public ConversationApi(final Region region, final ConversationApiConfig config) {
@@ -27,21 +30,21 @@ public class ConversationApi {
     this.config = config;
   }
 
-  private static ConversationApiConfig createConfig(Region region, Sinch.Config sinchConfig) {
-    final HttpClient httpClient = HttpClient.newHttpClient();
-    final ObjectMapper objectMapper = objectMapper();
+  private static ConversationApiConfig createConfig(
+      final Region region,
+      final SinchRestClientFactory clientFactory,
+      final Sinch.Config sinchConfig) {
     final Configuration regionConfig = Configuration.forRegion(region);
     final AuthenticationService authenticationService =
         new AuthenticationService(
-            httpClient,
+            HttpClient.newHttpClient(),
             regionConfig.authentication(),
             sinchConfig.getKeyId(),
             sinchConfig.getKeySecret());
-
     return ConversationApiConfig.builder()
         .projectId(sinchConfig.getProjectId())
         .baseUrl(regionConfig.conversationApi().getUrl())
-        .restClient(new SinchRestClient(authenticationService, httpClient, objectMapper))
+        .restClient(clientFactory.getClient(authenticationService, objectMapper()))
         .build();
   }
 

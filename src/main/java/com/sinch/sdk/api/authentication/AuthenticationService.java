@@ -1,11 +1,10 @@
 package com.sinch.sdk.api.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.configuration.Configuration;
+import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.auth.service.AuthResponse;
-import com.sinch.sdk.utils.ExceptionUtils;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -95,10 +94,21 @@ public class AuthenticationService {
         httpClient.send(bearerTokenRequest, HttpResponse.BodyHandlers.ofInputStream());
     if (response.statusCode() == 401) {
       throw new ConfigurationException(
-          "Invalid credentials, verify the keyId and keySecret",
-          ExceptionUtils.getResponseBody(response));
+          "Invalid credentials, verify the keyId and keySecret", bodyToString(response));
     }
-    return objectMapper.readValue(SinchRestClient.validate(response).body(), AuthResponse.class);
+    return objectMapper.readValue(validate(response).body(), AuthResponse.class);
+  }
+
+  private static HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
+    final int statusCode = response.statusCode();
+    if (statusCode / 100 != 2) {
+      throw new ApiException(
+          statusCode,
+          "Call to " + response.uri() + " received non-success response",
+          response.headers(),
+          bodyToString(response));
+    }
+    return response;
   }
 
   private void scheduleReload(final long delay) {
@@ -113,5 +123,12 @@ public class AuthenticationService {
         runnable.run();
       }
     };
+  }
+
+  @SneakyThrows
+  private static String bodyToString(HttpResponse<InputStream> response) {
+    try (InputStream body = response.body()) {
+      return body == null ? null : new String(body.readAllBytes());
+    }
   }
 }

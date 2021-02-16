@@ -1,7 +1,7 @@
 package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.api.SinchRestClient;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
+import com.sinch.sdk.api.conversationapi.restclient.SinchRestClient;
 import java.net.URI;
 
 public abstract class AbstractService {
