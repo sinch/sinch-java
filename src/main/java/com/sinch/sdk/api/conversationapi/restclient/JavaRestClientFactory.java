@@ -55,7 +55,6 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
           .thenAccept(res -> {});
     }
 
-    @SneakyThrows
     @Override
     public <S> CompletableFuture<Void> post(final URI uri, final S body) {
       return send(requestBuilder(uri)
@@ -65,7 +64,6 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
           .thenAccept(res -> {});
     }
 
-    @SneakyThrows
     @Override
     public <T, S> CompletableFuture<T> post(final URI uri, final Class<T> clazz, final S body) {
       return send(
@@ -78,7 +76,6 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
                           .build()));
     }
 
-    @SneakyThrows
     @Override
     public <T, S> CompletableFuture<T> patch(final URI uri, final Class<T> clazz, final S body) {
       return send(
