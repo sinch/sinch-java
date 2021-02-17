@@ -3,6 +3,7 @@ package com.sinch.sdk;
 import static com.sinch.sdk.utils.StringUtils.isEmpty;
 
 import com.sinch.sdk.api.conversationapi.ConversationApi;
+import com.sinch.sdk.api.conversationapi.restclient.JavaRestClientFactory;
 import com.sinch.sdk.api.conversationapi.restclient.SinchRestClientFactory;
 import com.sinch.sdk.configuration.ExternalConfiguration;
 import com.sinch.sdk.exception.ConfigurationException;
@@ -47,7 +48,7 @@ public class Sinch {
   }
 
   public ConversationApi conversationApi(@NonNull final Region region) {
-    return conversationApi(region, () -> SinchRestClientFactory.create(HttpClient.newHttpClient()));
+    return conversationApi(region, () -> new JavaRestClientFactory(HttpClient.newHttpClient()));
   }
 
   public ConversationApi conversationApi(

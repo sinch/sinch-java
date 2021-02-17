@@ -12,7 +12,7 @@ import lombok.SneakyThrows;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
-class OkHttpRestClientFactory implements SinchRestClientFactory {
+public class OkHttpRestClientFactory implements SinchRestClientFactory {
 
   private final OkHttpClient httpClient;
 

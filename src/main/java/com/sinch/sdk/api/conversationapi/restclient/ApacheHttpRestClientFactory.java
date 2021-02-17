@@ -21,10 +21,10 @@ import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.Method;
 
-class ApacheHttpRestClientFactory implements SinchRestClientFactory {
+public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
   private final CloseableHttpAsyncClient httpClient;
 
-  ApacheHttpRestClientFactory(final CloseableHttpAsyncClient httpClient) {
+  public ApacheHttpRestClientFactory(final CloseableHttpAsyncClient httpClient) {
     this.httpClient = httpClient;
   }
 
