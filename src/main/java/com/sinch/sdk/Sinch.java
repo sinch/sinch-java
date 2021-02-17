@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -63,7 +62,6 @@ public class Sinch {
             });
   }
 
-  @SneakyThrows
   private void validate() {
     Optional.ofNullable(sinchConfig)
         .orElseThrow(

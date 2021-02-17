@@ -4,7 +4,6 @@ import com.sinch.sdk.configuration.impl.ConfigurationEU;
 import com.sinch.sdk.configuration.impl.ConfigurationUS;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.Region;
-import lombok.SneakyThrows;
 
 public interface Configuration {
 
@@ -12,7 +11,6 @@ public interface Configuration {
 
   ConversationApi conversationApi();
 
-  @SneakyThrows
   static Configuration forRegion(final Region region) {
     switch (region) {
       case EU:
