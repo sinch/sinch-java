@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.App;
@@ -17,8 +18,9 @@ public class Apps extends AbstractService {
   static final String PARAM_APP_ID = "appId";
   private static final String PARAM_APP = "app";
 
-  public Apps(final ConversationApiConfig config) {
-    super(config);
+  public Apps(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
   }
 
   @Override

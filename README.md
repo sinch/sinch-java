@@ -29,13 +29,12 @@ class CustomRestClientFactory implements SinchRestClientFactory {
 
   @Override
   public SinchRestClient getClient(
-      final AuthenticationService authenticationService, final ObjectMapper objectMapper) {
+      final Duration requestTimeout, final ObjectMapper objectMapper) {
     // return the implementation of SinchRestClient here with usage of custom http client
   }
 ```
-Important to notice here is that in order to read values returned by Sinch Conv API you must use the 
-objectMapper which is provided in the arguments to the **_getClient_** and in each request you must
-send also the Authorization header with bearer token provided by **_authenticationService.getHeaderValue()_**.
+The **_requestTimeout_** value is read from Java VM parameter sinch.http_timeout. The value must be defined in seconds.
+If parameter is missing (or its value) then **_requestTimeout_** is equal to **_null_**. 
 
 Such factory must be used later in order to create a Sinch Conv API client:
 ```

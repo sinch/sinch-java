@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.OptIn;
@@ -22,8 +23,9 @@ public class OptIns extends AbstractService {
   private static final String PARAM_OUT_APP_ID = PARAM_OPT_OUT + SUB_APP_ID;
   private static final String PARAM_OUT_CHANNELS = PARAM_OPT_OUT + SUB_CHANNELS;
 
-  public OptIns(final ConversationApiConfig config) {
-    super(config);
+  public OptIns(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
   }
 
   @Override

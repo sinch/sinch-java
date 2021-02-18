@@ -17,25 +17,26 @@ public class ExternalConfiguration {
     return System.getProperty(Keys.KEY_SECRET);
   }
 
+  public static Long getHttpTimeout() {
+    try {
+      return Long.parseLong(System.getProperty(Keys.HTTP_TIMEOUT));
+    } catch (final NumberFormatException ignored) {
+    }
+    return null;
+  }
+
   private static class Keys {
     private static final String KEY_PREFIX = "sinch.";
     private static final String PROJECT_ID = KEY_PREFIX + "project_id";
     private static final String KEY_ID = KEY_PREFIX + "key_id";
     private static final String KEY_SECRET = KEY_PREFIX + "key_secret";
+    private static final String HTTP_TIMEOUT = KEY_PREFIX + "http_timeout";
   }
 
   public static class Authentication {
 
     public static String getUrl() {
       return System.getProperty(Keys.URL);
-    }
-
-    public static Long getHttpTimeout() {
-      try {
-        return Long.parseLong(System.getProperty(Keys.HTTP_TIMEOUT));
-      } catch (final NumberFormatException ignored) {
-      }
-      return null;
     }
 
     public static boolean getBasicAuth() {
@@ -46,7 +47,6 @@ public class ExternalConfiguration {
       private static final String KEY_PREFIX =
           ExternalConfiguration.Keys.KEY_PREFIX + "authentication.";
       private static final String URL = KEY_PREFIX + "url";
-      private static final String HTTP_TIMEOUT = KEY_PREFIX + "http_timeout";
       private static final String BASIC_AUTH = KEY_PREFIX + "basic_auth";
     }
   }

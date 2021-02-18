@@ -2,9 +2,17 @@ package com.sinch.sdk.configuration.impl;
 
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.configuration.ExternalConfiguration;
+import java.time.Duration;
 import java.util.Optional;
 
 public abstract class AbstractConfiguration implements Configuration {
+
+  @Override
+  public Duration httpTimeout() {
+    return Optional.ofNullable(ExternalConfiguration.getHttpTimeout())
+        .map(Duration::ofSeconds)
+        .orElse(null);
+  }
 
   public abstract static class AbstractAuthentication implements Authentication {
     @Override
@@ -14,11 +22,6 @@ public abstract class AbstractConfiguration implements Configuration {
     }
 
     protected abstract String getUrlInternal();
-
-    @Override
-    public long getHttpTimeout() {
-      return Optional.ofNullable(ExternalConfiguration.Authentication.getHttpTimeout()).orElse(10L);
-    }
 
     @Override
     public boolean useBasicAuth() {

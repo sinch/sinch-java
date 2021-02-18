@@ -1,23 +1,17 @@
 package com.sinch.sdk.api.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.configuration.Configuration;
-import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.auth.service.AuthResponse;
-import java.io.InputStream;
+import com.sinch.sdk.restclient.SinchRestClient;
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 
 public class AuthenticationService {
   public static final String HEADER_KEY_AUTH = "Authorization";
@@ -29,39 +23,38 @@ public class AuthenticationService {
   private static final String TEMPLATE_BASIC_AUTH = "Basic %s";
   private static final String TEMPLATE_ID_SECRET = "%s:%s";
 
-  private final HttpClient httpClient;
-  private final ObjectMapper objectMapper;
+  private final SinchRestClient sinchRestClient;
+  private final URI authRequestURI;
+  private final Map<String, String> authRequestHeaders;
 
   private long fallbackRetryDelay;
   private Timer refreshTimer;
-  private HttpRequest bearerTokenRequest;
-  private CompletableFuture<String> authHeaderFuture;
+  private CompletableFuture<Map<String, String>> authHeaderFuture;
 
   public AuthenticationService(
-      final HttpClient httpClient,
+      final SinchRestClient sinchRestClient,
       final Configuration.Authentication config,
       @NonNull final String keyId,
       @NonNull final String keySecret) {
-    this.httpClient = httpClient;
-    this.objectMapper = new ObjectMapper();
-    final String basicHeaderValue =
+    this.sinchRestClient = sinchRestClient;
+    String basicHeaderValue =
         String.format(
             TEMPLATE_BASIC_AUTH,
             Base64.getEncoder()
                 .encodeToString(String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes()));
+    this.authRequestURI = URI.create(config.getUrl());
+    this.authRequestHeaders =
+        Map.of(
+            HEADER_KEY_AUTH,
+            basicHeaderValue,
+            HEADER_KEY_CONTENT_TYPE,
+            APPLICATION_FORM_URLENCODED_VALUE);
     if (config.useBasicAuth()) {
-      authHeaderFuture = CompletableFuture.completedFuture(basicHeaderValue);
+      authHeaderFuture =
+          CompletableFuture.completedFuture(Map.of(HEADER_KEY_AUTH, basicHeaderValue));
     } else {
       this.fallbackRetryDelay = config.getFallbackRetryDelay();
       this.refreshTimer = new Timer("BearerTokenRefreshTimer");
-      this.bearerTokenRequest =
-          HttpRequest.newBuilder()
-              .POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials"))
-              .uri(URI.create(config.getUrl()))
-              .header(HEADER_KEY_AUTH, basicHeaderValue)
-              .header(HEADER_KEY_CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-              .timeout(Duration.ofSeconds(config.getHttpTimeout()))
-              .build();
       reload();
     }
   }
@@ -74,41 +67,25 @@ public class AuthenticationService {
    *
    * @return async task for the header value to use with @{HEADER_KEY_AUTH}
    */
-  public CompletableFuture<String> getHeaderValue() {
+  public CompletableFuture<Map<String, String>> getHeaderValue() {
     return authHeaderFuture;
   }
 
   private void reload() {
     authHeaderFuture =
-        CompletableFuture.supplyAsync(this::getAuthResponse)
+        getAuthResponse()
             .thenApply(
                 authResponse -> {
                   scheduleReload(Math.max(authResponse.getExpiresIn() - 60, fallbackRetryDelay));
-                  return String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken());
+                  return Map.of(
+                      HEADER_KEY_AUTH,
+                      String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken()));
                 });
   }
 
-  @SneakyThrows
-  private AuthResponse getAuthResponse() {
-    final HttpResponse<InputStream> response =
-        httpClient.send(bearerTokenRequest, HttpResponse.BodyHandlers.ofInputStream());
-    if (response.statusCode() == 401) {
-      throw new ConfigurationException(
-          "Invalid credentials, verify the keyId and keySecret", bodyToString(response));
-    }
-    return objectMapper.readValue(validate(response).body(), AuthResponse.class);
-  }
-
-  private static HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
-    final int statusCode = response.statusCode();
-    if (statusCode / 100 != 2) {
-      throw new ApiException(
-          statusCode,
-          "Call to " + response.uri() + " received non-success response",
-          response.headers(),
-          bodyToString(response));
-    }
-    return response;
+  private CompletableFuture<AuthResponse> getAuthResponse() {
+    return sinchRestClient.post(
+        authRequestURI, AuthResponse.class, "grant_type=client_credentials", authRequestHeaders);
   }
 
   private void scheduleReload(final long delay) {
@@ -123,12 +100,5 @@ public class AuthenticationService {
         runnable.run();
       }
     };
-  }
-
-  @SneakyThrows
-  private static String bodyToString(HttpResponse<InputStream> response) {
-    try (InputStream body = response.body()) {
-      return body == null ? null : new String(body.readAllBytes());
-    }
   }
 }

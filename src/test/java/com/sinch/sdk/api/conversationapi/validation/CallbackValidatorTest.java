@@ -2,23 +2,20 @@ package com.sinch.sdk.api.conversationapi.validation;
 
 import static com.sinch.sdk.api.conversationapi.validation.CallbackValidator.Exception.Reason.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.sinch.sdk.api.BaseTest;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import com.sinch.sdk.extensions.ResourceExtension;
+import com.sinch.sdk.extensions.ResourceExtension.Resource;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-class CallbackValidatorTest extends BaseTest {
+@ExtendWith(ResourceExtension.class)
+class CallbackValidatorTest {
 
   private static final String VALID_SECRET = "ohsosecret";
   private static final Duration VALID_DURATION = Duration.ofDays(365 * 25);
@@ -29,14 +26,16 @@ class CallbackValidatorTest extends BaseTest {
   private CallbackValidator validValidator;
 
   @BeforeEach
-  void setUp() {
-    payload =
-        new BufferedReader(
-                new InputStreamReader(
-                    getResource("conversation-start-callback.json"), StandardCharsets.UTF_8))
-            .lines()
-            .collect(Collectors.joining("\n"));
-    headers = getResource("conversation-start-callback-headers.json", new TypeReference<>() {});
+  void setUp(
+      @Resource(path = "conversation-api/callback-validation/conversation-start-callback.json")
+          String json,
+      @Resource(
+              path =
+                  "conversation-api/callback-validation/conversation-start-callback-headers.json",
+              type = Map.class)
+          Map<String, String> headersFromFile) {
+    payload = json;
+    headers = headersFromFile;
     validValidator = new CallbackValidator(VALID_SECRET).durationWindow(VALID_DURATION);
   }
 
@@ -120,10 +119,5 @@ class CallbackValidatorTest extends BaseTest {
                     .validateCallback(payload, headers));
     final CallbackValidator.Exception cause = (CallbackValidator.Exception) exception.getCause();
     Assertions.assertEquals(SIGNATURE_MISMATCH, cause.getReason());
-  }
-
-  @Override
-  protected InputStream getResource(final String fileName) {
-    return super.getResource("conversation-api/callback-validation/" + fileName);
   }
 }
