@@ -78,6 +78,10 @@ public class ConversationApi {
     return new Messages(config, authenticationService);
   }
 
+  public Messages messages(final String appId) {
+    return new Messages(config, authenticationService, appId);
+  }
+
   public OptIns optIns() {
     return new OptIns(config, authenticationService);
   }

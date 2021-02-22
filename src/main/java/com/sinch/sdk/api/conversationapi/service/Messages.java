@@ -19,9 +19,19 @@ public class Messages extends AbstractService {
   private static final String PARAM_TRANSCODE_APP_ID = PARAM_TRANSCODE + SUB_APP_ID;
   private static final String PARAM_TRANSCODE_CHANNELS = PARAM_TRANSCODE + SUB_CHANNELS;
 
+  private final String defaultAppId;
+
   public Messages(
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    this(config, authenticationService, null);
+  }
+
+  public Messages(
+      final ConversationApiConfig config,
+      final AuthenticationService authenticationService,
+      final String appId) {
     super(config, authenticationService);
+    defaultAppId = appId;
   }
 
   @Override
@@ -171,7 +181,10 @@ public class Messages extends AbstractService {
       return ExceptionUtils.missingParam(PARAM_SEND);
     }
     if (StringUtils.isEmpty(sendMessageRequest.getAppId())) {
-      return ExceptionUtils.missingParam(PARAM_SEND_APP_ID);
+      sendMessageRequest.appId(defaultAppId);
+      if (StringUtils.isEmpty(sendMessageRequest.getAppId())) {
+        return ExceptionUtils.missingParam(PARAM_SEND_APP_ID);
+      }
     }
     return restClient.post(
         withQuery(":send"), SendMessageResponse.class, sendMessageRequest.projectId(projectId));
@@ -210,7 +223,10 @@ public class Messages extends AbstractService {
       return ExceptionUtils.missingParam(PARAM_TRANSCODE);
     }
     if (StringUtils.isEmpty(transcodeMessageRequest.getAppId())) {
-      return ExceptionUtils.missingParam(PARAM_TRANSCODE_APP_ID);
+      transcodeMessageRequest.appId(defaultAppId);
+      if (StringUtils.isEmpty(transcodeMessageRequest.getAppId())) {
+        return ExceptionUtils.missingParam(PARAM_TRANSCODE_APP_ID);
+      }
     }
     if (transcodeMessageRequest.getChannels() == null) {
       return ExceptionUtils.missingParam(PARAM_TRANSCODE_CHANNELS);
