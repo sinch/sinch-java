@@ -1,7 +1,8 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
-import com.sinch.sdk.api.conversationapi.restclient.SinchRestClient;
+import com.sinch.sdk.restclient.SinchRestClient;
 import java.net.URI;
 
 public abstract class AbstractService {
@@ -19,12 +20,13 @@ public abstract class AbstractService {
   protected final URI serviceURI;
   private final String serviceUrl;
 
-  public AbstractService(final ConversationApiConfig config) {
+  public AbstractService(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
     this.projectId = config.getProjectId();
-    this.restClient = config.getRestClient();
-    serviceUrl =
+    this.restClient = new SinchRestClientProxy(authenticationService, config.getRestClient());
+    this.serviceUrl =
         String.format(TEMPLATE_URL, config.getBaseUrl(), API_VERSION, projectId, getServiceName());
-    serviceURI = URI.create(serviceUrl);
+    this.serviceURI = URI.create(serviceUrl);
   }
 
   protected URI withPath(final String path) {

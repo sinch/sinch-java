@@ -3,11 +3,11 @@ package com.sinch.sdk;
 import static com.sinch.sdk.utils.StringUtils.isEmpty;
 
 import com.sinch.sdk.api.conversationapi.ConversationApi;
-import com.sinch.sdk.api.conversationapi.restclient.JavaRestClientFactory;
-import com.sinch.sdk.api.conversationapi.restclient.SinchRestClientFactory;
 import com.sinch.sdk.configuration.ExternalConfiguration;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.Region;
+import com.sinch.sdk.restclient.JavaRestClientFactory;
+import com.sinch.sdk.restclient.SinchRestClientFactory;
 import java.net.http.HttpClient;
 import java.util.Optional;
 import java.util.function.Supplier;

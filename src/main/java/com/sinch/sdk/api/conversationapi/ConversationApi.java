@@ -7,45 +7,47 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.authentication.AuthenticationService;
-import com.sinch.sdk.api.conversationapi.restclient.SinchRestClientFactory;
 import com.sinch.sdk.api.conversationapi.service.*;
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.model.common.Region;
-import java.net.http.HttpClient;
+import com.sinch.sdk.restclient.SinchRestClient;
+import com.sinch.sdk.restclient.SinchRestClientFactory;
 
 public class ConversationApi {
 
   private final Region region;
   private final ConversationApiConfig config;
+  private final AuthenticationService authenticationService;
 
   public ConversationApi(
       final Region region,
-      final SinchRestClientFactory clientFactory,
+      final SinchRestClientFactory restClientFactory,
       final Sinch.Config sinchConfig) {
-    this(region, createConfig(region, clientFactory, sinchConfig));
-  }
-
-  public ConversationApi(final Region region, final ConversationApiConfig config) {
+    Configuration regionConfig = Configuration.forRegion(region);
+    SinchRestClient restClient =
+        restClientFactory.getClient(regionConfig.httpTimeout(), objectMapper());
     this.region = region;
-    this.config = config;
-  }
-
-  private static ConversationApiConfig createConfig(
-      final Region region,
-      final SinchRestClientFactory clientFactory,
-      final Sinch.Config sinchConfig) {
-    final Configuration regionConfig = Configuration.forRegion(region);
-    final AuthenticationService authenticationService =
+    this.config =
+        ConversationApiConfig.builder()
+            .projectId(sinchConfig.getProjectId())
+            .baseUrl(regionConfig.conversationApi().getUrl())
+            .restClient(restClient)
+            .build();
+    this.authenticationService =
         new AuthenticationService(
-            HttpClient.newHttpClient(),
+            restClient,
             regionConfig.authentication(),
             sinchConfig.getKeyId(),
             sinchConfig.getKeySecret());
-    return ConversationApiConfig.builder()
-        .projectId(sinchConfig.getProjectId())
-        .baseUrl(regionConfig.conversationApi().getUrl())
-        .restClient(clientFactory.getClient(authenticationService, objectMapper()))
-        .build();
+  }
+
+  public ConversationApi(
+      final Region region,
+      final ConversationApiConfig config,
+      AuthenticationService authenticationService) {
+    this.region = region;
+    this.config = config;
+    this.authenticationService = authenticationService;
   }
 
   public Region region() {
@@ -53,39 +55,39 @@ public class ConversationApi {
   }
 
   public Apps apps() {
-    return new Apps(config);
+    return new Apps(config, authenticationService);
   }
 
   public Capabilities capabilities() {
-    return new Capabilities(config);
+    return new Capabilities(config, authenticationService);
   }
 
   public Contacts contacts() {
-    return new Contacts(config);
+    return new Contacts(config, authenticationService);
   }
 
   public Conversations conversations() {
-    return new Conversations(config);
+    return new Conversations(config, authenticationService);
   }
 
   public Events events() {
-    return new Events(config);
+    return new Events(config, authenticationService);
   }
 
   public Messages messages() {
-    return new Messages(config);
+    return new Messages(config, authenticationService);
   }
 
   public OptIns optIns() {
-    return new OptIns(config);
+    return new OptIns(config, authenticationService);
   }
 
   public Transcoding transcoding() {
-    return new Transcoding(config);
+    return new Transcoding(config, authenticationService);
   }
 
   public Webhooks webhooks() {
-    return new Webhooks(config);
+    return new Webhooks(config, authenticationService);
   }
 
   private static ObjectMapper objectMapper() {

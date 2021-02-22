@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
@@ -11,9 +12,10 @@ public class Transcoding extends AbstractService {
 
   private final Messages messages;
 
-  public Transcoding(final ConversationApiConfig config) {
-    super(config);
-    messages = new Messages(config);
+  public Transcoding(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
+    messages = new Messages(config, authenticationService);
   }
 
   @Override

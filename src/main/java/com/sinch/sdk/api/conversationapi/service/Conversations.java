@@ -2,6 +2,7 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import static com.sinch.sdk.api.conversationapi.service.Contacts.PARAM_CONTACT_ID;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.*;
@@ -22,9 +23,10 @@ public class Conversations extends AbstractService {
 
   private final Messages messages;
 
-  public Conversations(final ConversationApiConfig config) {
-    super(config);
-    messages = new Messages(config);
+  public Conversations(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
+    messages = new Messages(config, authenticationService);
   }
 
   @Override

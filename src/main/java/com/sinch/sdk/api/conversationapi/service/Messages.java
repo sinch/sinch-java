@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.*;
@@ -18,8 +19,9 @@ public class Messages extends AbstractService {
   private static final String PARAM_TRANSCODE_APP_ID = PARAM_TRANSCODE + SUB_APP_ID;
   private static final String PARAM_TRANSCODE_CHANNELS = PARAM_TRANSCODE + SUB_CHANNELS;
 
-  public Messages(final ConversationApiConfig config) {
-    super(config);
+  public Messages(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
   }
 
   @Override

@@ -1,25 +1,27 @@
-package com.sinch.sdk.api.conversationapi.restclient;
+package com.sinch.sdk.restclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.exception.ApiException;
+import com.sinch.sdk.exception.ConfigurationException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpHeaders;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import lombok.SneakyThrows;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
 import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.Method;
+import org.apache.hc.core5.util.Timeout;
 
 public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
   private final CloseableHttpAsyncClient httpClient;
@@ -29,34 +31,40 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
   }
 
   @Override
-  public SinchRestClient getClient(
-      AuthenticationService authenticationService, ObjectMapper objectMapper) {
-    return new ApacheHttpRestClient(authenticationService, httpClient, objectMapper);
+  public SinchRestClient getClient(final Duration requestTimeout, final ObjectMapper objectMapper) {
+    return new ApacheHttpRestClient(httpClient, requestTimeout, objectMapper);
   }
 
   private static class ApacheHttpRestClient implements SinchRestClient {
 
     private final CloseableHttpAsyncClient client;
-    private final AuthenticationService authenticationService;
+    private final RequestConfig requestConfig;
     private final ObjectMapper objectMapper;
 
     ApacheHttpRestClient(
-        AuthenticationService authenticationService,
-        CloseableHttpAsyncClient client,
-        ObjectMapper objectMapper) {
-      this.authenticationService = authenticationService;
+        CloseableHttpAsyncClient client, Duration requestTimeout, ObjectMapper objectMapper) {
       this.client = client;
+      this.requestConfig = getRequestConfig(requestTimeout);
       this.objectMapper = objectMapper;
     }
 
-    @Override
-    public <T> CompletableFuture<T> get(URI uri, Class<T> clazz) {
-      return send(clazz, requestBuilder(uri, Method.GET));
+    private RequestConfig getRequestConfig(Duration requestTimeout) {
+      if (requestTimeout == null) {
+        return RequestConfig.DEFAULT;
+      }
+      return RequestConfig.custom()
+          .setResponseTimeout(Timeout.ofSeconds(requestTimeout.getSeconds()))
+          .build();
     }
 
     @Override
-    public CompletableFuture<Void> post(URI uri) {
-      return send(requestBuilder(uri, Method.POST)
+    public <T> CompletableFuture<T> get(URI uri, Class<T> clazz, Map<String, String> headers) {
+      return send(clazz, requestBuilder(uri, Method.GET, headers));
+    }
+
+    @Override
+    public CompletableFuture<Void> post(URI uri, Map<String, String> headers) {
+      return send(requestBuilder(uri, Method.POST, headers)
               .thenApply(
                   request -> {
                     request.setBody(new byte[] {}, ContentType.APPLICATION_JSON);
@@ -66,54 +74,53 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
     }
 
     @Override
-    public <S> CompletableFuture<Void> post(URI uri, S body) {
-      return send(requestBuilder(uri, Method.POST)
+    public <S> CompletableFuture<Void> post(URI uri, S body, Map<String, String> headers) {
+      return send(requestBuilder(uri, Method.POST, headers)
               .thenApply(
                   request -> {
-                    request.setBody(getBytes(body), ContentType.APPLICATION_JSON);
+                    request.setBody(getBytes(objectMapper, body), ContentType.APPLICATION_JSON);
                     return request;
                   }))
           .thenAccept(res -> {});
     }
 
     @Override
-    public <T, S> CompletableFuture<T> post(URI uri, Class<T> clazz, S body) {
+    public <T, S> CompletableFuture<T> post(
+        URI uri, Class<T> clazz, S body, Map<String, String> headers) {
       return send(
           clazz,
-          requestBuilder(uri, Method.POST)
+          requestBuilder(uri, Method.POST, headers)
               .thenApply(
                   request -> {
-                    request.setBody(getBytes(body), ContentType.APPLICATION_JSON);
+                    request.setBody(getBytes(objectMapper, body), ContentType.APPLICATION_JSON);
                     return request;
                   }));
     }
 
     @Override
-    public <T, S> CompletableFuture<T> patch(URI uri, Class<T> clazz, S body) {
+    public <T, S> CompletableFuture<T> patch(
+        URI uri, Class<T> clazz, S body, Map<String, String> headers) {
       return send(
           clazz,
-          requestBuilder(uri, Method.PATCH)
+          requestBuilder(uri, Method.PATCH, headers)
               .thenApply(
                   request -> {
-                    request.setBody(getBytes(body), ContentType.APPLICATION_JSON);
+                    request.setBody(getBytes(objectMapper, body), ContentType.APPLICATION_JSON);
                     return request;
                   }));
     }
 
     @Override
-    public CompletableFuture<Void> delete(URI uri) {
-      return send(requestBuilder(uri, Method.DELETE)).thenAccept(response -> {});
+    public CompletableFuture<Void> delete(URI uri, Map<String, String> headers) {
+      return send(requestBuilder(uri, Method.DELETE, headers)).thenAccept(response -> {});
     }
 
-    private CompletableFuture<SimpleHttpRequest> requestBuilder(final URI uri, Method method) {
-      return authenticationService
-          .getHeaderValue()
-          .thenApply(
-              authHeaderValue -> {
-                SimpleHttpRequest request = SimpleHttpRequests.create(method, uri);
-                request.addHeader(AuthenticationService.HEADER_KEY_AUTH, authHeaderValue);
-                return request;
-              });
+    private CompletableFuture<SimpleHttpRequest> requestBuilder(
+        final URI uri, Method method, Map<String, String> headers) {
+      SimpleHttpRequest request = SimpleHttpRequests.create(method, uri);
+      request.setConfig(requestConfig);
+      headers.forEach(request::addHeader);
+      return CompletableFuture.completedFuture(request);
     }
 
     private <T> CompletableFuture<T> send(
@@ -144,7 +151,7 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
                       try {
                         SimpleHttpResponse validatedResponse = validate(request, response);
                         responseFuture.complete(validatedResponse);
-                      } catch (ApiException exception) {
+                      } catch (ConfigurationException | ApiException exception) {
                         responseFuture.completeExceptionally(exception);
                       }
                     }
@@ -166,6 +173,10 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
     private static SimpleHttpResponse validate(
         final SimpleHttpRequest request, final SimpleHttpResponse response) {
       final int statusCode = response.getCode();
+      if (statusCode == 401) {
+        throw new ConfigurationException(
+            "Invalid credentials, verify the keyId and keySecret", bodyToString(response));
+      }
       if (statusCode / 100 != 2) {
         throw new ApiException(
             statusCode,
@@ -178,11 +189,6 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
 
     private static String bodyToString(SimpleHttpResponse response) {
       return response.getBody() == null ? null : new String(response.getBody().getBodyBytes());
-    }
-
-    @SneakyThrows
-    private byte[] getBytes(final Object body) {
-      return objectMapper.writeValueAsBytes(body);
     }
 
     private static HttpHeaders toHttpHeaders(Header[] headers) {

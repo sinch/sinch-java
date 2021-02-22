@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.QueryCapabilityRequest;
@@ -15,8 +16,9 @@ public class Capabilities extends AbstractService {
   private static final String PARAM_CAPABILITY_REQUEST_APP_ID =
       PARAM_CAPABILITY_REQUEST + SUB_APP_ID;
 
-  public Capabilities(final ConversationApiConfig config) {
-    super(config);
+  public Capabilities(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
   }
 
   @Override

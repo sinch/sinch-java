@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.Contact;
@@ -19,8 +20,9 @@ public class Contacts extends AbstractService {
   private static final String PARAM_MERGE_DESTINATION_ID = PARAM_MERGE + ".destinationId";
   private static final String PARAM_MERGE_SOURCE_ID = PARAM_MERGE + ".sourceId";
 
-  public Contacts(final ConversationApiConfig config) {
-    super(config);
+  public Contacts(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
   }
 
   @Override

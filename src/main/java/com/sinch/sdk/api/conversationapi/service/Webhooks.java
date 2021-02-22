@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.Webhook;
@@ -18,9 +19,10 @@ public class Webhooks extends AbstractService {
 
   private final Apps apps;
 
-  public Webhooks(final ConversationApiConfig config) {
-    super(config);
-    apps = new Apps(config);
+  public Webhooks(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
+    apps = new Apps(config, authenticationService);
   }
 
   @Override

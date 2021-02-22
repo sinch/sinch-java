@@ -1,5 +1,6 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.SendEventRequest;
@@ -10,8 +11,9 @@ import java.util.concurrent.CompletionException;
 
 public class Events extends AbstractService {
 
-  public Events(final ConversationApiConfig config) {
-    super(config);
+  public Events(
+      final ConversationApiConfig config, final AuthenticationService authenticationService) {
+    super(config, authenticationService);
   }
 
   @Override

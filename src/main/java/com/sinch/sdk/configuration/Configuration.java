@@ -4,12 +4,15 @@ import com.sinch.sdk.configuration.impl.ConfigurationEU;
 import com.sinch.sdk.configuration.impl.ConfigurationUS;
 import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.model.common.Region;
+import java.time.Duration;
 
 public interface Configuration {
 
   Authentication authentication();
 
   ConversationApi conversationApi();
+
+  Duration httpTimeout();
 
   static Configuration forRegion(final Region region) {
     switch (region) {
@@ -24,8 +27,6 @@ public interface Configuration {
 
   interface Authentication {
     String getUrl();
-
-    long getHttpTimeout();
 
     long getFallbackRetryDelay();
 
