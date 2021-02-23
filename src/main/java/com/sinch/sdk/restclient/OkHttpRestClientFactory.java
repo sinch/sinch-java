@@ -1,8 +1,7 @@
 package com.sinch.sdk.restclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.exception.ConfigurationException;
+import com.sinch.sdk.restclient.ResponseValidator.ResponseMetadata;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -11,6 +10,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import okhttp3.Request.Builder;
 import org.jetbrains.annotations.NotNull;
@@ -28,15 +28,19 @@ public class OkHttpRestClientFactory implements SinchRestClientFactory {
     return new OkHttpRestClient(httpClient, requestTimeout, objectMapper);
   }
 
+  @Slf4j
   private static class OkHttpRestClient implements SinchRestClient {
 
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
+    private final ResponseValidator responseValidator;
 
     OkHttpRestClient(OkHttpClient client, Duration requestTimeout, ObjectMapper objectMapper) {
       this.client =
           requestTimeout != null ? client.newBuilder().readTimeout(requestTimeout).build() : client;
+      log.info("Uses {} request timeout", requestTimeout != null ? requestTimeout : "default");
       this.objectMapper = objectMapper;
+      this.responseValidator = new ResponseValidator();
     }
 
     @SneakyThrows
@@ -50,7 +54,7 @@ public class OkHttpRestClientFactory implements SinchRestClientFactory {
     public CompletableFuture<Void> post(URI uri, Map<String, String> headers) {
       return send(requestBuilder(uri.toURL(), headers)
               .thenApply(builder -> builder.post(RequestBody.create(new byte[] {})).build()))
-          .thenAccept(res -> {});
+          .thenAccept(responseBody -> {});
     }
 
     @SneakyThrows
@@ -60,7 +64,7 @@ public class OkHttpRestClientFactory implements SinchRestClientFactory {
               .thenApply(
                   builder ->
                       builder.post(RequestBody.create(getBytes(objectMapper, body))).build()))
-          .thenAccept(res -> {});
+          .thenAccept(responseBody -> {});
     }
 
     @SneakyThrows
@@ -92,7 +96,7 @@ public class OkHttpRestClientFactory implements SinchRestClientFactory {
     public CompletableFuture<Void> delete(URI uri, Map<String, String> headers) {
       return send(requestBuilder(uri.toURL(), headers)
               .thenApply(builder -> builder.delete().build()))
-          .thenAccept(Response::close);
+          .thenAccept(responseBody -> {});
     }
 
     private CompletableFuture<Request.Builder> requestBuilder(
@@ -106,57 +110,53 @@ public class OkHttpRestClientFactory implements SinchRestClientFactory {
         final Class<T> clazz, final CompletableFuture<Request> request) {
       return send(request)
           .thenApply(
-              response -> {
-                try (ResponseBody body = response.body()) {
-                  return body != null ? objectMapper.readValue(body.byteStream(), clazz) : null;
+              body -> {
+                try {
+                  return objectMapper.readValue(body, clazz);
                 } catch (IOException e) {
+                  log.error("Exception occurred while trying to read response as {}", clazz);
                   throw new RuntimeException(e);
                 }
               });
     }
 
-    private CompletableFuture<Response> send(final CompletableFuture<Request> requestFuture) {
+    private CompletableFuture<byte[]> send(final CompletableFuture<Request> requestFuture) {
       CompletableFuture<Response> responseFuture = new CompletableFuture<>();
       requestFuture.thenAccept(
-          request ->
-              client
-                  .newCall(request)
-                  .enqueue(
-                      new Callback() {
-                        @Override
-                        public void onFailure(@NotNull Call call, @NotNull IOException exception) {
-                          responseFuture.completeExceptionally(exception);
-                        }
+          request -> {
+            log.debug("Send {} request to: {}", request.method(), request.url().uri());
+            client
+                .newCall(request)
+                .enqueue(
+                    new Callback() {
+                      @Override
+                      public void onFailure(@NotNull Call call, @NotNull IOException exception) {
+                        log.error("Received an exception from {}", request.url().uri(), exception);
+                        responseFuture.completeExceptionally(exception);
+                      }
 
-                        @Override
-                        public void onResponse(@NotNull Call call, @NotNull Response response) {
-                          responseFuture.complete(response);
-                        }
-                      }));
+                      @Override
+                      public void onResponse(@NotNull Call call, @NotNull Response response) {
+                        responseFuture.complete(response);
+                      }
+                    });
+          });
 
-      return responseFuture.thenApply(OkHttpRestClient::validate);
-    }
-
-    private static Response validate(final Response response) {
-      final int statusCode = response.code();
-      if (statusCode == 401) {
-        throw new ConfigurationException(
-            "Invalid credentials, verify the keyId and keySecret", bodyToString(response));
-      }
-      if (statusCode / 100 != 2) {
-        throw new ApiException(
-            statusCode,
-            "Call to " + response.request().url().uri() + " received non-success response",
-            HttpHeaders.of(response.headers().toMultimap(), (s1, s2) -> true),
-            bodyToString(response));
-      }
-      return response;
+      return responseFuture
+          .thenApply(
+              response ->
+                  new ResponseMetadata(
+                      response.code(),
+                      response.request().url().uri(),
+                      getResponseBodyBytes(response),
+                      HttpHeaders.of(response.headers().toMultimap(), (s1, s2) -> true)))
+          .thenApply(responseMetadata -> responseValidator.validate(responseMetadata, log));
     }
 
     @SneakyThrows
-    private static String bodyToString(Response response) {
+    private static byte[] getResponseBodyBytes(Response response) {
       try (ResponseBody body = response.body()) {
-        return body == null ? null : new String(body.bytes());
+        return body == null ? new byte[] {} : body.bytes();
       }
     }
   }

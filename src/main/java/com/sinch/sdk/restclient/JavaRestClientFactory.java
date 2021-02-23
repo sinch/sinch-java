@@ -1,10 +1,8 @@
 package com.sinch.sdk.restclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.exception.ConfigurationException;
+import com.sinch.sdk.restclient.ResponseValidator.ResponseMetadata;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -14,7 +12,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 public class JavaRestClientFactory implements SinchRestClientFactory {
 
@@ -29,6 +27,7 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
     return new JavaHttpRestClient(httpClient, requestTimeout, objectMapper);
   }
 
+  @Slf4j
   private static class JavaHttpRestClient implements SinchRestClient {
 
     private static final String PATCH = "PATCH";
@@ -36,12 +35,15 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
     private final HttpClient client;
     private final Duration requestTimeout;
     private final ObjectMapper objectMapper;
+    private final ResponseValidator responseValidator;
 
     JavaHttpRestClient(
         final HttpClient client, final Duration requestTimeout, final ObjectMapper objectMapper) {
       this.client = client;
       this.requestTimeout = requestTimeout;
+      log.info("Using {} request timeout", requestTimeout != null ? requestTimeout : "default");
       this.objectMapper = objectMapper;
+      this.responseValidator = new ResponseValidator();
     }
 
     @Override
@@ -53,7 +55,7 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
     public CompletableFuture<Void> post(URI uri, Map<String, String> headers) {
       return send(requestBuilder(uri, headers)
               .thenApply(builder -> builder.POST(HttpRequest.BodyPublishers.noBody()).build()))
-          .thenAccept(res -> {});
+          .thenAccept(responseBody -> {});
     }
 
     @Override
@@ -65,7 +67,7 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
                           .POST(
                               HttpRequest.BodyPublishers.ofByteArray(getBytes(objectMapper, body)))
                           .build()))
-          .thenAccept(res -> {});
+          .thenAccept(responseBody -> {});
     }
 
     @Override
@@ -100,45 +102,52 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
     @Override
     public CompletableFuture<Void> delete(URI uri, Map<String, String> headers) {
       return send(requestBuilder(uri, headers).thenApply(builder -> builder.DELETE().build()))
-          .thenAccept(res -> {});
-    }
-
-    private static HttpResponse<InputStream> validate(final HttpResponse<InputStream> response) {
-      final int statusCode = response.statusCode();
-      if (statusCode == 401) {
-        throw new ConfigurationException(
-            "Invalid credentials, verify the keyId and keySecret", bodyToString(response));
-      }
-      if (statusCode / 100 != 2) {
-        throw new ApiException(
-            statusCode,
-            "Call to " + response.uri() + " received non-success response",
-            response.headers(),
-            bodyToString(response));
-      }
-      return response;
+          .thenAccept(responseBody -> {});
     }
 
     private <T> CompletableFuture<T> send(
         final Class<T> clazz, final CompletableFuture<HttpRequest> request) {
       return send(request)
-          .thenApply(HttpResponse::body)
           .thenApply(
-              bodyInputStream -> {
+              body -> {
                 try {
-                  return objectMapper.readValue(bodyInputStream, clazz);
+                  return objectMapper.readValue(body, clazz);
                 } catch (IOException e) {
+                  log.error("Exception occurred while trying to read response as {}", clazz);
                   throw new RuntimeException(e);
                 }
               });
     }
 
-    private CompletableFuture<HttpResponse<InputStream>> send(
-        final CompletableFuture<HttpRequest> requestFuture) {
+    private CompletableFuture<byte[]> send(final CompletableFuture<HttpRequest> requestFuture) {
       return requestFuture
           .thenCompose(
-              request -> client.sendAsync(request, HttpResponse.BodyHandlers.ofInputStream()))
-          .thenApply(JavaHttpRestClient::validate);
+              request -> {
+                log.debug("Send {} request to: {}", request.method(), request.uri());
+                return client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray());
+              })
+          .whenComplete(JavaHttpRestClient::logExceptions)
+          .thenApply(
+              httpResponse ->
+                  new ResponseMetadata(
+                      httpResponse.statusCode(),
+                      httpResponse.uri(),
+                      httpResponse.body(),
+                      httpResponse.headers()))
+          .thenApply(responseMetadata -> responseValidator.validate(responseMetadata, log));
+    }
+
+    private static void logExceptions(HttpResponse<byte[]> response, Throwable throwable) {
+      if (throwable != null) {
+        log.error("Received an exception from {}", response.uri(), throwable);
+        if (log.isDebugEnabled()) {
+          log.debug(
+              "Received response from {} with status {} and body: {}",
+              response.uri(),
+              response.statusCode(),
+              BodyMapper.bodyToString(response.body()));
+        }
+      }
     }
 
     private CompletableFuture<HttpRequest.Builder> requestBuilder(
@@ -155,13 +164,6 @@ public class JavaRestClientFactory implements SinchRestClientFactory {
         builder = builder.timeout(requestTimeout);
       }
       return CompletableFuture.completedFuture(builder);
-    }
-
-    @SneakyThrows
-    private static String bodyToString(HttpResponse<InputStream> response) {
-      try (InputStream body = response.body()) {
-        return body == null ? null : new String(body.readAllBytes());
-      }
     }
   }
 }
