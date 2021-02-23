@@ -57,12 +57,15 @@ dependencies {
 
 spotless {
     java {
+        target project.fileTree(project.projectDir) {
+            include 'src/**/*.java'
+            exclude 'build/**/*.*'
+        }
         googleJavaFormat()
         removeUnusedImports()
         trimTrailingWhitespace()
     }
 }
-tasks.build.dependsOn tasks.spotlessApply
 
 test {
     useJUnitPlatform {
