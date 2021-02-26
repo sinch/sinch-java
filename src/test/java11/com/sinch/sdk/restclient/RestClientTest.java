@@ -23,8 +23,7 @@ import com.sinch.sdk.extensions.WireMockExtension;
 import com.sinch.sdk.extensions.WireMockExtension.WiremockUri;
 import com.sinch.sdk.model.conversationapi.App;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionException;
@@ -32,7 +31,6 @@ import lombok.SneakyThrows;
 import okhttp3.OkHttpClient;
 import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,12 +41,7 @@ class RestClientTest {
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String HEADER_NAME = "Content-Type";
   private static final String HEADER_VALUE = "application/json";
-  private static final Map<String, String> HEADER_MAP = new HashMap<>();
-
-  @BeforeAll
-  static void setup() {
-    HEADER_MAP.put(HEADER_NAME, HEADER_VALUE);
-  }
+  private static final Map<String, String> HEADER_MAP = Map.of(HEADER_NAME, HEADER_VALUE);
 
   @ParameterizedTest
   @MethodSource("restClients")
@@ -217,7 +210,8 @@ class RestClientTest {
   private static List<SinchRestClient> restClients() {
     final CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
     httpClient.start();
-    return Arrays.asList(
+    return List.of(
+        new JavaRestClientFactory(HttpClient.newHttpClient()).getClient(null, OBJECT_MAPPER),
         new OkHttpRestClientFactory(new OkHttpClient()).getClient(null, OBJECT_MAPPER),
         new ApacheHttpRestClientFactory(httpClient).getClient(null, OBJECT_MAPPER));
   }

@@ -6,6 +6,8 @@ import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.QueryCapabilityRequest;
 import com.sinch.sdk.model.conversationapi.QueryCapabilityResponse;
 import com.sinch.sdk.model.conversationapi.Recipient;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,9 @@ class CapabilitiesTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    capabilities = Sinch.conversationApi(Region.EU).capabilities();
+    capabilities =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
+            .capabilities();
   }
 
   @Test

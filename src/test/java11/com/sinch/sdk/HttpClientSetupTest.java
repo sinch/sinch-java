@@ -5,7 +5,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static java.util.Collections.singletonList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinch.sdk.extensions.WireMockExtension;
@@ -20,8 +19,8 @@ import com.sinch.sdk.restclient.SinchRestClientFactory;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.http.HttpClient;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
@@ -73,11 +72,11 @@ class HttpClientSetupTest {
 
   static Stream<TestConfig> httpClientConfigs() {
     return Stream.of(
-        new TestConfig(OkHttpApplication.class, singletonList("httpclient"), false),
-        new TestConfig(ApacheHttpClientApplication.class, singletonList("okhttp"), false),
-        new TestConfig(JdkHttpClientApplication.class, Collections.emptyList(), true),
-        new TestConfig(OkHttpApplication.class, singletonList("okhttp"), true),
-        new TestConfig(ApacheHttpClientApplication.class, singletonList("httpclient"), true));
+        new TestConfig(OkHttpApplication.class, List.of("httpclient"), false),
+        new TestConfig(ApacheHttpClientApplication.class, List.of("okhttp"), false),
+        new TestConfig(JdkHttpClientApplication.class, List.of("okhttp", "httpclient"), false),
+        new TestConfig(OkHttpApplication.class, List.of("okhttp"), true),
+        new TestConfig(ApacheHttpClientApplication.class, List.of("httpclient"), true));
   }
 
   static ClassLoader isolatedClassLoader(List<String> toFilter) {
@@ -119,7 +118,7 @@ class HttpClientSetupTest {
   public static class JdkHttpClientApplication {
 
     public static void test(String projectId) {
-      HttpClientSetupTest.test(projectId, new JavaRestClientFactory(null));
+      HttpClientSetupTest.test(projectId, new JavaRestClientFactory(HttpClient.newHttpClient()));
     }
   }
 

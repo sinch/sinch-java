@@ -43,7 +43,7 @@ public class ResourceExtension implements ParameterResolver {
     } else {
       return getResource(
           paramDefinition.path(),
-          new TypeReference<>() {
+          new TypeReference<Type>() {
             @Override
             public Type getType() {
               return paramDefinition.type();

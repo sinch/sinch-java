@@ -5,7 +5,6 @@ import com.sinch.sdk.restclient.ResponseValidator.ResponseMetadata;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpHeaders;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -149,7 +148,7 @@ public class OkHttpRestClientFactory implements SinchRestClientFactory {
                       response.code(),
                       response.request().url().uri(),
                       getResponseBodyBytes(response),
-                      HttpHeaders.of(response.headers().toMultimap(), (s1, s2) -> true)))
+                      new HttpHeaders(response.headers().toMultimap())))
           .thenApply(responseMetadata -> responseValidator.validate(responseMetadata, log));
     }
 

@@ -8,7 +8,9 @@ import com.sinch.sdk.model.conversationapi.App;
 import com.sinch.sdk.model.conversationapi.Webhook;
 import com.sinch.sdk.model.conversationapi.WebhookTargetType;
 import com.sinch.sdk.model.conversationapi.WebhookTrigger;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
 import java.util.List;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,7 +27,8 @@ class WebhooksTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    final ConversationApi conversationApi = Sinch.conversationApi(Region.EU);
+    final ConversationApi conversationApi =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()));
     apps = conversationApi.apps();
     webhooks = conversationApi.webhooks();
     app = apps.create(new App().displayName("Webhook test app"));

@@ -6,7 +6,6 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.exception.ConfigurationException;
 import java.net.URI;
-import java.net.http.HttpHeaders;
 import lombok.Value;
 import org.slf4j.Logger;
 
