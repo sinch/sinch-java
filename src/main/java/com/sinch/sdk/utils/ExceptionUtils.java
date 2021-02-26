@@ -31,10 +31,7 @@ public class ExceptionUtils {
   public ApiException getExpectedCause(final Throwable throwable) {
     final Throwable cause = throwable.getCause();
     if (cause instanceof ApiException) {
-      final ApiException apiException = (ApiException) cause; // TODO: replace with proper logging
-      System.out.println(apiException.getCode());
-      System.out.println(apiException.getResponseBody());
-      return apiException;
+      return (ApiException) cause;
     }
     throw throwable;
   }

@@ -12,7 +12,9 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AuthenticationService {
   public static final String HEADER_KEY_AUTH = "Authorization";
   private static final String HEADER_KEY_CONTENT_TYPE = "Content-Type";
@@ -49,6 +51,11 @@ public class AuthenticationService {
             basicHeaderValue,
             HEADER_KEY_CONTENT_TYPE,
             APPLICATION_FORM_URLENCODED_VALUE);
+    log.info(
+        "Configuration [url: {}, fallbackRetry: {}, useBasicAuth: {}]",
+        config.getUrl(),
+        config.getFallbackRetryDelay(),
+        config.useBasicAuth());
     if (config.useBasicAuth()) {
       authHeaderFuture =
           CompletableFuture.completedFuture(Map.of(HEADER_KEY_AUTH, basicHeaderValue));
@@ -76,6 +83,7 @@ public class AuthenticationService {
         getAuthResponse()
             .thenApply(
                 authResponse -> {
+                  log.debug("Received the access token");
                   scheduleReload(Math.max(authResponse.getExpiresIn() - 60, fallbackRetryDelay));
                   return Map.of(
                       HEADER_KEY_AUTH,
@@ -97,6 +105,7 @@ public class AuthenticationService {
     return new TimerTask() {
       @Override
       public void run() {
+        log.debug("Refreshing the access token");
         runnable.run();
       }
     };

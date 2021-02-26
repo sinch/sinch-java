@@ -53,6 +53,7 @@ dependencies {
     // Required by swagger generated models
     implementation "io.swagger:swagger-annotations:1.5.22"
     implementation "com.google.code.findbugs:jsr305:3.0.2"
+    implementation "org.slf4j:slf4j-api:1.7.30"
     compileOnly "com.squareup.okhttp3:okhttp:4.9.0"
     compileOnly "org.apache.httpcomponents.client5:httpclient5:5.0.3"
 
@@ -71,6 +72,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    testRuntimeOnly "org.slf4j:slf4j-simple:1.7.30"
 }
 
 spotless {
