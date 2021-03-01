@@ -1,0 +1,54 @@
+{
+  "message" : {
+    "carousel_message" : {
+      "cards" : [ {
+        "choices" : [ {
+          "call_message" : {
+            "phone_number" : "+123445566",
+            "title" : "Call me!"
+          }
+        }, {
+          "url_message" : {
+            "title" : "Join my meeting!",
+            "url" : "https://slack.meeting.com"
+          }
+        } ],
+        "description" : "Card Description",
+        "height" : "SHORT",
+        "media_message" : {
+          "url" : "https://1vxc0v12qhrm1e72gq1mmxkf-wpengine.netdna-ssl.com/wp-content/uploads/2020/07/Sinch-Voice-calling-graphics.png"
+        },
+        "title" : "Card Title"
+      }, {
+        "choices" : [ {
+          "call_message" : {
+            "phone_number" : "numbah",
+            "title" : "a"
+          }
+        } ],
+        "description" : "Descriptioner",
+        "height" : "UNSPECIFIED_HEIGHT",
+        "media_message" : {
+          "thumbnail_url" : "file://small_img",
+          "url" : "file://img"
+        },
+        "title" : "Other Title"
+      } ],
+      "choices" : [ {
+        "call_message" : {
+          "phone_number" : "+321665544",
+          "title" : "My number"
+        }
+      } ]
+    }
+  },
+  "queue" : "NORMAL_PRIORITY",
+  "recipient" : {
+    "identified_by" : {
+      "channel_identities" : [ {
+        "channel" : "MESSENGER",
+        "identity" : "msngrrr"
+      } ]
+    }
+  }
+}

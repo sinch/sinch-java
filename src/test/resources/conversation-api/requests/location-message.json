@@ -1,0 +1,21 @@
+{
+  "message" : {
+    "location_message" : {
+      "coordinates" : {
+        "latitude" : 55.512,
+        "longitude" : 22.445
+      },
+      "label" : "The location label",
+      "title" : "Here!"
+    }
+  },
+  "queue" : "NORMAL_PRIORITY",
+  "recipient" : {
+    "identified_by" : {
+      "channel_identities" : [ {
+        "channel" : "VIBERBM",
+        "identity" : "bmviberer"
+      } ]
+    }
+  }
+}

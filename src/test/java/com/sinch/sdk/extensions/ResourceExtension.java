@@ -2,6 +2,7 @@ package com.sinch.sdk.extensions;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sinch.sdk.api.conversationapi.ConversationApi;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -22,7 +23,13 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 
 public class ResourceExtension implements ParameterResolver {
 
-  protected static final ObjectMapper MAPPER = objectMapper();
+  private static final ObjectMapper MAPPER;
+  private static final ObjectWriter WRITER;
+
+  static {
+    MAPPER = objectMapper();
+    WRITER = MAPPER.writerWithDefaultPrettyPrinter();
+  }
 
   @Override
   public boolean supportsParameter(
@@ -37,12 +44,12 @@ public class ResourceExtension implements ParameterResolver {
       throws ParameterResolutionException {
     final Resource paramDefinition = parameterContext.getParameter().getAnnotation(Resource.class);
     if (String.class.equals(paramDefinition.type())) {
-      return getResourceAsString(paramDefinition.path());
+      return getResourceAsString(paramDefinition.value());
     } else if (InputStream.class.equals(paramDefinition.type())) {
-      return getResourceAsInputStream(paramDefinition.path());
+      return getResourceAsInputStream(paramDefinition.value());
     } else {
       return getResource(
-          paramDefinition.path(),
+          paramDefinition.value(),
           new TypeReference<Type>() {
             @Override
             public Type getType() {
@@ -75,11 +82,19 @@ public class ResourceExtension implements ParameterResolver {
     return (ObjectMapper) method.invoke(null);
   }
 
+  @SneakyThrows
+  public static String asJsonString(final Object value) {
+    return WRITER.writeValueAsString(value);
+  }
+
   @Target({ElementType.PARAMETER})
   @Retention(RetentionPolicy.RUNTIME)
   public @interface Resource {
-    String path() default "";
 
+    /** Path of the resource to load */
+    String value() default "";
+
+    /** Optional type of the resource */
     Class<?> type() default String.class;
   }
 }

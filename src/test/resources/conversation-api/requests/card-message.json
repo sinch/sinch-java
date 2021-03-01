@@ -1,0 +1,33 @@
+{
+  "app_id" : "123",
+  "message" : {
+    "card_message" : {
+      "choices" : [ {
+        "call_message" : {
+          "phone_number" : "+123445566",
+          "title" : "Call me!"
+        }
+      }, {
+        "url_message" : {
+          "title" : "Join my meeting!",
+          "url" : "https://slack.meeting.com"
+        }
+      } ],
+      "description" : "Card Description",
+      "height" : "SHORT",
+      "media_message" : {
+        "url" : "https://1vxc0v12qhrm1e72gq1mmxkf-wpengine.netdna-ssl.com/wp-content/uploads/2020/07/Sinch-Voice-calling-graphics.png"
+      },
+      "title" : "Card Title"
+    }
+  },
+  "queue" : "NORMAL_PRIORITY",
+  "recipient" : {
+    "identified_by" : {
+      "channel_identities" : [ {
+        "channel" : "VIBER",
+        "identity" : "vibrrrr"
+      } ]
+    }
+  }
+}

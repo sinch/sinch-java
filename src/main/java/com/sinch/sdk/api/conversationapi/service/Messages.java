@@ -4,6 +4,7 @@ import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.*;
+import com.sinch.sdk.model.conversationapi.requests.messages.MessageRequest;
 import com.sinch.sdk.utils.ExceptionUtils;
 import com.sinch.sdk.utils.StringUtils;
 import java.util.Map;
@@ -142,6 +143,15 @@ public class Messages extends AbstractService {
           Conversations.PARAM_CONVERSATION_ID, Contacts.PARAM_CONTACT_ID);
     }
     return restClient.get(withQuery(params.build()), ListMessagesResponse.class);
+  }
+
+  public SendMessageResponse send(final MessageRequest<?, ?> messageRequest) {
+    return send(messageRequest.getRequest());
+  }
+
+  public CompletableFuture<SendMessageResponse> sendAsync(
+      final MessageRequest<?, ?> messageRequest) {
+    return sendAsync(messageRequest.getRequest());
   }
 
   /**

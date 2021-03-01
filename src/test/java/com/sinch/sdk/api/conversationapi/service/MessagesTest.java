@@ -89,7 +89,8 @@ class MessagesTest extends BaseConvIntegrationTest {
     exception =
         Assertions.assertThrows(ApiException.class, () -> messages.list(new ListMessagesParams()));
     assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> messages.send(null));
+    exception =
+        Assertions.assertThrows(ApiException.class, () -> messages.send((SendMessageRequest) null));
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(ApiException.class, () -> messages.send(new SendMessageRequest()));

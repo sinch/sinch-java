@@ -59,7 +59,7 @@ class AuthenticationServiceTest {
 
   @Test
   void shouldReturnBearerTokenWhenAuthResponseIsSuccessful(
-      @Resource(path = "authentication/response.json", type = AuthResponse.class)
+      @Resource(value = "authentication/response.json", type = AuthResponse.class)
           AuthResponse authResponse) {
     // given
     when(authRestClientMock.post(any(), eq(AuthResponse.class), any(), any()))
@@ -100,7 +100,7 @@ class AuthenticationServiceTest {
 
   @Test
   void shouldReturnUnauthorizedWhenAuthRestClientReturnsUnauthorized(
-      @Resource(path = "authentication/401_response.json") String authResponse) {
+      @Resource("authentication/401_response.json") String authResponse) {
     // given
     final CompletableFuture<AuthResponse> failedFuture = new CompletableFuture<>();
     failedFuture.completeExceptionally(

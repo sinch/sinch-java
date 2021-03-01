@@ -27,10 +27,10 @@ class CallbackValidatorTest {
 
   @BeforeEach
   void setUp(
-      @Resource(path = "conversation-api/callback-validation/conversation-start-callback.json")
+      @Resource("conversation-api/callback-validation/conversation-start-callback.json")
           String json,
       @Resource(
-              path =
+              value =
                   "conversation-api/callback-validation/conversation-start-callback-headers.json",
               type = Map.class)
           Map<String, String> headersFromFile) {
