@@ -18,7 +18,6 @@ import com.sinch.sdk.extensions.ResourceExtension.Resource;
 import com.sinch.sdk.model.common.auth.service.AuthResponse;
 import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.test.utils.AwaitUtil;
-import java.net.http.HttpTimeoutException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.Test;
@@ -77,11 +76,14 @@ class AuthenticationServiceTest {
   }
 
   @Test
-  void
-      shouldReturnWrappedHttpTimeoutExceptionThrowsWhenCallToAuthServiceReturnsHttpTimeoutException() {
+  void shouldReturnWrappedExceptionThrowsWhenCallToAuthServiceReturnsException() {
     // given
+    final String exceptionMessage = "Wrapped exception";
+    final CompletableFuture<AuthResponse> failedFuture = new CompletableFuture<>();
+    failedFuture.completeExceptionally(new RuntimeException(exceptionMessage));
+
     when(authRestClientMock.post(any(), eq(AuthResponse.class), any(), any()))
-        .thenReturn(CompletableFuture.failedFuture(new HttpTimeoutException("")));
+        .thenReturn(failedFuture);
     AuthenticationService authenticationService =
         new AuthenticationService(authRestClientMock, new AuthenticationEU(), TEST_ID, TEST_SECRET);
 
@@ -90,19 +92,22 @@ class AuthenticationServiceTest {
 
     // then
     assertThat(throwable).isInstanceOf(CompletionException.class);
-    assertThat(throwable.getCause()).isInstanceOf(HttpTimeoutException.class);
+    assertThat(throwable.getCause())
+        .isInstanceOf(RuntimeException.class)
+        .extracting(Throwable::getMessage)
+        .isEqualTo(exceptionMessage);
   }
 
   @Test
   void shouldReturnUnauthorizedWhenAuthRestClientReturnsUnauthorized(
       @Resource(path = "authentication/401_response.json") String authResponse) {
     // given
-    CompletableFuture<AuthResponse> completableFuture =
-        CompletableFuture.failedFuture(
-            new ConfigurationException(
-                "Invalid credentials, verify the keyId and keySecret", authResponse));
+    final CompletableFuture<AuthResponse> failedFuture = new CompletableFuture<>();
+    failedFuture.completeExceptionally(
+        new ConfigurationException(
+            "Invalid credentials, verify the keyId and keySecret", authResponse));
     when(authRestClientMock.post(any(), eq(AuthResponse.class), any(), any()))
-        .thenReturn(completableFuture);
+        .thenReturn(failedFuture);
     AuthenticationService authenticationService =
         new AuthenticationService(authRestClientMock, new AuthenticationEU(), TEST_ID, TEST_SECRET);
 
@@ -117,8 +122,10 @@ class AuthenticationServiceTest {
   @Test
   void shouldReturnWrappedTooManyRequestsWhenThrowsByAuthRestClient() {
     // given
+    final CompletableFuture<AuthResponse> failedFuture = new CompletableFuture<>();
+    failedFuture.completeExceptionally(new ApiException(429, ""));
     when(authRestClientMock.post(any(), eq(AuthResponse.class), any(), any()))
-        .thenReturn(CompletableFuture.failedFuture(new ApiException(429, "")));
+        .thenReturn(failedFuture);
     AuthenticationService authenticationService =
         new AuthenticationService(authRestClientMock, new AuthenticationEU(), TEST_ID, TEST_SECRET);
 

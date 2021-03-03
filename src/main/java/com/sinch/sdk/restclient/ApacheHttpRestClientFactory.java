@@ -6,7 +6,6 @@ import com.sinch.sdk.exception.ConfigurationException;
 import com.sinch.sdk.restclient.ResponseValidator.ResponseMetadata;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpHeaders;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -153,7 +152,7 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
             log.debug("Send {} request to: {}", request.getMethod(), requestURI(request));
             client.execute(
                 request,
-                new FutureCallback<>() {
+                new FutureCallback<SimpleHttpResponse>() {
                   @Override
                   public void completed(SimpleHttpResponse response) {
                     try {
@@ -197,7 +196,7 @@ public class ApacheHttpRestClientFactory implements SinchRestClientFactory {
               .collect(
                   Collectors.groupingBy(
                       Header::getName, Collectors.mapping(Header::getValue, Collectors.toList())));
-      return HttpHeaders.of(headersMap, (s1, s2) -> true);
+      return new HttpHeaders(headersMap);
     }
   }
 }

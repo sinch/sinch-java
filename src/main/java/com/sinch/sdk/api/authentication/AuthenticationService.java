@@ -6,6 +6,8 @@ import com.sinch.sdk.model.common.auth.service.AuthResponse;
 import com.sinch.sdk.restclient.SinchRestClient;
 import java.net.URI;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,25 +47,28 @@ public class AuthenticationService {
             Base64.getEncoder()
                 .encodeToString(String.format(TEMPLATE_ID_SECRET, keyId, keySecret).getBytes()));
     this.authRequestURI = URI.create(config.getUrl());
-    this.authRequestHeaders =
-        Map.of(
-            HEADER_KEY_AUTH,
-            basicHeaderValue,
-            HEADER_KEY_CONTENT_TYPE,
-            APPLICATION_FORM_URLENCODED_VALUE);
     log.info(
         "Configuration [url: {}, fallbackRetry: {}, useBasicAuth: {}]",
         config.getUrl(),
         config.getFallbackRetryDelay(),
         config.useBasicAuth());
+    this.authRequestHeaders = createHeaders(basicHeaderValue, config.useBasicAuth());
     if (config.useBasicAuth()) {
-      authHeaderFuture =
-          CompletableFuture.completedFuture(Map.of(HEADER_KEY_AUTH, basicHeaderValue));
+      authHeaderFuture = CompletableFuture.completedFuture(this.authRequestHeaders);
     } else {
       this.fallbackRetryDelay = config.getFallbackRetryDelay();
       this.refreshTimer = new Timer("BearerTokenRefreshTimer");
       reload();
     }
+  }
+
+  private Map<String, String> createHeaders(String basicHeaderValue, boolean useBasicAuth) {
+    Map<String, String> authRequestHeaders = new HashMap<>();
+    authRequestHeaders.put(HEADER_KEY_AUTH, basicHeaderValue);
+    if (!useBasicAuth) {
+      authRequestHeaders.put(HEADER_KEY_CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);
+    }
+    return Collections.unmodifiableMap(authRequestHeaders);
   }
 
   /**
@@ -85,9 +90,11 @@ public class AuthenticationService {
                 authResponse -> {
                   log.debug("Received the access token");
                   scheduleReload(Math.max(authResponse.getExpiresIn() - 60, fallbackRetryDelay));
-                  return Map.of(
+                  final Map<String, String> authTokenHeader = new HashMap<>();
+                  authTokenHeader.put(
                       HEADER_KEY_AUTH,
                       String.format(TEMPLATE_BEARER_AUTH, authResponse.getAccessToken()));
+                  return authTokenHeader;
                 });
   }
 

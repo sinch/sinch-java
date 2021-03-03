@@ -4,7 +4,9 @@ import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.*;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
 import java.util.Optional;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,9 @@ class ContactsTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    contacts = Sinch.conversationApi(Region.EU).contacts();
+    contacts =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
+            .contacts();
   }
 
   @Test
@@ -44,7 +48,7 @@ class ContactsTest extends BaseConvIntegrationTest {
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
     Assertions.assertEquals(
-        Optional.of("404"), exception.getResponseHeaders().firstValue(":status"));
+        Optional.of("404"), exception.getResponseHeaders().firstValue("status"));
     System.out.println(exception.getResponseBody());
   }
 

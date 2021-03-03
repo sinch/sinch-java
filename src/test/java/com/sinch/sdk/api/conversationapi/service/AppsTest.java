@@ -4,7 +4,9 @@ import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.*;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
 import java.util.List;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,9 @@ class AppsTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    apps = Sinch.conversationApi(Region.EU).apps();
+    apps =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
+            .apps();
   }
 
   @Test

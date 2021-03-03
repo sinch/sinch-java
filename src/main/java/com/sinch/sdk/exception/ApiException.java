@@ -1,6 +1,6 @@
 package com.sinch.sdk.exception;
 
-import java.net.http.HttpHeaders;
+import com.sinch.sdk.restclient.HttpHeaders;
 
 public class ApiException extends RuntimeException {
   private final int code;
@@ -34,7 +34,7 @@ public class ApiException extends RuntimeException {
   /**
    * Get the HTTP response headers.
    *
-   * @return Headers as an HttpHeaders object
+   * @return Headers as {@link HttpHeaders}
    */
   public HttpHeaders getResponseHeaders() {
     return responseHeaders;

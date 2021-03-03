@@ -6,7 +6,9 @@ import com.sinch.sdk.model.conversationapi.AppMessage;
 import com.sinch.sdk.model.conversationapi.ConversationChannel;
 import com.sinch.sdk.model.conversationapi.TextMessage;
 import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
 import java.util.Map;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +20,9 @@ class TranscodingTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    transcoding = Sinch.conversationApi(Region.EU).transcoding();
+    transcoding =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
+            .transcoding();
   }
 
   @Test

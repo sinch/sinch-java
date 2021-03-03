@@ -64,6 +64,6 @@ class SinchRestClientProxy implements SinchRestClient {
   private Map<String, String> mergeHeaders(
       Map<String, String> headers, Map<String, String> authHeaders) {
     return Stream.concat(headers.entrySet().stream(), authHeaders.entrySet().stream())
-        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }

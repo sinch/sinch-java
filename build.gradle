@@ -6,6 +6,7 @@ plugins {
     id "com.diffplug.spotless" version "5.8.2"
     id 'com.adarshr.test-logger' version "2.1.1"
     id "com.jfrog.bintray" version "1.8.5"
+    id 'me.champeau.mrjar'
 }
 
 repositories {
@@ -54,7 +55,7 @@ dependencies {
     implementation "io.swagger:swagger-annotations:1.5.22"
     implementation "com.google.code.findbugs:jsr305:3.0.2"
     implementation "org.slf4j:slf4j-api:1.7.30"
-    compileOnly "com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "com.squareup.okhttp3:okhttp:4.9.0"
     compileOnly "org.apache.httpcomponents.client5:httpclient5:5.0.3"
 
     implementation "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
@@ -73,6 +74,13 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
     testRuntimeOnly "org.slf4j:slf4j-simple:1.7.30"
+    testRuntimeOnly "com.squareup.okhttp3:okhttp:4.9.0"
+}
+
+tasks.withType(Test) {
+    systemProperties.putAll(
+            System.getProperties().findAll { it.key.startsWith("sinch") || it.key == 'ignoreTestTags' }
+    )
 }
 
 spotless {
@@ -87,32 +95,25 @@ spotless {
     }
 }
 
+multiReleaseJar {
+    addLanguageVersion 11
+}
+
 test {
     useJUnitPlatform {
-        excludeTags System.getProperty("ignoreTestTags") ?
-                "none()" : "integrationTest"
+        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'integrationTest'
+    }
+}
+
+testJava11() {
+    useJUnitPlatform {
+        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'integrationTest'
     }
 }
 
 testlogger {
     showFullStackTraces false
     showStandardStreams true
-}
-
-tasks.withType(Test) {
-    systemProperties = System.properties as Map<String, ?>
-}
-
-tasks.jar {
-    manifest {
-        attributes("Implementation-Title": project.name,
-                "Implementation-Version": project.version)
-    }
-}
-
-java {
-    withSourcesJar()
-    withJavadocJar()
 }
 
 def convApiSwaggerFile = new File("$buildDir/conversation-api.swagger.json")
@@ -137,9 +138,11 @@ openApiGenerate {
     generateModelTests = false
     generateModelDocumentation = false
     modelFilesConstrainedTo = [""]
+    configOptions = ['hideGenerationTimestamp': 'true']
 }
 sourceSets.main.java.srcDir "$buildDir/swagger/src/main/java"
 compileJava.dependsOn tasks.openApiGenerate
+compileJava11Java.dependsOn tasks.openApiGenerate
 
 class AntDownload extends DefaultTask {
     @Input

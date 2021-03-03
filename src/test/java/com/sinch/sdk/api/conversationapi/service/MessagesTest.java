@@ -1,12 +1,15 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import static java.util.Collections.emptyList;
+
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.*;
-import java.util.List;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
 import java.util.Map;
 import java.util.Optional;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,7 +24,9 @@ class MessagesTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    messages = Sinch.conversationApi(Region.EU).messages();
+    messages =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
+            .messages();
   }
 
   @Test
@@ -33,7 +38,7 @@ class MessagesTest extends BaseConvIntegrationTest {
     Assertions.assertNotNull(exception.getResponseBody());
     Assertions.assertNotNull(exception.getResponseHeaders());
     Assertions.assertEquals(
-        Optional.of("404"), exception.getResponseHeaders().firstValue(":status"));
+        Optional.of("404"), exception.getResponseHeaders().firstValue("status"));
     System.out.println(exception.getResponseBody());
   }
 
@@ -99,7 +104,7 @@ class MessagesTest extends BaseConvIntegrationTest {
     exception =
         Assertions.assertThrows(
             ApiException.class,
-            () -> messages.transcode(new TranscodeMessageRequest().channels(List.of())));
+            () -> messages.transcode(new TranscodeMessageRequest().channels(emptyList())));
     assertClientSideException(exception);
   }
 }

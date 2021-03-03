@@ -13,18 +13,22 @@ public class ExceptionUtils {
   public static final int BAD_REQUEST = 400;
 
   public <T> CompletableFuture<T> missingParam(final String paramName) {
-    return CompletableFuture.failedFuture(
+    final CompletableFuture<T> completableFuture = new CompletableFuture<>();
+    completableFuture.completeExceptionally(
         new ApiException(
             BAD_REQUEST, String.format("Missing the required parameter '%s'", paramName)));
+    return completableFuture;
   }
 
   public <T> CompletableFuture<T> missingOneOf(final String... paramNames) {
-    return CompletableFuture.failedFuture(
+    final CompletableFuture<T> completableFuture = new CompletableFuture<>();
+    completableFuture.completeExceptionally(
         new ApiException(
             BAD_REQUEST,
             String.format(
                 "Missing required oneOf parameter: %s",
                 Arrays.stream(paramNames).collect(Collectors.toList()))));
+    return completableFuture;
   }
 
   @SneakyThrows

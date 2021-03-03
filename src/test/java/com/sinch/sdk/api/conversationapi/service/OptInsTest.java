@@ -1,10 +1,13 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import static java.util.Collections.emptyList;
+
 import com.sinch.sdk.Sinch;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.common.Region;
 import com.sinch.sdk.model.conversationapi.*;
-import java.util.List;
+import com.sinch.sdk.restclient.OkHttpRestClientFactory;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +21,9 @@ class OptInsTest extends BaseConvIntegrationTest {
 
   @BeforeAll
   static void beforeAll() {
-    optIns = Sinch.conversationApi(Region.EU).optIns();
+    optIns =
+        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
+            .optIns();
   }
 
   @Test
@@ -56,7 +61,7 @@ class OptInsTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> optIns.optIn(new OptIn().channels(List.of()), null));
+            ApiException.class, () -> optIns.optIn(new OptIn().channels(emptyList()), null));
     assertClientSideException(exception);
     exception = Assertions.assertThrows(ApiException.class, () -> optIns.optOut(null, null));
     assertClientSideException(exception);
@@ -66,7 +71,7 @@ class OptInsTest extends BaseConvIntegrationTest {
     assertClientSideException(exception);
     exception =
         Assertions.assertThrows(
-            ApiException.class, () -> optIns.optOut(new OptOut().channels(List.of()), null));
+            ApiException.class, () -> optIns.optOut(new OptOut().channels(emptyList()), null));
     assertClientSideException(exception);
   }
 }
