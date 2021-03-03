@@ -1,8 +1,8 @@
 package com.sinch.sdk.api.authentication;
 
+import com.sinch.sdk.api.authentication.model.AuthResponse;
 import com.sinch.sdk.configuration.Configuration;
 import com.sinch.sdk.exception.ConfigurationException;
-import com.sinch.sdk.model.common.auth.service.AuthResponse;
 import com.sinch.sdk.restclient.SinchRestClient;
 import java.net.URI;
 import java.util.Base64;

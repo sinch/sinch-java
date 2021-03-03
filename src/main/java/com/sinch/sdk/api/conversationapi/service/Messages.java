@@ -2,11 +2,12 @@ package com.sinch.sdk.api.conversationapi.service;
 
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
+import com.sinch.sdk.api.conversationapi.model.ListMessagesParams;
+import com.sinch.sdk.api.conversationapi.model.request.message.MessageRequest;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.*;
-import com.sinch.sdk.model.conversationapi.requests.messages.MessageRequest;
-import com.sinch.sdk.utils.ExceptionUtils;
-import com.sinch.sdk.utils.StringUtils;
+import com.sinch.sdk.util.ExceptionUtils;
+import com.sinch.sdk.util.StringUtils;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;

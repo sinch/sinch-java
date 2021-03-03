@@ -5,7 +5,7 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.SendEventRequest;
 import com.sinch.sdk.model.conversationapi.SendEventResponse;
-import com.sinch.sdk.utils.ExceptionUtils;
+import com.sinch.sdk.util.ExceptionUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 

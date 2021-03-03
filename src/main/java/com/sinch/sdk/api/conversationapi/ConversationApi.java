@@ -9,7 +9,7 @@ import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.service.*;
 import com.sinch.sdk.configuration.Configuration;
-import com.sinch.sdk.model.common.Region;
+import com.sinch.sdk.model.Region;
 import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.restclient.SinchRestClientFactory;
 

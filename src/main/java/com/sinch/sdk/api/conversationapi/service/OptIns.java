@@ -7,9 +7,9 @@ import com.sinch.sdk.model.conversationapi.OptIn;
 import com.sinch.sdk.model.conversationapi.OptInResponse;
 import com.sinch.sdk.model.conversationapi.OptOut;
 import com.sinch.sdk.model.conversationapi.OptOutResponse;
-import com.sinch.sdk.utils.ExceptionUtils;
-import com.sinch.sdk.utils.QueryStringBuilder;
-import com.sinch.sdk.utils.StringUtils;
+import com.sinch.sdk.util.ExceptionUtils;
+import com.sinch.sdk.util.QueryStringBuilder;
+import com.sinch.sdk.util.StringUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 

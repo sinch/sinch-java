@@ -3,7 +3,7 @@ package com.sinch.sdk.configuration;
 import com.sinch.sdk.configuration.impl.ConfigurationEU;
 import com.sinch.sdk.configuration.impl.ConfigurationUS;
 import com.sinch.sdk.exception.ConfigurationException;
-import com.sinch.sdk.model.common.Region;
+import com.sinch.sdk.model.Region;
 import java.time.Duration;
 
 public interface Configuration {
