@@ -1,0 +1,28 @@
+{
+  "channel_priority_order" : [ "WHATSAPP", "SMS" ],
+  "message" : {
+    "template_message" : {
+      "channel_template" : {
+        "WHATSAPP" : {
+          "language_code" : "SV",
+          "parameters" : {
+            "header[1]image.link" : "https://example.com"
+          },
+          "template_id" : "tempateId"
+        }
+      },
+      "omni_template" : {
+        "language_code" : "EN",
+        "parameters" : {
+          "name" : "Ms Smith"
+        },
+        "template_id" : "omniId",
+        "version" : "v5"
+      }
+    }
+  },
+  "queue" : "NORMAL_PRIORITY",
+  "recipient" : {
+    "contact_id" : "adf123"
+  }
+}
