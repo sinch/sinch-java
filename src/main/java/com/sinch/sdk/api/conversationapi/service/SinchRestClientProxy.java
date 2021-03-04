@@ -3,6 +3,7 @@ package com.sinch.sdk.api.conversationapi.service;
 import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.restclient.SinchRestClient;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -12,6 +13,8 @@ class SinchRestClientProxy implements SinchRestClient {
 
   private final AuthenticationService authenticationService;
   private final SinchRestClient sinchRestClient;
+  static final Map<String, String> SDK_CALL_IDENTIFIER_HEADER =
+      Collections.singletonMap("Grpc-Metadata-sdk-request", Boolean.TRUE.toString());
 
   SinchRestClientProxy(
       AuthenticationService authenticationService, SinchRestClient sinchRestClient) {
@@ -58,12 +61,13 @@ class SinchRestClientProxy implements SinchRestClient {
   private CompletableFuture<Map<String, String>> allHeaders(Map<String, String> headers) {
     return authenticationService
         .getHeaderValue()
-        .thenApply(authHeader -> mergeHeaders(headers, authHeader));
+        .thenApply(authHeader -> mergeHeaders(authHeader, SDK_CALL_IDENTIFIER_HEADER))
+        .thenApply(autoAddedHeaders -> mergeHeaders(headers, autoAddedHeaders));
   }
 
   private Map<String, String> mergeHeaders(
-      Map<String, String> headers, Map<String, String> authHeaders) {
-    return Stream.concat(headers.entrySet().stream(), authHeaders.entrySet().stream())
+      Map<String, String> headers, Map<String, String> headersToAdd) {
+    return Stream.concat(headers.entrySet().stream(), headersToAdd.entrySet().stream())
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 }
