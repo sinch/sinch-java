@@ -26,11 +26,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Publish to Bintray
-        run: ./gradlew bintrayUpload
+      - name: Publish to Sonatype
+        run: ./gradlew publishAllPublicationsToSonatypeRepository
         env:
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USER }}
+          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
+          ORG_GRADLE_PROJECT_clxRepoUser: ${{ secrets.CLX_REPO_USER }}
+          ORG_GRADLE_PROJECT_clxRepoPassword: ${{ secrets.CLX_REPO_PASSWORD }}
 
       - name: Cleanup Gradle Cache
         # Remove some files from the Gradle cache, so they aren't cached by GitHub Actions.
