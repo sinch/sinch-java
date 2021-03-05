@@ -1,7 +1,7 @@
 package com.sinch.sdk.api.conversationapi.validation;
 
 import com.sinch.sdk.api.authentication.AuthenticationService;
-import com.sinch.sdk.utils.StringUtils;
+import com.sinch.sdk.util.StringUtils;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;

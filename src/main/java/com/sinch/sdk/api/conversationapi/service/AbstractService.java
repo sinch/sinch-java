@@ -5,7 +5,7 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.restclient.SinchRestClient;
 import java.net.URI;
 
-public abstract class AbstractService {
+abstract class AbstractService {
 
   private static final String API_VERSION = "v1";
 

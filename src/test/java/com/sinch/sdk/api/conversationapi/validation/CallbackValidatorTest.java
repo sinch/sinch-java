@@ -2,8 +2,8 @@ package com.sinch.sdk.api.conversationapi.validation;
 
 import static com.sinch.sdk.api.conversationapi.validation.CallbackValidator.Exception.Reason.*;
 
-import com.sinch.sdk.extensions.ResourceExtension;
-import com.sinch.sdk.extensions.ResourceExtension.Resource;
+import com.sinch.sdk.test.extension.ResourceExtension;
+import com.sinch.sdk.test.extension.ResourceExtension.Resource;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Map;
