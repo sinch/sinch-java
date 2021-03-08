@@ -13,8 +13,8 @@ class SinchRestClientProxy implements SinchRestClient {
 
   private final AuthenticationService authenticationService;
   private final SinchRestClient sinchRestClient;
-  static final Map<String, String> SDK_CALL_IDENTIFIER_HEADER =
-      Collections.singletonMap("Grpc-Metadata-sdk-request", Boolean.TRUE.toString());
+  static final Map<String, String> SDK_VERSION_HEADER =
+      Collections.singletonMap("Grpc-Metadata-sdk-version", Version.getValue());
 
   SinchRestClientProxy(
       AuthenticationService authenticationService, SinchRestClient sinchRestClient) {
@@ -61,7 +61,7 @@ class SinchRestClientProxy implements SinchRestClient {
   private CompletableFuture<Map<String, String>> allHeaders(Map<String, String> headers) {
     return authenticationService
         .getHeaderValue()
-        .thenApply(authHeader -> mergeHeaders(authHeader, SDK_CALL_IDENTIFIER_HEADER))
+        .thenApply(authHeader -> mergeHeaders(authHeader, SDK_VERSION_HEADER))
         .thenApply(autoAddedHeaders -> mergeHeaders(headers, autoAddedHeaders));
   }
 

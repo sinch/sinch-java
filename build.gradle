@@ -181,6 +181,12 @@ sourceSets.main.java.srcDir "$buildDir/swagger/src/main/java"
 compileJava.dependsOn tasks.openApiGenerate
 compileJava11Java.dependsOn tasks.openApiGenerate
 
+task createVersionProperties(type: WriteProperties) {
+    outputFile file("$buildDir/resources/main/com/sinch/version.properties")
+    property "version", project.version.toString()
+}
+classes.dependsOn createVersionProperties
+
 class AntDownload extends DefaultTask {
     @Input
     String sourceUrl

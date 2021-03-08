@@ -14,4 +14,4 @@ publish:
   retry: 2
   when: manual
   script:
-    - ./gradlew publishAllPublicationsToSinchRepository
+    - ./gradlew publish

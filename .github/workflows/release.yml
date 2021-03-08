@@ -27,7 +27,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Publish to Sonatype
-        run: ./gradlew publishAllPublicationsToSonatypeRepository
+        run: ./gradlew publish
         env:
           ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.OSSRH_USER }}
           ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.OSSRH_PASSWORD }}
