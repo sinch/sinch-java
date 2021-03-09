@@ -11,7 +11,7 @@ A built jar can be found in the build/libs folder
 
 ### Default Maven setup 
 
-```  
+```xml  
 <dependencies>
     <dependency>
       <groupId>com.sinch.sdk</groupId>
@@ -24,7 +24,7 @@ A built jar can be found in the build/libs folder
 
 ### Default Gradle setup
 
-```
+```groovy
 dependencies {
     implementation "com.sinch.sdk:java-sdk:${sdkVersion}"
     ...
@@ -43,7 +43,7 @@ we strongly recommend excluding this transitive dependency
 
 ### Recommended Maven setup for non-default HttpClient (e.g. Apache)
 
-```  
+```xml  
 <dependencies>
   <dependency>
     <groupId>com.sinch.sdk</groupId>
@@ -67,7 +67,7 @@ we strongly recommend excluding this transitive dependency
 
 ### Recommended Gradle setup for non-default HttpClient (e.g. Apache)
 
-```
+```groovy
 dependencies {
     implementation("com.sinch.sdk:java-sdk:${sdkVersion}") {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
@@ -79,7 +79,7 @@ dependencies {
 
 ## Usage
 The typical initialization for SDK is:
-```
+```java
 Sinch.init(keyId, keySecret, projectId);
 ConversationApiClient apiClient = Sinch.conversationApi(Region.US);
 ```
@@ -93,7 +93,7 @@ SKD has built-in support for:
 - JDK 11 HttpClient (in case SDK is run on Java 11)
 
 In order to use different built-in HttpClient it must be provided explicitly:
-```
+```java
 Sinch.init(keyId, keySecret, projectId);
 CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
 httpClient.start();
@@ -101,13 +101,13 @@ ConversationApi apiClient = Sinch.conversationApi(Region.EU, () -> new ApacheHtt
 ```
 
 It is also possible to create Sinch API Client by providing your own instance of Http client. Example for OkHttpClient:
-```
+```java
 var httpClient = new OkHttpClient();
 Sinch.init(keyId, keySecret, projectId);
 ConversationApi apiClient = Sinch.conversationApi(Region.US, () -> new OkHttpRestClientFactory(httpClient));
 ```
 A user can also use Http Client which Sinch does not support by default:
-```
+```java
 class CustomRestClientFactory implements SinchRestClientFactory {
 
   @Override
@@ -120,7 +120,7 @@ The `requestTimeout` value is read from Java VM parameter `sinch.http_timeout`. 
 If parameter is missing (or its value) then `requestTimeout` is equal to `null`.
 
 Such factory must be used later in order to create a Sinch Conv API client:
-```
+```java
 Sinch.conversationApi(Region.EU, () -> new CustomRestClientFactory())
 ```
 
@@ -136,6 +136,51 @@ Sinch.conversationApi(Region.EU, () -> new CustomRestClientFactory())
 - access token actions (refresh, response received)
 - requests method and URI
 - response status code and body
+
+## How to contribute
+
+### New product must be added under package `com.sinch.sdk.api` 
+Example: SDK for ConversationAPI is located under package `com.sinch.sdk.api.conversationapi`.
+
+### Use `com.sinch.sdk.api.authentication.AuthenticationService` in order to authenticate calls
+AuthenticationService returns header with authentication token which must be used with subsequent rest calls. 
+Token is refreshed automatically.
+
+### REST calls should be done via `com.sinch.sdk.restclient.SinchRestClient` 
+The instance of SinchRestClient is provided by `com.sinch.sdk.restclient.SinchRestClientFactory` (specific for a customer or default one).
+
+### An easy entry point must be provided for the SDK user
+The SDK user should have a simple entry point for specific product part (example `com.sinch.sdk.api.conversationapi.ConversationApi`). 
+This entry point must be accessible via Sinch class. The default implementation must be provided but also an easy way to customize it.  
+Example (default one):
+```java
+Sinch.conversationApi(Region.US);
+```
+Example (customized):
+```java
+Sinch.conversationApi(Region.US, () -> new OkHttpRestClientFactory(new OkHttpClient()));
+```
+
+### Provide builders to construct model classes instead of setters
+Example:
+```java
+new Conversation()
+    .active(true)
+    .activeChannel(ConversationChannel.MESSENGER)
+    .appId(appId)
+    .contactId(contactId));
+```
+
+### Generate model from product specific Swagger file 
+// TODO describe how to do it when plugin or similar is ready
+
+### Syntax for the SDK user should be as simple as possible 
+The most common uses cases should have as short syntax as possible (most hidden by the builders or factories).
+
+### Use Java 8 by default
+Java SDK is a multi-release JAR. We use Java 11 mainly to support JDK 11 HttpClient (see [ADR-02: Support for JDK8](#adr-02-support-for-jdk8) and https://openjdk.java.net/jeps/238).
+
+### Document any architecture decisions in [Architecture Decision Log](#architecture-decision-log)
 
 ## Architecture Decision Log
 
