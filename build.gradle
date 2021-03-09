@@ -53,12 +53,25 @@ publishing {
 
     repositories {
         maven {
+            name "Sonatype"
             def releaseRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             def snapshotRepo = "https://oss.sonatype.org/content/repositories/snapshots/"
             url = isReleaseVersion ? releaseRepo : snapshotRepo
             credentials {
                 username = project.findProperty('ossrhUsername')
                 password = project.findProperty('ossrhPassword')
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name "Sinch"
+            def repo = isReleaseVersion ? "releases" : "snapshots"
+            url = "https://nexus.int.clxnetworks.net/repository/clx-$repo-hosted"
+            credentials {
+                username = project.findProperty("clxRepoUser")
+                password = project.findProperty("clxRepoPassword")
             }
         }
     }
