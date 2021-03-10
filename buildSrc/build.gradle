@@ -2,6 +2,12 @@ plugins {
     id 'groovy-gradle-plugin'
 }
 
+repositories {
+    mavenCentral()
+}
+
+
 dependencies {
     implementation localGroovy()
+    implementation 'org.openapitools:openapi-generator-gradle-plugin:4.3.0'
 }
