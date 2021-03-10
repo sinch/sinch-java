@@ -2,11 +2,11 @@ plugins {
     id "java-library"
     id "signing"
     id "maven-publish"
-    id "org.openapi.generator" version "4.3.0"
     id "io.freefair.lombok" version "5.3.0"
     id "com.diffplug.spotless" version "5.8.2"
     id 'com.adarshr.test-logger' version "2.1.1"
     id 'me.champeau.mrjar'
+    id 'com.sinch.openapi.generator'
 }
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -145,6 +145,14 @@ spotless {
     }
 }
 
+generateModelFromOpenApi {
+    modelDefinition {
+        apiName 'conversationapi'
+        url 'https://developers.sinch.com/openapi/5e8c97e796be52003d4ead78'
+        prefixesToRemove 'Type', 'V1'
+    }
+}
+
 multiReleaseJar {
     addLanguageVersion 11
 }
@@ -166,53 +174,11 @@ testlogger {
     showStandardStreams true
 }
 
-def convApiSwaggerFile = new File("$buildDir/conversation-api.swagger.json")
-task getConversationApiSwagger(type: AntDownload) {
-    sourceUrl = "https://developers.sinch.com/openapi/5e8c97e796be52003d4ead78"
-    target = convApiSwaggerFile
-}
-tasks.openApiGenerate.dependsOn getConversationApiSwagger
-
-task renameConvApiSwaggerModels(type: Exec) {
-    description "Removes the prefixes from the swagger generated models."
-    commandLine "./remove_model_prefix.sh", "conversationapi", "Type", "V1"
-}
-tasks.openApiGenerate.finalizedBy renameConvApiSwaggerModels
-
-openApiGenerate {
-    generatorName = "java"
-    library = "native"
-    inputSpec = convApiSwaggerFile.toString()
-    outputDir = "$buildDir/swagger"
-    modelPackage = "com.sinch.sdk.model.conversationapi"
-    generateModelTests = false
-    generateModelDocumentation = false
-    modelFilesConstrainedTo = [""]
-    configOptions = ['hideGenerationTimestamp': 'true']
-}
-sourceSets.main.java.srcDir "$buildDir/swagger/src/main/java"
-compileJava.dependsOn tasks.openApiGenerate
-compileJava11Java.dependsOn tasks.openApiGenerate
-
 task createVersionProperties(type: WriteProperties) {
     outputFile file("$buildDir/resources/main/com/sinch/version.properties")
     property "version", project.version.toString()
 }
 classes.dependsOn createVersionProperties
-
-class AntDownload extends DefaultTask {
-    @Input
-    String sourceUrl
-
-    @OutputFile
-    File target
-
-    @TaskAction
-    void download() {
-        println("$sourceUrl -> $target")
-        ant.get(src: sourceUrl, dest: target)
-    }
-}
 
 task printVersionName {
     doLast {

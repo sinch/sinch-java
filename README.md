@@ -172,7 +172,19 @@ new Conversation()
 ```
 
 ### Generate model from product specific Swagger file 
-// TODO describe how to do it when plugin or similar is ready
+A custom plugin is available to process multiple swagger files for OpenApi.  
+Example:
+```groovy
+generateModelFromOpenApi {
+    modelDefinition {
+        apiName 'conversationapi'
+        url 'https://developers.sinch.com/openapi/5e8c97e796be52003d4ead78'
+        prefixesToRemove 'Type', 'V1'
+    }
+}
+```
+Teams can add specific `modelDefinition` in order to generate classes. `ApiName` defines the package under `com.sinch.sdk.model`.
+`Url` points to the Swagger file. `PrefixesToRemove` is an addition which removes prefixes from generated files (e.g. called with `Type` changes `TypeApp` into `App`).
 
 ### Syntax for the SDK user should be as simple as possible 
 The most common uses cases should have as short syntax as possible (most hidden by the builders or factories).

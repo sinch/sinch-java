@@ -1,0 +1,13 @@
+plugins {
+    id 'java-library'
+    id 'org.openapi.generator'
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+import com.sinch.openapi.OpenApiExtension
+
+extensions.create('generateModelFromOpenApi', OpenApiExtension, project, sourceSets)
