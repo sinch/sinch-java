@@ -1,112 +1,174 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
 
-import com.sinch.sdk.Sinch;
 import com.sinch.sdk.api.conversationapi.model.ListMessagesParams;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.Region;
-import com.sinch.sdk.model.conversationapi.*;
-import com.sinch.sdk.restclient.OkHttpRestClientFactory;
-import java.util.Map;
-import java.util.Optional;
-import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import com.sinch.sdk.api.conversationapi.model.request.message.TextMessageRequest;
+import com.sinch.sdk.model.conversationapi.ConversationChannel;
+import com.sinch.sdk.model.conversationapi.ConversationMessage;
+import com.sinch.sdk.model.conversationapi.ListMessagesResponse;
+import com.sinch.sdk.model.conversationapi.SendMessageRequest;
+import com.sinch.sdk.model.conversationapi.SendMessageResponse;
+import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
+import com.sinch.sdk.model.conversationapi.TranscodeMessageResponse;
+import java.util.Arrays;
+import java.util.List;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class MessagesTest extends BaseConvIntegrationTest {
+class MessagesTest extends BaseServiceTest {
 
-  private final String appId = "your-app-id";
-  private final String contactId = "your-contact-id";
-  private final String messageId = "your-message-id";
+  private static final String APP_ID = "app-id";
+  private static final String MESSAGE_ID = "message-id";
 
   private static Messages messages;
 
-  @BeforeAll
-  static void beforeAll() {
-    messages =
-        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
-            .messages();
+  @BeforeEach
+  void setUp() {
+    messages = getMessages(null);
   }
 
   @Test
-  void testDeleteMessage() {
-    messages.delete(messageId);
-    final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> messages.get(messageId));
-    Assertions.assertEquals(404, exception.getCode());
-    Assertions.assertNotNull(exception.getResponseBody());
-    Assertions.assertNotNull(exception.getResponseHeaders());
-    Assertions.assertEquals(
-        Optional.of("404"), exception.getResponseHeaders().firstValue("status"));
-    System.out.println(exception.getResponseBody());
+  void publicConstructor() {
+    new Messages(CONFIG, null);
+    final Messages messages = new Messages(CONFIG, null, null);
+    assertThat(messages.restClient).isNotNull();
+    assertThat(messages.serviceURI.toString())
+        .isEqualTo(String.format(EXPECTED_SERVICE_URI_FORMAT, messages.getServiceName()));
   }
 
   @Test
-  void testGetMessage() {
-    final ConversationMessage response = messages.get(messageId);
-    prettyPrint(response);
+  void deleteMessage() {
+    messages.delete(MESSAGE_ID);
+
+    verifyDeleteCalled(() -> uriPathEndsWithMatcher(MESSAGE_ID));
   }
 
   @Test
-  void testListMessages() {
-    final ListMessagesResponse response =
-        messages.list(new ListMessagesParams().contactId(contactId));
-    prettyPrint(response);
+  void getMessage() {
+    messages.get(MESSAGE_ID);
+
+    verifyGetCalled(() -> uriPathEndsWithMatcher(MESSAGE_ID), ConversationMessage.class);
   }
 
   @Test
-  void testSendAppMessage() {
-    final SendMessageResponse response =
-        messages.send(
-            new SendMessageRequest()
-                .appId(appId)
-                .message(new AppMessage().textMessage(new TextMessage().text("SDK text message")))
-                .recipient(new Recipient().contactId(contactId))
-                .addChannelPriorityOrderItem(ConversationChannel.SMS));
-    prettyPrint(response);
+  void listMessages() {
+    final String contactId = "contact-id";
+    messages.list(new ListMessagesParams().contactId(contactId));
+
+    verifyGetCalled(() -> uriQueryEndsWithMatcher(contactId), ListMessagesResponse.class);
   }
 
   @Test
-  void testTranscodeMessage() {
-    final Map<String, String> response =
-        messages.transcode(
-            new TranscodeMessageRequest()
-                .appMessage(
-                    new AppMessage().textMessage(new TextMessage().text("SDK text message")))
-                .addChannelsItem(ConversationChannel.VIBER)
-                .addChannelsItem(ConversationChannel.WHATSAPP)
-                .appId(appId));
-    prettyPrint(response);
+  void sendSimpleMessage() {
+    messages.send(new TextMessageRequest("Hej").appId(APP_ID));
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(Messages.SEND),
+        SendMessageResponse.class,
+        () ->
+            argThat(
+                (SendMessageRequest req) ->
+                    APP_ID.equals(req.getAppId()) && PROJECT_ID.equals(req.getProjectId())));
   }
 
   @Test
-  void testMissingParamsThrows() {
-    ApiException exception = Assertions.assertThrows(ApiException.class, () -> messages.get(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> messages.list(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> messages.list(new ListMessagesParams()));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> messages.send((SendMessageRequest) null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> messages.send(new SendMessageRequest()));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> messages.transcode(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class,
-            () -> messages.transcode(new TranscodeMessageRequest().appId(appId)));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class,
-            () -> messages.transcode(new TranscodeMessageRequest().channels(emptyList())));
-    assertClientSideException(exception);
+  void sendSimpleMessageAsync() {
+    messages
+        .sendAsync(new TextMessageRequest("Hej").appId(APP_ID))
+        .whenComplete(
+            (ign, ign2) ->
+                verifyPostCalled(
+                    () -> uriPathEndsWithMatcher(Messages.SEND),
+                    SendMessageResponse.class,
+                    () ->
+                        argThat(
+                            (SendMessageRequest req) ->
+                                APP_ID.equals(req.getAppId())
+                                    && PROJECT_ID.equals(req.getProjectId()))));
+  }
+
+  @Test
+  void sendMessage() {
+    messages.send(new SendMessageRequest().appId(APP_ID));
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(Messages.SEND),
+        SendMessageResponse.class,
+        () ->
+            argThat(
+                (SendMessageRequest req) ->
+                    APP_ID.equals(req.getAppId()) && PROJECT_ID.equals(req.getProjectId())));
+  }
+
+  @Test
+  void sendMessageDefaultAppId() {
+    final String defaultAppId = "defaultAppId";
+    getMessages(defaultAppId).send(new SendMessageRequest());
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(Messages.SEND),
+        SendMessageResponse.class,
+        () ->
+            argThat(
+                (SendMessageRequest req) ->
+                    defaultAppId.equals(req.getAppId()) && PROJECT_ID.equals(req.getProjectId())));
+  }
+
+  @Test
+  void transcodeMessage() {
+    messages.transcode(
+        new TranscodeMessageRequest().appId(APP_ID).addChannelsItem(ConversationChannel.SMS));
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(Messages.TRANSCODE),
+        TranscodeMessageResponse.class,
+        () ->
+            argThat(
+                (TranscodeMessageRequest req) ->
+                    APP_ID.equals(req.getAppId()) && PROJECT_ID.equals(req.getProjectId())));
+  }
+
+  @Test
+  void transcodeMessageDefaultAppId() {
+    final String defaultAppId = "defaultAppId";
+    getMessages(defaultAppId)
+        .transcode(new TranscodeMessageRequest().addChannelsItem(ConversationChannel.SMS));
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(Messages.TRANSCODE),
+        TranscodeMessageResponse.class,
+        () ->
+            argThat(
+                (TranscodeMessageRequest req) ->
+                    defaultAppId.equals(req.getAppId()) && PROJECT_ID.equals(req.getProjectId())));
+  }
+
+  @ParameterizedTest
+  @MethodSource("callsWithMissingParams")
+  void missingParamsThrows(final ThrowingCallable throwingCallable) {
+    assertClientSideException(throwingCallable);
+  }
+
+  private static List<ThrowingCallable> callsWithMissingParams() {
+    return Arrays.asList(
+        () -> messages.get(null),
+        () -> messages.list(null),
+        () -> messages.list(new ListMessagesParams()),
+        () -> messages.delete(null),
+        () -> messages.send((SendMessageRequest) null),
+        () -> messages.send(new SendMessageRequest()),
+        () -> messages.transcode(null),
+        () -> messages.transcode(new TranscodeMessageRequest().appId(APP_ID)),
+        () -> messages.transcode(new TranscodeMessageRequest().channels(emptyList())));
+  }
+
+  private Messages getMessages(final String defaultAppId) {
+    return new Messages(PROJECT_ID, restClient, BASE_URL, defaultAppId);
   }
 }

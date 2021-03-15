@@ -5,6 +5,7 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.QueryCapabilityRequest;
 import com.sinch.sdk.model.conversationapi.QueryCapabilityResponse;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.StringUtils;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +20,11 @@ public class Capabilities extends AbstractService {
   public Capabilities(
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
+  }
+
+  Capabilities(
+      final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
   }
 
   @Override

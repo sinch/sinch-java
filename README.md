@@ -1,16 +1,21 @@
-
 # sinch-java-sdk
+[![Maven Central](https://img.shields.io/maven-central/v/com.sinch.sdk/java-sdk.svg)](https://mvnrepository.com/artifact/com.sinch.sdk/java-sdk)
 
-## How to build the project 
+## Documentation
+Sign up and find API documentation on the [Developer page](https://developers.sinch.com/)
 
-Build project using ./gradlew build
+## Installation
+The artifacts can be found on [Maven Central](https://mvnrepository.com/artifact/com.sinch.sdk/java-sdk).
 
-A built jar can be found in the build/libs folder
+#### Gradle setup
+```groovy
+dependencies {
+    implementation "com.sinch.sdk:java-sdk:${sdkVersion}"
+    ...
+}
+```
 
-## How to use SDK in a project
-
-### Default Maven setup 
-
+#### Maven setup
 ```xml  
 <dependencies>
     <dependency>
@@ -22,27 +27,103 @@ A built jar can be found in the build/libs folder
 </dependencies>
 ```
 
-### Default Gradle setup
+## Quickstart
+Start by visiting the [Getting started guide](https://dashboard.sinch.com/convapi/getting-started)
 
+### Initialize the client
+Find your Credentials [here](https://dashboard.sinch.com/settings/access-keys)
+
+>This step is not needed if the Credentials are injected as described [here](#external-configuration), we strongly
+recommend that you do.
+```java
+String keyId="__key_id__";
+String keySecret="__key_secret__";
+String projectId="__project_id__";
+
+Sinch.init(keyId, keySecret, projectId);
+```
+
+### Find the app id
+Find information about your apps on the [dashboard](https://dashboard.sinch.com/convapi/apps), or with the help of the SDK
+```java
+Sinch.conversationApi(Region.EU).apps().list();
+```
+
+### Send a text message
+```java
+Messages messages =
+    Sinch.conversationApi(Region.EU) // The region of the app
+        .messages("__app_id__");
+
+messages.send(new TextMessageRequest("Hi from the Sinch SDK!")
+    .smsRecipient("+46707654321"));
+```
+
+### List conversations
+```java
+Sinch.conversationApi(Region.EU).conversations()
+    .listConversations(new ListConversationsParams().appId("__app_id__"));
+```
+Find more examples [here](src/test/java/example/conversationapi/)
+
+## SDK Versions
+Project in this repository follow the grammar defined in [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (`MAJOR.MINOR.PATCH`) with Spring framework's interpretation of versioning scheme.
+
+`MAJOR` may involve a significant amount of work to upgrade.
+
+`MINOR` should involve little to no work to upgrade.
+
+`PATCH` should involve no work.
+
+## Java Versions
+`Java 8` defaults to the OkHttpClient (https://square.github.io/okhttp).
+
+`Java 11` defaults to the Java native HttpClient.
+
+## Custom http clients
+
+The SDK has built-in support for:
+- [OkHttpClient](https://square.github.io/okhttp/)
+- [Apache client](https://hc.apache.org/httpcomponents-client-5.0.x/index.html)
+- JDK 11 HttpClient (if the SDK is run on Java 11)
+
+In order to use your own instance of a HttpClient it must be provided explicitly:
+
+### Apache
+```java
+Sinch.conversationApi(Region.EU, () -> new ApacheHttpRestClientFactory(existingApacheHttpClient));
+```
+
+You can also implement your own SinchRestClient for the http client currently in use:
+```java
+class CustomRestClientFactory implements SinchRestClientFactory {
+  @Override
+  public SinchRestClient getClient(
+      final Duration requestTimeout, final ObjectMapper objectMapper) {
+    // return the implementation of SinchRestClient here using the custom http client
+  }
+```
+The `requestTimeout` value is read from the VM property `sinch.http_timeout`, it will return `null` if missing.
+Read more about external configuration [here](#external-configuration)
+
+This custom client factory can then be used as in the `Apache` example above.
+
+### Excluding the built-in client
+The SDK has a dependency on OkHttp in order to run with a default HttpClient on Java 8.
+We strongly recommend excluding this transitive dependency if running on Java 11 or using a different http client.
+
+#### Gradle
 ```groovy
 dependencies {
-    implementation "com.sinch.sdk:java-sdk:${sdkVersion}"
+    implementation("com.sinch.sdk:java-sdk:${sdkVersion}") {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    implementation "org.apache.httpcomponents.client5:httpclient5:${apacheHttpClientVersion}"
     ...
 }
 ```
 
-### Setup with different HttpClient 
-
-In case SDK is run on Java 8 we use by default OkHttpClient (https://square.github.io/okhttp).
-In case SDK is run on Java 11 we use by default HttpClient shipped with Java 11.
-Another HttpClient implementation might be used (see section [Usage](#usage) for details).
-
-SDK has dependency to OkHttp added in order to run with default HttpClient on Java 8 runtime.
-In case you want to run SDK with different HttpClient, or you run SDK on Java 11 with the default one
-we strongly recommend excluding this transitive dependency
-
-### Recommended Maven setup for non-default HttpClient (e.g. Apache)
-
+#### Maven
 ```xml  
 <dependencies>
   <dependency>
@@ -65,77 +146,41 @@ we strongly recommend excluding this transitive dependency
 </dependencies>
 ```
 
-### Recommended Gradle setup for non-default HttpClient (e.g. Apache)
+## External configuration
+The Sinch SDK can be configured using system properties.
 
-```groovy
-dependencies {
-    implementation("com.sinch.sdk:java-sdk:${sdkVersion}") {
-        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-    }
-    implementation "org.apache.httpcomponents.client5:httpclient5:${apacheHttpClientVersion}"
-    ...
-}
+### Usage
+There are many ways of sending system properties to your application.
+The easiest way is to simply pass it from the command line:
+```bash
+java -Dsinch.project_id="__project_id__" -jar app.jar
 ```
 
-## Usage
-The typical initialization for SDK is:
-```java
-Sinch.init(keyId, keySecret, projectId);
-ConversationApiClient apiClient = Sinch.conversationApi(Region.US);
-```
-This will use default HttpClient based on Java Runtime version:
-- OkHttpClient in case SDK is run on Java 8
-- HttpClient from JDK 11 in case SDK is run on Java 11
-
-SKD has built-in support for:
-- OkHttpClient (https://square.github.io/okhttp/)
-- Apache HttpClient (https://hc.apache.org/httpcomponents-client-5.0.x/index.html)
-- JDK 11 HttpClient (in case SDK is run on Java 11)
-
-In order to use different built-in HttpClient it must be provided explicitly:
-```java
-Sinch.init(keyId, keySecret, projectId);
-CloseableHttpAsyncClient httpClient = HttpAsyncClientBuilder.create().build();
-httpClient.start();
-ConversationApi apiClient = Sinch.conversationApi(Region.EU, () -> new ApacheHttpRestClientFactory(httpClient));
+### Available settings
+#### General settings
+Find your Credentials at https://dashboard.sinch.com/settings/access-keys
+```properties
+sinch.project_id # Project id from the link above (String)
+sinch.key_id # Key id from the link above (String)
+sinch.key_secret # Key secret from the link above (String)
+sinch.http_timeout # Timeout in seconds of the http client used to access the api (Integer)
 ```
 
-It is also possible to create Sinch API Client by providing your own instance of Http client. Example for OkHttpClient:
-```java
-var httpClient = new OkHttpClient();
-Sinch.init(keyId, keySecret, projectId);
-ConversationApi apiClient = Sinch.conversationApi(Region.US, () -> new OkHttpRestClientFactory(httpClient));
-```
-A user can also use Http Client which Sinch does not support by default:
-```java
-class CustomRestClientFactory implements SinchRestClientFactory {
+## Logging
+The SDK uses Slf4j for logging.
 
-  @Override
-  public SinchRestClient getClient(
-      final Duration requestTimeout, final ObjectMapper objectMapper) {
-    // return the implementation of SinchRestClient here with usage of custom http client
-  }
-```
-The `requestTimeout` value is read from Java VM parameter `sinch.http_timeout`. The value must be defined in seconds.
-If parameter is missing (or its value) then `requestTimeout` is equal to `null`.
+Consult the [documentation](http://slf4j.org/docs.html) for information about logging configuration.
 
-Such factory must be used later in order to create a Sinch Conv API client:
-```java
-Sinch.conversationApi(Region.EU, () -> new CustomRestClientFactory())
-```
+`INFO`
+- Configuration settings (non-sensitive data e.g. url)
 
-## Logs
+`ERROR`
+- Responses which finish with 4xx or 5xx status code
 
-### INFO Level
-- configuration settings (non-sensitive data e.g. url)
-
-### ERROR Level
-- responses which finish with 4xx or 5xx status code
-
-### DEBUG Level
-- access token actions (refresh, response received)
-- requests method and URI
-- response status code and body
+`DEBUG`
+- Access token actions (refresh, response received)
+- Requests method and URI
+- Response status code and body
 
 ## How to contribute
 

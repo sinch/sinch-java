@@ -5,6 +5,7 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
 import com.sinch.sdk.model.conversationapi.TranscodeMessageResponse;
+import com.sinch.sdk.restclient.SinchRestClient;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,6 +17,11 @@ public class Transcoding extends AbstractService {
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
     messages = new Messages(config, authenticationService);
+  }
+
+  Transcoding(final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
+    messages = new Messages(projectId, sinchRestClient, baseUrl, null);
   }
 
   @Override

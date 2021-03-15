@@ -5,7 +5,13 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.api.conversationapi.model.ListMessagesParams;
 import com.sinch.sdk.api.conversationapi.model.request.message.MessageRequest;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.*;
+import com.sinch.sdk.model.conversationapi.ConversationMessage;
+import com.sinch.sdk.model.conversationapi.ListMessagesResponse;
+import com.sinch.sdk.model.conversationapi.SendMessageRequest;
+import com.sinch.sdk.model.conversationapi.SendMessageResponse;
+import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
+import com.sinch.sdk.model.conversationapi.TranscodeMessageResponse;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.StringUtils;
 import java.util.Map;
@@ -13,6 +19,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class Messages extends AbstractService {
+
+  static final String SEND = ":send";
+  static final String TRANSCODE = ":transcode";
 
   private static final String PARAM_MESSAGE_ID = "messageId";
   private static final String PARAM_SEND = "sendMessageRequest";
@@ -34,6 +43,15 @@ public class Messages extends AbstractService {
       final String appId) {
     super(config, authenticationService);
     defaultAppId = appId;
+  }
+
+  Messages(
+      final String projectId,
+      final SinchRestClient sinchRestClient,
+      final String baseUrl,
+      final String defaultAppId) {
+    super(projectId, sinchRestClient, baseUrl);
+    this.defaultAppId = defaultAppId;
   }
 
   @Override
@@ -198,7 +216,7 @@ public class Messages extends AbstractService {
       }
     }
     return restClient.post(
-        withQuery(":send"), SendMessageResponse.class, sendMessageRequest.projectId(projectId));
+        withQuery(SEND), SendMessageResponse.class, sendMessageRequest.projectId(projectId));
   }
 
   /**
@@ -244,7 +262,7 @@ public class Messages extends AbstractService {
     }
     return restClient
         .post(
-            withQuery(":transcode"),
+            withQuery(TRANSCODE),
             TranscodeMessageResponse.class,
             transcodeMessageRequest.projectId(projectId))
         .thenApply(TranscodeMessageResponse::getTranscodedMessage);

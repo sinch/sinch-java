@@ -1,77 +1,86 @@
 package com.sinch.sdk.api.conversationapi.service;
 
 import static java.util.Collections.emptyList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isA;
 
-import com.sinch.sdk.Sinch;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.Region;
-import com.sinch.sdk.model.conversationapi.*;
-import com.sinch.sdk.restclient.OkHttpRestClientFactory;
-import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import com.sinch.sdk.api.conversationapi.factory.RecipientFactory;
+import com.sinch.sdk.model.conversationapi.ConversationChannel;
+import com.sinch.sdk.model.conversationapi.OptIn;
+import com.sinch.sdk.model.conversationapi.OptInResponse;
+import com.sinch.sdk.model.conversationapi.OptOut;
+import com.sinch.sdk.model.conversationapi.OptOutResponse;
+import java.util.Arrays;
+import java.util.List;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class OptInsTest extends BaseConvIntegrationTest {
+class OptInsTest extends BaseServiceTest {
 
-  private final String contactId = "your-contact-id";
-  private final String appId = "your-app-id";
+  private static final String CONTACT_ID = "contact-id";
+  private static final String APP_ID = "app-id";
 
   private static OptIns optIns;
 
-  @BeforeAll
-  static void beforeAll() {
-    optIns =
-        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
-            .optIns();
+  @BeforeEach
+  void setUp() {
+    optIns = new OptIns(PROJECT_ID, restClient, BASE_URL);
   }
 
   @Test
-  void testRegisterOptIn() {
-    final OptInResponse response =
-        optIns.optIn(
-            new OptIn()
-                .appId(appId)
-                .addChannelsItem(ConversationChannel.WHATSAPP)
-                .recipient(new Recipient().contactId(contactId)),
-            null);
-    prettyPrint(response);
+  void publicConstructor() {
+    final OptIns optIns = new OptIns(CONFIG, null);
+    assertThat(optIns.restClient).isNotNull();
+    assertThat(optIns.serviceURI.toString())
+        .isEqualTo(String.format(EXPECTED_SERVICE_URI_FORMAT, optIns.getServiceName()));
   }
 
   @Test
-  void testRegisterOptOut() {
-    final OptOutResponse response =
-        optIns.optOut(
-            new OptOut()
-                .appId(appId)
-                .addChannelsItem(ConversationChannel.WHATSAPP)
-                .recipient(new Recipient().contactId(contactId)),
-            null);
-    prettyPrint(response);
+  void registerOptIn() {
+    optIns.optIn(
+        new OptIn()
+            .appId(APP_ID)
+            .addChannelsItem(ConversationChannel.WHATSAPP)
+            .recipient(RecipientFactory.fromContactId(CONTACT_ID)),
+        null);
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(PROJECT_ID + "/" + OptIns.OPTINS_REGISTER),
+        OptInResponse.class,
+        () -> isA(OptIn.class));
   }
 
   @Test
-  void testMissingParamsThrows() {
-    ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> optIns.optIn(null, null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> optIns.optIn(new OptIn().appId(appId), null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> optIns.optIn(new OptIn().channels(emptyList()), null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> optIns.optOut(null, null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> optIns.optOut(new OptOut().appId(appId), null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> optIns.optOut(new OptOut().channels(emptyList()), null));
-    assertClientSideException(exception);
+  void registerOptOut() {
+    optIns.optOut(
+        new OptOut()
+            .appId(APP_ID)
+            .addChannelsItem(ConversationChannel.WHATSAPP)
+            .recipient(RecipientFactory.fromContactId(CONTACT_ID)),
+        null);
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(PROJECT_ID + "/" + OptIns.OPTOUTS_REGISTER),
+        OptOutResponse.class,
+        () -> isA(OptOut.class));
+  }
+
+  @ParameterizedTest
+  @MethodSource("callsWithMissingParams")
+  void missingParamsThrows(final ThrowingCallable throwingCallable) {
+    assertClientSideException(throwingCallable);
+  }
+
+  private static List<ThrowingCallable> callsWithMissingParams() {
+    return Arrays.asList(
+        () -> optIns.optIn(null, null),
+        () -> optIns.optIn(new OptIn().appId(APP_ID), null),
+        () -> optIns.optIn(new OptIn().channels(emptyList()), null),
+        () -> optIns.optOut(null, null),
+        () -> optIns.optOut(new OptOut().appId(APP_ID), null),
+        () -> optIns.optOut(new OptOut().channels(emptyList()), null));
   }
 }

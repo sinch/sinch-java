@@ -7,13 +7,12 @@ import java.net.URI;
 
 abstract class AbstractService {
 
-  private static final String API_VERSION = "v1";
+  static final String API_VERSION = "v1";
+  static final String TEMPLATE_URL = "%s/%s/projects/%s/%s";
 
   protected static final String PARAMS = "params";
   protected static final String SUB_APP_ID = ".appId";
   protected static final String SUB_CHANNELS = ".channels";
-
-  protected static final String TEMPLATE_URL = "%s/%s/projects/%s/%s";
 
   protected final String projectId;
   protected final SinchRestClient restClient;
@@ -22,10 +21,18 @@ abstract class AbstractService {
 
   public AbstractService(
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
-    this.projectId = config.getProjectId();
-    this.restClient = new SinchRestClientProxy(authenticationService, config.getRestClient());
+    this(
+        config.getProjectId(),
+        new SinchRestClientProxy(authenticationService, config.getRestClient()),
+        config.getBaseUrl());
+  }
+
+  AbstractService(
+      final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    this.projectId = projectId;
+    this.restClient = sinchRestClient;
     this.serviceUrl =
-        String.format(TEMPLATE_URL, config.getBaseUrl(), API_VERSION, projectId, getServiceName());
+        String.format(TEMPLATE_URL, baseUrl, API_VERSION, projectId, getServiceName());
     this.serviceURI = URI.create(serviceUrl);
   }
 

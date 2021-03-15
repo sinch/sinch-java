@@ -1,125 +1,117 @@
 package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.Sinch;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+
 import com.sinch.sdk.api.conversationapi.model.Pagination;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.Region;
-import com.sinch.sdk.model.conversationapi.*;
-import com.sinch.sdk.restclient.OkHttpRestClientFactory;
-import java.util.Optional;
-import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import com.sinch.sdk.model.conversationapi.Contact;
+import com.sinch.sdk.model.conversationapi.ListContactsResponse;
+import com.sinch.sdk.model.conversationapi.MergeContactRequest;
+import java.util.Arrays;
+import java.util.List;
+import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class ContactsTest extends BaseConvIntegrationTest {
+class ContactsTest extends BaseServiceTest {
 
-  private static final String contactId = "your-contact-id";
+  private static final String CONTACT_ID = "contact-id";
 
   private static Contacts contacts;
 
-  @BeforeAll
-  static void beforeAll() {
-    contacts =
-        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
-            .contacts();
+  @BeforeEach
+  void setUp() {
+    contacts = new Contacts(PROJECT_ID, restClient, BASE_URL);
   }
 
   @Test
-  void testCreateContact() {
-    final Contact contact =
-        contacts.create(
-            new Contact()
-                .displayName("SDK test contact")
-                .addChannelIdentitiesItem(
-                    new ChannelIdentity()
-                        .channel(ConversationChannel.MESSENGER)
-                        .identity("6536947852974")
-                        .appId("your-app-id")));
-
-    prettyPrint(contact);
+  void publicConstructor() {
+    final Contacts contacts = new Contacts(CONFIG, null);
+    assertThat(contacts.restClient).isNotNull();
+    assertThat(contacts.serviceURI.toString())
+        .isEqualTo(String.format(EXPECTED_SERVICE_URI_FORMAT, contacts.getServiceName()));
   }
 
   @Test
-  void testDeleteContact() {
-    contacts.delete(contactId);
-    final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> contacts.get(contactId));
-    Assertions.assertEquals(404, exception.getCode());
-    Assertions.assertNotNull(exception.getResponseBody());
-    Assertions.assertNotNull(exception.getResponseHeaders());
-    Assertions.assertEquals(
-        Optional.of("404"), exception.getResponseHeaders().firstValue("status"));
-    System.out.println(exception.getResponseBody());
+  void createContact() {
+    contacts.create(new Contact());
+
+    verifyPostCalled(() -> eq(contacts.serviceURI), Contact.class);
   }
 
   @Test
-  void testGetContact() {
-    final Contact contact = contacts.get(contactId);
-    prettyPrint(contact);
+  void deleteContact() {
+    contacts.delete(CONTACT_ID);
+
+    verifyDeleteCalled(() -> uriPathEndsWithMatcher(CONTACT_ID));
   }
 
   @Test
-  void testListContacts() {
-    final ListContactsResponse response = contacts.list();
-    prettyPrint(response);
+  void getContact() {
+    contacts.get(CONTACT_ID);
+
+    verifyGetCalled(() -> uriPathEndsWithMatcher(CONTACT_ID), Contact.class);
   }
 
   @Test
-  public void testListContactsSize() {
-    final ListContactsResponse response = contacts.list(new Pagination().size(1));
-    prettyPrint(response);
+  void listContacts() {
+    contacts.list();
+
+    verifyGetCalled(() -> eq(contacts.serviceURI), ListContactsResponse.class);
   }
 
   @Test
-  public void testListContactsToken() {
-    final ListContactsResponse response = contacts.list(new Pagination().token("nextPageToken"));
-    prettyPrint(response);
+  void listContactsPagination() {
+    contacts.list(new Pagination());
+
+    verifyGetCalled(() -> eq(contacts.serviceURI), ListContactsResponse.class);
   }
 
   @Test
-  void testMergeContact() {
-    final Contact contact =
-        contacts.merge(
-            new MergeContactRequest().destinationId(contactId).sourceId("second-contact-id"));
-    prettyPrint(contact);
+  void listContactsThrows() {
+    givenGetThrows();
+
+    //noinspection ThrowableNotThrown
+    verifyThrowsApiException(() -> contacts.list());
   }
 
   @Test
-  void testUpdateContact() {
-    final Contact contact =
-        contacts.update(
-            contactId, new Contact().displayName("Updated test contact").email("email@emial.com"));
-    prettyPrint(contact);
+  void mergeContact() {
+    contacts.merge(
+        new MergeContactRequest().destinationId(CONTACT_ID).sourceId("source-contact-id"));
+
+    verifyPostCalled(
+        () -> uriPathEndsWithMatcher(CONTACT_ID + ":merge"),
+        Contact.class,
+        () -> argThat((MergeContactRequest req) -> PROJECT_ID.equals(req.getProjectId())));
   }
 
   @Test
-  void testMissingParamsThrows() {
-    ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> contacts.create(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contacts.delete(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contacts.get(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contacts.list(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contacts.merge(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class,
-            () -> contacts.merge(new MergeContactRequest().sourceId(contactId)));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class,
-            () -> contacts.merge(new MergeContactRequest().destinationId(contactId)));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> contacts.update(null, new Contact()));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> contacts.update(contactId, null));
-    assertClientSideException(exception);
+  void updateContact() {
+    contacts.update(CONTACT_ID, new Contact());
+
+    verifyPatchCalled(() -> uriPathEndsWithMatcher(CONTACT_ID), Contact.class);
+  }
+
+  @ParameterizedTest
+  @MethodSource("callsWithMissingParams")
+  void missingParamsThrows(final ThrowableAssert.ThrowingCallable throwingCallable) {
+    assertClientSideException(throwingCallable);
+  }
+
+  private static List<ThrowableAssert.ThrowingCallable> callsWithMissingParams() {
+    return Arrays.asList(
+        () -> contacts.create(null),
+        () -> contacts.delete(null),
+        () -> contacts.get(null),
+        () -> contacts.list(null),
+        () -> contacts.merge(null),
+        () -> contacts.merge(new MergeContactRequest().sourceId(CONTACT_ID)),
+        () -> contacts.merge(new MergeContactRequest().destinationId(CONTACT_ID)),
+        () -> contacts.update(null, new Contact()),
+        () -> contacts.update(CONTACT_ID, null));
   }
 }

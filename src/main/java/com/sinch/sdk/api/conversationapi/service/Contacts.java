@@ -7,6 +7,7 @@ import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.Contact;
 import com.sinch.sdk.model.conversationapi.ListContactsResponse;
 import com.sinch.sdk.model.conversationapi.MergeContactRequest;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.StringUtils;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +24,10 @@ public class Contacts extends AbstractService {
   public Contacts(
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
+  }
+
+  Contacts(final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
   }
 
   @Override

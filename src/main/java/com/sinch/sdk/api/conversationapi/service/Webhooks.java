@@ -4,6 +4,7 @@ import com.sinch.sdk.api.authentication.AuthenticationService;
 import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.exception.ApiException;
 import com.sinch.sdk.model.conversationapi.Webhook;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.StringUtils;
 import java.util.List;
@@ -23,6 +24,11 @@ public class Webhooks extends AbstractService {
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
     apps = new Apps(config, authenticationService);
+  }
+
+  Webhooks(final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
+    apps = new Apps(projectId, sinchRestClient, baseUrl);
   }
 
   @Override

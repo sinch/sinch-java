@@ -1,40 +1,36 @@
 package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.Sinch;
-import com.sinch.sdk.model.Region;
-import com.sinch.sdk.model.conversationapi.AppMessage;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sinch.sdk.model.conversationapi.ConversationChannel;
-import com.sinch.sdk.model.conversationapi.TextMessage;
 import com.sinch.sdk.model.conversationapi.TranscodeMessageRequest;
-import com.sinch.sdk.restclient.OkHttpRestClientFactory;
-import java.util.Map;
-import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TranscodingTest extends BaseConvIntegrationTest {
+class TranscodingTest extends BaseServiceTest {
 
   private static Transcoding transcoding;
 
-  private final String appId = "your-app-id";
-
-  @BeforeAll
-  static void beforeAll() {
-    transcoding =
-        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
-            .transcoding();
+  @BeforeEach
+  void setUp() {
+    transcoding = new Transcoding(PROJECT_ID, restClient, BASE_URL);
   }
 
   @Test
-  void testTranscodeMessage() {
-    final Map<String, String> response =
-        transcoding.transcodeMessage(
-            new TranscodeMessageRequest()
-                .appMessage(
-                    new AppMessage().textMessage(new TextMessage().text("SDK text message")))
-                .addChannelsItem(ConversationChannel.MESSENGER)
-                .addChannelsItem(ConversationChannel.RCS)
-                .appId(appId));
-    prettyPrint(response);
+  void publicConstructor() {
+    final Transcoding transcoding = new Transcoding(CONFIG, null);
+    assertThat(transcoding.restClient).isNotNull();
+    assertThat(transcoding.serviceURI.toString())
+        .isEqualTo(String.format(EXPECTED_SERVICE_URI_FORMAT, transcoding.getServiceName()));
+  }
+
+  @Test
+  void transcodeMessage() {
+    // For coverage, asserted in MessageTest
+    final String appId = "app-id";
+    transcoding.transcodeMessage(
+        new TranscodeMessageRequest().addChannelsItem(ConversationChannel.RCS).appId(appId));
+    transcoding.transcodeMessageAsync(
+        new TranscodeMessageRequest().addChannelsItem(ConversationChannel.RCS).appId(appId));
   }
 }

@@ -1,6 +1,15 @@
 package com.sinch.sdk.api.conversationapi.factory;
 
-import com.sinch.sdk.model.conversationapi.*;
+import com.sinch.sdk.model.conversationapi.CallMessage;
+import com.sinch.sdk.model.conversationapi.CardMessage;
+import com.sinch.sdk.model.conversationapi.CarouselMessage;
+import com.sinch.sdk.model.conversationapi.ChoiceMessage;
+import com.sinch.sdk.model.conversationapi.Coordinates;
+import com.sinch.sdk.model.conversationapi.LocationMessage;
+import com.sinch.sdk.model.conversationapi.MediaMessage;
+import com.sinch.sdk.model.conversationapi.TemplateMessage;
+import com.sinch.sdk.model.conversationapi.TextMessage;
+import com.sinch.sdk.model.conversationapi.UrlMessage;
 import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 

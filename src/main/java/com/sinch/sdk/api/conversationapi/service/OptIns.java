@@ -7,6 +7,7 @@ import com.sinch.sdk.model.conversationapi.OptIn;
 import com.sinch.sdk.model.conversationapi.OptInResponse;
 import com.sinch.sdk.model.conversationapi.OptOut;
 import com.sinch.sdk.model.conversationapi.OptOutResponse;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.QueryStringBuilder;
 import com.sinch.sdk.util.StringUtils;
@@ -15,6 +16,9 @@ import java.util.concurrent.CompletionException;
 
 @SuppressWarnings("DuplicatedCode")
 public class OptIns extends AbstractService {
+
+  static final String OPTINS_REGISTER = "optins:register";
+  static final String OPTOUTS_REGISTER = "optouts:register";
 
   private static final String PARAM_OPT_IN = "optIn";
   private static final String PARAM_IN_APP_ID = PARAM_OPT_IN + SUB_APP_ID;
@@ -26,6 +30,10 @@ public class OptIns extends AbstractService {
   public OptIns(
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
+  }
+
+  OptIns(final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
   }
 
   @Override
@@ -79,7 +87,7 @@ public class OptIns extends AbstractService {
             .add(OptInResponse.JSON_PROPERTY_REQUEST_ID, requestId)
             .build();
     return restClient.post(
-        withQuery("optins:register".concat(queryString)), OptInResponse.class, optIn);
+        withQuery(OPTINS_REGISTER.concat(queryString)), OptInResponse.class, optIn);
   }
 
   /**
@@ -129,6 +137,6 @@ public class OptIns extends AbstractService {
             .add(OptOutResponse.JSON_PROPERTY_REQUEST_ID, requestId)
             .build();
     return restClient.post(
-        withQuery("optouts:register".concat(queryString)), OptOutResponse.class, optOut);
+        withQuery(OPTOUTS_REGISTER.concat(queryString)), OptOutResponse.class, optOut);
   }
 }

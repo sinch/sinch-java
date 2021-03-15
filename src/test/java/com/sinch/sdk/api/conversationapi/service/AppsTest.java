@@ -1,100 +1,101 @@
 package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.Sinch;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.Region;
-import com.sinch.sdk.model.conversationapi.*;
-import com.sinch.sdk.restclient.OkHttpRestClientFactory;
-import java.util.List;
-import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 
-class AppsTest extends BaseConvIntegrationTest {
+import com.sinch.sdk.model.conversationapi.App;
+import com.sinch.sdk.model.conversationapi.ListAppsResponse;
+import com.sinch.sdk.model.conversationapi.ListWebhooksResponse;
+import java.util.Arrays;
+import java.util.List;
+import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+class AppsTest extends BaseServiceTest {
+
+  private static final String APP_ID = "app-id";
 
   private static Apps apps;
 
-  @BeforeAll
-  static void beforeAll() {
-    apps =
-        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()))
-            .apps();
+  @BeforeEach
+  void setUp() {
+    apps = new Apps(PROJECT_ID, restClient, BASE_URL);
   }
 
   @Test
-  void testCreateApp() {
-    final String displayName = "SDK test";
-    final App app =
-        apps.create(
-            new App()
-                .displayName(displayName)
-                .addChannelCredentialsItem(
-                    new ConversationChannelCredential()
-                        .channel(ConversationChannel.MESSENGER)
-                        .staticToken(new StaticTokenCredential().token("token")))
-                .retentionPolicy(
-                    new RetentionPolicy()
-                        .retentionType(RetentionPolicyType.PERSIST_RETENTION_POLICY)));
-
-    Assertions.assertEquals(displayName, app.getDisplayName());
-    Assertions.assertNotNull(app.getRetentionPolicy());
-    Assertions.assertEquals(
-        RetentionPolicyType.PERSIST_RETENTION_POLICY, app.getRetentionPolicy().getRetentionType());
-    prettyPrint(app);
-    apps.delete(app.getId());
+  void publicConstructor() {
+    final Apps apps = new Apps(CONFIG, null);
+    assertThat(apps.restClient).isNotNull();
+    assertThat(apps.serviceURI.toString())
+        .isEqualTo(String.format(EXPECTED_SERVICE_URI_FORMAT, apps.getServiceName()));
   }
 
   @Test
-  void testDeleteApp() {
-    final App app = createApp("To be deleted");
-    apps.delete(app.getId());
-    final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> apps.get(app.getId()));
-    Assertions.assertEquals(404, exception.getCode());
-    Assertions.assertNotNull(exception.getResponseBody());
-    Assertions.assertNotNull(exception.getResponseHeaders());
+  void createApp() {
+    apps.create(new App());
+
+    verifyPostCalled(() -> eq(apps.serviceURI), App.class);
   }
 
   @Test
-  void testGetApp() {
-    final App createdApp = createApp("Get app");
-    final App app = apps.get(createdApp.getId());
-    prettyPrint(app);
-    apps.delete(app.getId());
+  void deleteApp() {
+    apps.delete(APP_ID);
+
+    verifyDeleteCalled(() -> uriPathEndsWithMatcher(APP_ID));
   }
 
   @Test
-  void testListApps() {
-    final List<App> apps = AppsTest.apps.list();
-    prettyPrint(apps);
+  void getApp() {
+    apps.get(APP_ID);
+
+    verifyGetCalled(() -> uriPathEndsWithMatcher(APP_ID), App.class);
   }
 
   @Test
-  void testUpdateApp() {
-    final App update_app = createApp("Update app");
-    final String displayName = "Has been updated app";
-    final App app = apps.update(update_app.getId(), new App().displayName(displayName));
-    Assertions.assertEquals(displayName, app.getDisplayName());
-    prettyPrint(app);
-    apps.delete(app.getId());
+  void listApps() {
+    apps.list();
+
+    verifyGetCalled(() -> eq(apps.serviceURI), ListAppsResponse.class);
   }
 
   @Test
-  void testMissingParamsThrows() {
-    ApiException exception = Assertions.assertThrows(ApiException.class, () -> apps.create(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> apps.delete(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> apps.get(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> apps.update(null, new App()));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> apps.update("123", null));
-    assertClientSideException(exception);
+  void listAppThrows() {
+    givenGetThrows();
+
+    //noinspection ThrowableNotThrown
+    verifyThrowsApiException(() -> apps.list());
   }
 
-  private App createApp(final String displayName) {
-    return apps.create(new App().displayName(displayName));
+  @Test
+  void updateApp() {
+    apps.update(APP_ID, new App());
+
+    verifyPatchCalled(() -> uriPathEndsWithMatcher(APP_ID), App.class);
+  }
+
+  @Test
+  void listWebhooks() {
+    apps.listWebhooks(APP_ID);
+
+    verifyGetCalled(() -> uriPathEndsWithMatcher(APP_ID + "/webhooks"), ListWebhooksResponse.class);
+  }
+
+  @ParameterizedTest
+  @MethodSource("callsWithMissingParams")
+  void missingParamsThrows(final ThrowableAssert.ThrowingCallable throwingCallable) {
+    assertClientSideException(throwingCallable);
+  }
+
+  private static List<ThrowableAssert.ThrowingCallable> callsWithMissingParams() {
+    return Arrays.asList(
+        () -> apps.create(null),
+        () -> apps.delete(null),
+        () -> apps.get(null),
+        () -> apps.update(null, new App()),
+        () -> apps.update("appId", null),
+        () -> apps.listWebhooks(null));
   }
 }
