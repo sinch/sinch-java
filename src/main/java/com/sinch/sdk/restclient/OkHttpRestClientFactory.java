@@ -10,8 +10,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Request.Builder;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.jetbrains.annotations.NotNull;
 
 public class OkHttpRestClientFactory implements SinchRestClientFactory {

@@ -1,129 +1,89 @@
 package com.sinch.sdk.api.conversationapi.service;
 
-import com.sinch.sdk.Sinch;
-import com.sinch.sdk.api.conversationapi.ConversationApi;
-import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.Region;
-import com.sinch.sdk.model.conversationapi.App;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+
 import com.sinch.sdk.model.conversationapi.Webhook;
-import com.sinch.sdk.model.conversationapi.WebhookTargetType;
-import com.sinch.sdk.model.conversationapi.WebhookTrigger;
-import com.sinch.sdk.restclient.OkHttpRestClientFactory;
+import java.util.Arrays;
 import java.util.List;
-import okhttp3.OkHttpClient;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.assertj.core.api.ThrowableAssert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class WebhooksTest extends BaseConvIntegrationTest {
+class WebhooksTest extends BaseServiceTest {
 
-  private final String webhookUrl = "https://webhook.site/d9cb2b5f-5ecd-4c19-ac34-b059b6e5eae1";
+  private static final String APP_ID = "app-id";
+  private static final String WEBHOOK_ID = "webhook-id";
+  private static final String WEBHOOK_URL = "webhook-url";
 
-  private static Apps apps;
   private static Webhooks webhooks;
 
-  private static App app;
-
-  @BeforeAll
-  static void beforeAll() {
-    final ConversationApi conversationApi =
-        Sinch.conversationApi(Region.EU, () -> new OkHttpRestClientFactory(new OkHttpClient()));
-    apps = conversationApi.apps();
-    webhooks = conversationApi.webhooks();
-    app = apps.create(new App().displayName("Webhook test app"));
-  }
-
-  @AfterAll
-  static void afterAll() {
-    apps.delete(app.getId());
+  @BeforeEach
+  void setUp() {
+    webhooks = new Webhooks(PROJECT_ID, restClient, BASE_URL);
   }
 
   @Test
-  void testCreateWebhook() {
-    final Webhook webhook =
-        webhooks.create(
-            new Webhook()
-                .appId(app.getId())
-                .target(webhookUrl)
-                .addTriggersItem(WebhookTrigger.CONTACT_CREATE)
-                .addTriggersItem(WebhookTrigger.CAPABILITY)
-                .addTriggersItem(WebhookTrigger.OPT_IN)
-                .addTriggersItem(WebhookTrigger.OPT_OUT)
-                .addTriggersItem(WebhookTrigger.MESSAGE_DELIVERY)
-                .targetType(WebhookTargetType.HTTP));
+  void publicConstructor() {
+    final Webhooks webhooks = new Webhooks(CONFIG, null);
+    assertThat(webhooks.restClient).isNotNull();
+    assertThat(webhooks.serviceURI.toString())
+        .isEqualTo(String.format(EXPECTED_SERVICE_URI_FORMAT, webhooks.getServiceName()));
+  }
 
-    Assertions.assertEquals(webhookUrl, webhook.getTarget());
-    Assertions.assertNotNull(webhook.getTriggers());
-    Assertions.assertEquals(5, webhook.getTriggers().size());
-    Assertions.assertEquals(WebhookTargetType.HTTP, webhook.getTargetType());
-    prettyPrint(webhook);
-    webhooks.delete(webhook.getId());
+  @Test
+  void createWebhook() {
+    webhooks.create(new Webhook().appId(APP_ID).target(WEBHOOK_URL));
+
+    verifyPostCalled(() -> eq(webhooks.serviceURI), Webhook.class);
   }
 
   @Test
   void deleteWebhook() {
-    final Webhook webhook = createWebhook();
-    webhooks.delete(webhook.getId());
-    final ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> webhooks.get(webhook.getId()));
-    Assertions.assertEquals(404, exception.getCode());
-    Assertions.assertNotNull(exception.getResponseBody());
-    Assertions.assertNotNull(exception.getResponseHeaders());
+    webhooks.delete(WEBHOOK_ID);
+
+    verifyDeleteCalled(() -> uriPathEndsWithMatcher(WEBHOOK_ID));
   }
 
   @Test
   void getWebhook() {
-    final Webhook webhook = webhooks.get(createWebhook().getId());
-    prettyPrint(webhook);
-    webhooks.delete(webhook.getId());
+
+    webhooks.get(WEBHOOK_ID);
+
+    verifyGetCalled(() -> uriPathEndsWithMatcher(WEBHOOK_ID), Webhook.class);
   }
 
   @Test
   void listWebhooks() {
-    final List<Webhook> response = webhooks.list(app.getId());
-    prettyPrint(response);
+    // For coverage, asserted in MessageTest
+    webhooks.list(APP_ID);
+    webhooks.listAsync(APP_ID);
   }
 
   @Test
   void updateWebhook() {
-    final Webhook update_webhook = createWebhook();
-    final String expected_target = "https://www.google.com/";
-    final Webhook webhook =
-        webhooks.update(
-            update_webhook.getId(),
-            new Webhook().target(expected_target).targetType(WebhookTargetType.GRPC));
-    Assertions.assertEquals(expected_target, webhook.getTarget());
-    prettyPrint(webhook);
+    webhooks.update(WEBHOOK_ID, new Webhook());
+
+    verifyPatchCalled(() -> uriPathEndsWithMatcher(WEBHOOK_ID), Webhook.class);
   }
 
-  @Test
-  void testMissingParamsThrows() {
-    ApiException exception =
-        Assertions.assertThrows(ApiException.class, () -> webhooks.create(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> webhooks.create(new Webhook().appId("123")));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(
-            ApiException.class, () -> webhooks.create(new Webhook().target("123")));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.delete(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.get(null));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.list(null));
-    assertClientSideException(exception);
-    exception =
-        Assertions.assertThrows(ApiException.class, () -> webhooks.update(null, new Webhook()));
-    assertClientSideException(exception);
-    exception = Assertions.assertThrows(ApiException.class, () -> webhooks.update("123", null));
-    assertClientSideException(exception);
+  @ParameterizedTest
+  @MethodSource("callsWithMissingParams")
+  void missingParamsThrows(final ThrowableAssert.ThrowingCallable throwingCallable) {
+    assertClientSideException(throwingCallable);
   }
 
-  private Webhook createWebhook() {
-    return webhooks.create(new Webhook().appId(app.getId()).target(webhookUrl));
+  private static List<ThrowableAssert.ThrowingCallable> callsWithMissingParams() {
+    return Arrays.asList(
+        () -> webhooks.create(null),
+        () -> webhooks.create(new Webhook().appId(APP_ID)),
+        () -> webhooks.create(new Webhook().target(WEBHOOK_URL)),
+        () -> webhooks.delete(null),
+        () -> webhooks.get(null),
+        () -> webhooks.list(null),
+        () -> webhooks.update(null, new Webhook()),
+        () -> webhooks.update(WEBHOOK_ID, null));
   }
 }

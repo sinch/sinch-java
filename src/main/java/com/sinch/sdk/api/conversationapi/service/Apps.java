@@ -7,6 +7,7 @@ import com.sinch.sdk.model.conversationapi.App;
 import com.sinch.sdk.model.conversationapi.ListAppsResponse;
 import com.sinch.sdk.model.conversationapi.ListWebhooksResponse;
 import com.sinch.sdk.model.conversationapi.Webhook;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.StringUtils;
 import java.util.List;
@@ -21,6 +22,10 @@ public class Apps extends AbstractService {
   public Apps(
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
+  }
+
+  Apps(final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
   }
 
   @Override

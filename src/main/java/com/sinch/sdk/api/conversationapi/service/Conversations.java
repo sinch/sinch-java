@@ -7,13 +7,20 @@ import com.sinch.sdk.api.conversationapi.ConversationApiConfig;
 import com.sinch.sdk.api.conversationapi.model.ListConversationsParams;
 import com.sinch.sdk.api.conversationapi.model.ListMessagesParams;
 import com.sinch.sdk.exception.ApiException;
-import com.sinch.sdk.model.conversationapi.*;
+import com.sinch.sdk.model.conversationapi.Conversation;
+import com.sinch.sdk.model.conversationapi.ConversationMessage;
+import com.sinch.sdk.model.conversationapi.ListConversationsResponse;
+import com.sinch.sdk.model.conversationapi.ListMessagesResponse;
+import com.sinch.sdk.restclient.SinchRestClient;
 import com.sinch.sdk.util.ExceptionUtils;
 import com.sinch.sdk.util.StringUtils;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 public class Conversations extends AbstractService {
+
+  static final String INJECT_MESSAGE = ":inject-message";
+  static final String STOP = ":stop";
 
   static final String PARAM_CONVERSATION_ID = "conversationId";
   private static final String PARAM_CONVERSATION = "conversation";
@@ -29,6 +36,12 @@ public class Conversations extends AbstractService {
       final ConversationApiConfig config, final AuthenticationService authenticationService) {
     super(config, authenticationService);
     messages = new Messages(config, authenticationService);
+  }
+
+  Conversations(
+      final String projectId, final SinchRestClient sinchRestClient, final String baseUrl) {
+    super(projectId, sinchRestClient, baseUrl);
+    this.messages = new Messages(projectId, sinchRestClient, baseUrl, null);
   }
 
   @Override
@@ -179,7 +192,7 @@ public class Conversations extends AbstractService {
     if (StringUtils.isEmpty(conversationMessage.getContactId())) {
       return ExceptionUtils.missingParam(PARAM_MESSAGE_CONTACT_ID);
     }
-    return restClient.post(withPath(conversationId.concat(":inject-message")), conversationMessage);
+    return restClient.post(withPath(conversationId.concat(INJECT_MESSAGE)), conversationMessage);
   }
 
   /**
@@ -282,7 +295,7 @@ public class Conversations extends AbstractService {
     if (StringUtils.isEmpty(conversationId)) {
       return ExceptionUtils.missingParam(PARAM_CONVERSATION_ID);
     }
-    return restClient.post(withPath(conversationId.concat(":stop")));
+    return restClient.post(withPath(conversationId.concat(STOP)));
   }
 
   /**

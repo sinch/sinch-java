@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ResourceExtension.class)
-public class SyntaxTest {
+public class MessagesSyntaxTest {
 
   private static final String RESOURCE_PATH = "conversation-api/requests/";
 

@@ -159,13 +159,13 @@ multiReleaseJar {
 
 test {
     useJUnitPlatform {
-        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'integrationTest'
+        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'example'
     }
 }
 
 testJava11() {
     useJUnitPlatform {
-        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'integrationTest'
+        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'example'
     }
 }
 
