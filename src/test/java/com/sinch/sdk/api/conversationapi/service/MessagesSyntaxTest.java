@@ -1,5 +1,7 @@
 package com.sinch.sdk.api.conversationapi.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.sinch.sdk.api.conversationapi.factory.ChoiceFactory;
 import com.sinch.sdk.api.conversationapi.factory.MessageFactory;
 import com.sinch.sdk.api.conversationapi.model.request.message.CardMessageRequest;
@@ -11,13 +13,14 @@ import com.sinch.sdk.api.conversationapi.model.request.message.MessageRequest;
 import com.sinch.sdk.api.conversationapi.model.request.message.TemplateMessageRequest;
 import com.sinch.sdk.api.conversationapi.model.request.message.TextMessageRequest;
 import com.sinch.sdk.model.conversationapi.CardHeight;
+import com.sinch.sdk.model.conversationapi.ChannelIdentities;
 import com.sinch.sdk.model.conversationapi.ContactLanguage;
 import com.sinch.sdk.model.conversationapi.ConversationChannel;
+import com.sinch.sdk.model.conversationapi.Recipient;
 import com.sinch.sdk.model.conversationapi.SendMessageRequest;
 import com.sinch.sdk.model.conversationapi.TemplateReference;
 import com.sinch.sdk.test.extension.ResourceExtension;
 import org.assertj.core.api.AbstractStringAssert;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -29,13 +32,13 @@ public class MessagesSyntaxTest {
   @Test
   void testMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "text-message.json") final String expected) {
-    assertThat(new TextMessageRequest("Hej").smsRecipient("123")).isEqualTo(expected);
+    assertThatAsJson(new TextMessageRequest("Hej").smsRecipient("123")).isEqualTo(expected);
   }
 
   @Test
   void mediaMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "media-message.json") final String expected) {
-    assertThat(
+    assertThatAsJson(
             new MediaMessageRequest("https://media.url")
                 .thumbnail("https://media.thumbnail.url")
                 .rcsRecipient("+123445566"))
@@ -45,7 +48,7 @@ public class MessagesSyntaxTest {
   @Test
   void choiceMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "choice-message.json") final String expected) {
-    assertThat(
+    assertThatAsJson(
             new ChoiceMessageRequest("Choose")
                 .appId("123")
                 .addLocationChoice("Meet here", 44.222f, 66.333f)
@@ -58,13 +61,13 @@ public class MessagesSyntaxTest {
   @Test
   void cardMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "card-message.json") final String expected) {
-    assertThat(cardMessageRequest()).isEqualTo(expected);
+    assertThatAsJson(cardMessageRequest()).isEqualTo(expected);
   }
 
   @Test
   void carouselMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "carousel-message.json") final String expected) {
-    assertThat(
+    assertThatAsJson(
             new CarouselMessageRequest()
                 .addCallChoice("My number", "+321665544")
                 .addCard(cardMessageRequest().getMessage())
@@ -83,7 +86,7 @@ public class MessagesSyntaxTest {
   @Test
   void locationMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "location-message.json") final String expected) {
-    assertThat(
+    assertThatAsJson(
             new LocationMessageRequest("Here!", 22.445f, 55.512f)
                 .label("The location label")
                 .viberBMRecipient("bmviberer"))
@@ -93,7 +96,7 @@ public class MessagesSyntaxTest {
   @Test
   void templateMessage(
       @ResourceExtension.Resource(RESOURCE_PATH + "template-message.json") final String expected) {
-    assertThat(
+    assertThatAsJson(
             new TemplateMessageRequest()
                 .channelTemplateItem(
                     ConversationChannel.WHATSAPP,
@@ -114,6 +117,33 @@ public class MessagesSyntaxTest {
         .isEqualTo(expected);
   }
 
+  @Test
+  void recipientsAppends() {
+    final TextMessageRequest textMessageRequest = new TextMessageRequest("test");
+    final String identity = "123";
+    assertThat(textMessageRequest.getRequest().getRecipient()).isNull();
+    textMessageRequest.contactRecipient(identity);
+    assertThat(textMessageRequest.getRequest().getRecipient()).isNotNull();
+    assertThat(textMessageRequest.getRequest().getRecipient().getContactId()).isEqualTo(identity);
+    assertThat(textMessageRequest.getRequest().getRecipient().getIdentifiedBy()).isNull();
+    textMessageRequest.smsRecipient(identity);
+    assertThat(textMessageRequest.getRequest().getRecipient().getContactId()).isNotNull();
+    assertThat(
+            textMessageRequest.getRequest().getRecipient().getIdentifiedBy().getChannelIdentities())
+        .hasSize(1);
+    textMessageRequest.whatsappRecipient(identity);
+    assertThat(
+            textMessageRequest.getRequest().getRecipient().getIdentifiedBy().getChannelIdentities())
+        .hasSize(2);
+    textMessageRequest.contactRecipient("identity");
+    assertThat(textMessageRequest.getRequest().getRecipient().getContactId()).isEqualTo("identity");
+    textMessageRequest.recipient(new Recipient().identifiedBy(new ChannelIdentities()));
+    assertThat(textMessageRequest.getRequest().getRecipient().getContactId()).isEqualTo("identity");
+    assertThat(
+            textMessageRequest.getRequest().getRecipient().getIdentifiedBy().getChannelIdentities())
+        .hasSize(2);
+  }
+
   private CardMessageRequest cardMessageRequest() {
     return new CardMessageRequest("Card Title")
         .appId("123")
@@ -126,11 +156,11 @@ public class MessagesSyntaxTest {
         .viberRecipient("vibrrrr");
   }
 
-  private AbstractStringAssert<?> assertThat(final MessageRequest<?, ?> request) {
-    return assertThat(request.getRequest());
+  private AbstractStringAssert<?> assertThatAsJson(final MessageRequest<?, ?> request) {
+    return assertThatAsJson(request.getRequest());
   }
 
-  private AbstractStringAssert<?> assertThat(final SendMessageRequest request) {
-    return Assertions.assertThat(ResourceExtension.asJsonString(request));
+  private AbstractStringAssert<?> assertThatAsJson(final SendMessageRequest request) {
+    return assertThat(ResourceExtension.asJsonString(request));
   }
 }
