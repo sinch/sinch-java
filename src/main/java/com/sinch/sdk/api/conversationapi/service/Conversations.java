@@ -204,9 +204,9 @@ public class Conversations extends AbstractService {
    * @return {@link ListConversationsResponse}
    * @throws ApiException if fails to make API call
    */
-  public ListConversationsResponse listConversations(final ListConversationsParams params) {
+  public ListConversationsResponse list(final ListConversationsParams params) {
     try {
-      return listConversationsAsync(params).join();
+      return listAsync(params).join();
     } catch (final CompletionException ex) {
       throw ExceptionUtils.getExpectedCause(ex);
     }
@@ -220,7 +220,7 @@ public class Conversations extends AbstractService {
    * @param params Object holding the parameters (required)
    * @return Async task generating {@link ListConversationsResponse}
    */
-  public CompletableFuture<ListConversationsResponse> listConversationsAsync(
+  public CompletableFuture<ListConversationsResponse> listAsync(
       final ListConversationsParams params) {
     if (params == null) {
       return ExceptionUtils.missingParam(PARAMS);

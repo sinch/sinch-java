@@ -70,7 +70,7 @@ public class ConversationsExamples {
   @Test
   void listConversations() {
     final ListConversationsResponse response =
-        conversations.listConversations(
+        conversations.list(
             new ListConversationsParams().onlyActive(true).appId(AppsExamples.APP_ID).size(1));
     log.info("{}", response);
   }

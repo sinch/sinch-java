@@ -70,7 +70,7 @@ class ConversationsTest extends BaseServiceTest {
 
   @Test
   void listConversations() {
-    conversations.listConversations(new ListConversationsParams().contactId(CONTACT_ID));
+    conversations.list(new ListConversationsParams().contactId(CONTACT_ID));
 
     verifyGetCalled(() -> uriQueryEndsWithMatcher(CONTACT_ID), ListConversationsResponse.class);
   }
@@ -111,8 +111,8 @@ class ConversationsTest extends BaseServiceTest {
         () ->
             conversations.injectMessage(new ConversationMessage().conversationId(CONVERSATION_ID)),
         () -> conversations.injectMessage(new ConversationMessage().contactId(CONTACT_ID)),
-        () -> conversations.listConversations(null),
-        () -> conversations.listConversations(new ListConversationsParams()),
+        () -> conversations.list(null),
+        () -> conversations.list(new ListConversationsParams()),
         () -> conversations.stopActive(null),
         () -> conversations.update(null, new Conversation()),
         () -> conversations.update(CONVERSATION_ID, null));
