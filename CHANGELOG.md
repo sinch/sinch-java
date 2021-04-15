@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - <date>
+## [0.1.0] - 15-04-2021
 ### Changes
 - Add support for adding multiple recipient identities to the simple requests
 - Rename listConversations to align name with other services
+- Update to align generated classes with the API release
+  - Adds support for MMS
+  - Adds new ReasonCodes
 
 ## [0.0.2] - 08-03-2021
 ### Changes
