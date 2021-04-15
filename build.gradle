@@ -78,11 +78,8 @@ publishing {
 }
 
 signing {
+    required { isReleaseVersion && gradle.taskGraph.hasTask("publishAllPublicationsToSonatypeRepository") }
     sign publishing.publications.getByName(project.name)
-}
-
-tasks.withType(Sign) {
-    onlyIf { isReleaseVersion }
 }
 
 ext {
