@@ -37,6 +37,18 @@ public class RecipientFactory {
     return fromIdentity(ConversationChannel.WHATSAPP, identity);
   }
 
+  public static Recipient fromKakaoTalkIdentity(final String identity) {
+    return fromIdentity(ConversationChannel.KAKAOTALK, identity);
+  }
+
+  public static Recipient fromInstagramIdentity(final String identity) {
+    return fromIdentity(ConversationChannel.INSTAGRAM, identity);
+  }
+
+  public static Recipient fromTelegramIdentity(final String identity) {
+    return fromIdentity(ConversationChannel.TELEGRAM, identity);
+  }
+
   public static Recipient fromIdentity(final ConversationChannel channel, final String identity) {
     return new Recipient()
         .identifiedBy(

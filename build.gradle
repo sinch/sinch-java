@@ -145,7 +145,7 @@ spotless {
 generateModelFromOpenApi {
     modelDefinition {
         apiName 'conversationapi'
-        url 'https://developers.sinch.com/openapi/5e8c97e796be52003d4ead78'
+        url 'https://sinch.readme.io/openapi/5e30ccb44675ba0049b5d82c'
         prefixesToRemove 'Type', 'V1'
     }
 }
