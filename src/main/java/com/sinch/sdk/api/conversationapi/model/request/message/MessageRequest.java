@@ -103,4 +103,34 @@ public interface MessageRequest<Request, Message> {
   default Request whatsappRecipient(final String identity) {
     return recipient(fromWhatsappIdentity(identity));
   }
+
+  /**
+   * Specifies the recipient by KAKAOTALK channel identity.
+   *
+   * @param identity The kakaotalk identity
+   * @return this
+   */
+  default Request kakaoTalkRecipient(final String identity) {
+    return recipient(fromKakaoTalkIdentity(identity));
+  }
+
+  /**
+   * Specifies the recipient by KAKAOTALK channel identity.
+   *
+   * @param identity The instagram identity
+   * @return this
+   */
+  default Request instagramRecipient(final String identity) {
+    return recipient(fromInstagramIdentity(identity));
+  }
+
+  /**
+   * Specifies the recipient by TELEGRAM channel identity.
+   *
+   * @param identity The telegram identity
+   * @return this
+   */
+  default Request telegramRecipient(final String identity) {
+    return recipient(fromTelegramIdentity(identity));
+  }
 }
