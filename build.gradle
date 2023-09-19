@@ -2,11 +2,9 @@ plugins {
     id "java-library"
     id "signing"
     id "maven-publish"
-    id "io.freefair.lombok" version "5.3.0"
     id "com.diffplug.spotless" version "5.8.2"
     id 'com.adarshr.test-logger' version "2.1.1"
     id 'me.champeau.mrjar'
-    id 'com.sinch.openapi.generator'
 }
 
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
@@ -98,36 +96,6 @@ ext {
 }
 
 dependencies {
-    // Required by swagger generated models
-    implementation "io.swagger:swagger-annotations:${swaggerAnnotationsVersion}"
-    implementation "com.google.code.findbugs:jsr305:${findbugsVersion}"
-    implementation "org.slf4j:slf4j-api:${slf4jApiVersion}"
-    implementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
-    compileOnly "org.apache.httpcomponents.client5:httpclient5:${apacheHttpClientVersion}"
-
-    implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
-    implementation "javax.validation:validation-api:${javaxValidationVersion}"
-
-    testImplementation "com.github.tomakehurst:wiremock-jre8:${wiremockVersion}"
-    testImplementation "com.squareup.okhttp3:okhttp:${okhttpVersion}"
-    testImplementation "org.apache.httpcomponents.client5:httpclient5:${apacheHttpClientVersion}"
-    testImplementation "org.assertj:assertj-core:${assertjVersion}"
-    testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
-    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-    testRuntimeOnly "org.slf4j:slf4j-simple:${slf4jApiVersion}"
-    testRuntimeOnly "com.squareup.okhttp3:okhttp:${okhttpVersion}"
-}
-
-tasks.withType(Test) {
-    systemProperties.putAll(
-            System.getProperties().findAll { it.key.startsWith("sinch") || it.key == 'ignoreTestTags' }
-    )
 }
 
 spotless {
@@ -136,39 +104,12 @@ spotless {
             include 'src/**/*.java'
             exclude 'build/**/*.*'
         }
-        googleJavaFormat()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-    }
-}
 
-generateModelFromOpenApi {
-    modelDefinition {
-        apiName 'conversationapi'
-        url 'https://sinch.readme.io/openapi/5e30ccb44675ba0049b5d82c'
-        prefixesToRemove 'Type', 'V1'
     }
 }
 
 multiReleaseJar {
     addLanguageVersion 11
-}
-
-test {
-    useJUnitPlatform {
-        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'example'
-    }
-}
-
-testJava11() {
-    useJUnitPlatform {
-        excludeTags getSystemProperties().get('ignoreTestTags') ? 'none()' : 'example'
-    }
-}
-
-testlogger {
-    showFullStackTraces false
-    showStandardStreams true
 }
 
 task createVersionProperties(type: WriteProperties) {
