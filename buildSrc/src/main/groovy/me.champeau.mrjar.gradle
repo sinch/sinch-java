@@ -8,5 +8,4 @@ extensions.create("multiReleaseJar", MrJarExtension, java, sourceSets, javaToolc
 
 java {
     withSourcesJar()
-    withJavadocJar()
 }
